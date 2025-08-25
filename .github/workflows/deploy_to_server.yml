@@ -1,0 +1,21 @@
+name: Deploy to annekelley.site
+on: 
+  push: 
+    branches: 
+      - main
+jobs: 
+  deploy: 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Get the code 
+        uses: actions/checkout@v4 
+      - name: SSH key authentication
+        uses: webfactory/ssh-agent@v0.8.0 
+        with: 
+          ssh-private-key: ${{ secrets.PROD_SSH_KEY }} 
+      - name: Push to my server 
+        run: |
+          ssh-keyscan -H 143.198.147.148 >> ~/.ssh/known_hosts
+          git remote add prod banana@143.198.147.148:/var/repo/CSE-135-HW1.git 
+          git fetch --unshallow
+          git push --force prod main

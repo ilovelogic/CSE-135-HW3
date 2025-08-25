@@ -1,0 +1,25 @@
+                         
+.team-box {
+        position: relative;
+        top: -100px;
+        left: calc(66%);
+        width: calc(30%);
+        height: calc(50%);
+        padding: 10px;
+        margin: 10px;
+        background-color: pink;
+        margin: 10px;
+}
+
+.outer {
+	border: 5px solid pink;
+        width: calc(90%);
+}
+
+.row {
+        display: flex;
+}
+
+.column {
+        flex: 30%;
+}

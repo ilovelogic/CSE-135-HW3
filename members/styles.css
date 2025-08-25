@@ -1,0 +1,26 @@
+h1 {
+	color: green;
+}
+
+Alex McClelland
+a:link {
+	color: pink;
+}
+
+a:visited {
+	color: green;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+.outer {
+	border: 5px solid green;
+}
+
+@media (width >= 0em) {
+	body {
+		background-color: white;
+	}
+}
