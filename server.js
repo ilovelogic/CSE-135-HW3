@@ -16,4 +16,5 @@ var router = jsonServer.router('db.json');
 
 server.use(router);
 
-server.listen(3000);
+server.listen(3000, '127.0.0.1'); // listening on only localhost, since we removed access
+// to the general population via ufw
