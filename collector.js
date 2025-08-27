@@ -39,10 +39,12 @@ const computedCSS = window.getComputedStyle(cssDiv).getPropertyValue('color');
 allowsCSS = (computedCSS === 'black');
 
 // User's screen dimensions
-userScreenWidth, userScreenHeight = window.screen.width, window.screen.height;
+userScreenWidth = window.screen.width;
+userScreenHeight = window.screen.height;
 
 // User's window dimensions
-userWindowWidth, userWindowHeight = window.innerWidth, window.innerHeight;
+userWindowWidth = window.innerWidth;
+userWindowHeight = window.innerHeight;
 
 // User's network connection type
 userNetConnType = window.navigator.connection.effectiveType;
@@ -175,3 +177,10 @@ window.addEventListener('blur', (event) => {
  * Fetch API: https://developer.mozilla.org/en/docs/Web/API/Fetch_API
  */
 
+const response = await fetch("https://annekelley.site/api.php/post", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({username: "example", password: "password" }),
+});
