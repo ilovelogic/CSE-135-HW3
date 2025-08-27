@@ -57,11 +57,11 @@ if ($resource === "static") {
 
         default:
             http_response_code(405); // 405 means method not allowed
-            echo json_encode(["error" => "Method not supported"]);
+            echo json_encode(["error" => "Method $method not supported"]);
     }
 }
 else {
   http_response_code(404); // 404 means not found (applied since we only support "static")
-  echo json_encode(["error" => "Resource not found"]);
+  echo json_encode(["error" => "Requested resource: $resource. Resource not found"]);
 }
 ?>
