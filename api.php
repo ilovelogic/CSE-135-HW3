@@ -36,6 +36,7 @@ if ($resource === "static") {
                 # checks if any of the data entries have an id matching the requested id
                 # uses loose comparison since id from url is a string and id in mock data is an int
                 $entry = array_filter($mockStaticData, fn($dataEntry) => $dataEntry["id"] == $id);
+                echo json_encode(["requested entry" => $entry]);
             }
             else { # no id => return all static data
                 echo json_encode($mockStaticData); 
