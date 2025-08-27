@@ -1,4 +1,16 @@
 <?php
+
+/*
+Implements the following routing:
+
+HTTP Method | Example              | Route Description
+GET         | /api.php/static      | Retrieve every entry logged in the static table
+GET         | /api.php/static/{id} | Retrieve a specific entry logged in the static table (that matches the given id)
+POST        | /api.php/static      | Add a new entry to the static table
+PUT         | /api.php/static/{id} | Update a specific entry from the static table (that matches the given id)
+DELETE      | /api.php/static/{id} | Delete a specific entry from the static table (that matches the given id)
+*/
+
 header("Content-Type: application/json");
 
 # for testing, long-term goal is using a database
@@ -14,10 +26,8 @@ if ($request[0] === "/") {
 
 $pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
 
-$cleanPathArr = array_filter($pathArr); // removes empty entries (results of a leading or trailing /)
-
-$resource = $cleanPathArr[1] ?? null; // "static"
-$id = $cleanPathArr[2] ?? null; // "123"
+$resource = $pathArr[1] ?? null; // "static"
+$id = $pathArr[2] ?? null; // "123"
 
 if ($resource === "static") {
     switch ($method) {
@@ -68,6 +78,6 @@ if ($resource === "static") {
 }
 else {
   http_response_code(404); // 404 means not found (applied since we only support "static")
-  echo json_encode(["error" => "Requested resource: $resource. Resource not found"]);
+  echo json_encode(["error" => "Resource $resource not found"]);
 }
 ?>
