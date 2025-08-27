@@ -5,11 +5,17 @@ header("Content-Type: application/json");
 $mockStaticData = [["id" => 1, "userAgent" => "Mozilla/5.0", "language" => "en-US", "cookieEnabled" => true],
   ["id" => 2, "userAgent" => "Chrome/90", "language" => "fr-FR", "cookieEnabled" => false]];
 
-$request = $_SERVER['REQUEST_URI']; // ex. /api/static/123
+$request = $_SERVER['REQUEST_URI']; // ex. /api.php/static/123
 $method = $_SERVER['REQUEST_METHOD']; // GET, POST, PUT, DELETE
 
-$pathArr = explode('/', $request); // breaks up into ["api", "static", "123"]
+if ($request[0] === "/") {
+    $request = substr($request,1); // remove leading /
+}
+
+$pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
+
 $cleanPathArr = array_filter($pathArr); // removes empty entries (results of a leading or trailing /)
+
 $resource = $cleanPathArr[1] ?? null; // "static"
 $id = $cleanPathArr[2] ?? null; // "123"
 
