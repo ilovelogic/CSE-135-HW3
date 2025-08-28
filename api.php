@@ -162,6 +162,7 @@ function sendStaticStmt($conn, $inputArr) {
 
     // cleans input, assigning nonexistent values to null
     $input = [
+        'id' => $inputArr['id'] ?? time(),
         'userAgent' => $inputArr['userAgent'] ?? null,
         'userLang' => $inputArr['userLang'] ?? null,
         'acceptsCookies' => isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null,
@@ -177,10 +178,10 @@ function sendStaticStmt($conn, $inputArr) {
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     $sql = "INSERT INTO static (
-        userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
+        id, userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
         allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
         userNetConnType
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -191,7 +192,8 @@ function sendStaticStmt($conn, $inputArr) {
 
     // Bind parameters with explicit types (s = string, i = integer)
     $stmt->bind_param(
-        "ssiii iiiii s",
+        "issiiiiiiiis",
+        $input['id'],
         $input['userAgent'],
         $input['userLang'],
         $input['acceptsCookies'],
@@ -283,7 +285,7 @@ function sendActivityStmt($conn, $inputArr) {
     }
 
     $stmt->bind_param(
-        "sssii s iiii ss ii s",
+        "sssiisiiiissiis",
         $input['type'],
         $input['message'],
         $input['filename'],
