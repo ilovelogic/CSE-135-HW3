@@ -118,7 +118,7 @@ if ($resource) {
                     echo json_encode(["error" => "No activity log found or invalid structure"]);
                 }
             }
-            echo json_encode(["message" => "POST recieved successfully", "data" => $inputArr]);
+            echo json_encode(["data" => $inputArr]);
             break;
 
         case 'PUT':
@@ -172,6 +172,7 @@ function sendStaticStmt($conn, $inputArr) {
 
     // cleans input, assigning nonexistent values to null
     $id = $inputArr['id'] ?? time();
+
     $userAgent = $inputArr['userAgent'] ?? null;
     $userLang = $inputArr['userLang'] ?? null;
     $acceptsCookies = isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null;
