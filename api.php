@@ -56,7 +56,7 @@ if ($resource === "static") {
 
                 $sqlStmt->execute();
                 $dbEntry = $sqlStmt->get_result(); # returns a mysqli_result object corresponding to id
-                $dbEntryArr = $dbEntry->fetchassoc(); # returns single row as associative array
+                $dbEntryArr = $dbEntry->fetch_assoc(); # returns single row as associative array
 
                 if ($dbEntryArr) {
                     echo json_encode($dbEntryArr);
