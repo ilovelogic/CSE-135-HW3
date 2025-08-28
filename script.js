@@ -14,7 +14,9 @@ const data = {
 
 analyticsData = JSON.stringify(data);
 
-navigator.sendBeacon("/api.php/static", analyticsData);
+window.addEventListener("DOMContentLoaded", () => {
+  navigator.sendBeacon("/api.php/static", analyticsData);
+});
 
 const quoteArray = ["Everything excellent is as difficult as it is rare.", 
     "You could leave life right now. Let that determine what you do and say and think.",
