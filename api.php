@@ -176,7 +176,7 @@ function sendStaticStmt($conn, $inputArr) {
     ];
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
-    $sql = "INSERT INTO static_data (
+    $sql = "INSERT INTO static (
         userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
         allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
         userNetConnType
@@ -223,7 +223,7 @@ function sendPerfStmt($conn, $inputArr) {
     $pageLoadTimingObjectJson = $input['pageLoadTimingObject'] ? json_encode($input['pageLoadTimingObject']) : null;
 
     // prepares insert statement with placeholders
-    $sql = "INSERT INTO performance_data (
+    $sql = "INSERT INTO performance (
         pageLoadTimingObject,
         pageLoadTimeTotal,
         pageLoadStart,
@@ -269,7 +269,7 @@ function sendActivityStmt($conn, $inputArr) {
         'sessionId' => $inputArr['sessionId'] ?? null // for tying to specific user session if available
     ];
 
-    $sql = "INSERT INTO activity_data (
+    $sql = "INSERT INTO activity (
         type, message, filename, lineno, colno, error,
         clientX, clientY, button, scrollX, scrollY,
         `key`, `code`, timestamp, sessionId
