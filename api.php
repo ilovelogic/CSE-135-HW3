@@ -25,14 +25,10 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-header("Content-Type: application/json");
-
-# for testing, long-term goal is using a database
-$mockStaticData = [["id" => 1, "userAgent" => "Mozilla/5.0", "language" => "en-US", "cookieEnabled" => true],
-  ["id" => 2, "userAgent" => "Chrome/90", "language" => "fr-FR", "cookieEnabled" => false]];
 
 $request = $_SERVER['REQUEST_URI']; // ex. /api.php/static/123
 $method = $_SERVER['REQUEST_METHOD']; // GET, POST, PUT, DELETE
+
 
 if ($request[0] === "/") {
     $request = substr($request,1); // remove leading /
@@ -50,6 +46,7 @@ else if ($tmpResource === "activity") {
 else if ($tmpResource === "performance") {
     $resource = "performance";
 }
+
 
 $id = $pathArr[2] ?? null; // "123"
 
@@ -87,14 +84,37 @@ if ($resource) {
             break;
 
         case 'POST':
-            // reads in json payload to associative array
-            $payload = json_decode(file_get_contents('php://input'),true); 
+            // reads in payload to associative array
+            $inputArr = inputToArr();
+
+            if ($resource === "static") {
+                sendStaticStmt($conn, $inputArr);
+            }
+
+            else if ($resource === "performance") {
+                sendPerfStmt($conn, $inputArr);
+            }
+
+            else if ($resource === "activity") {
+                // checks if activityLog exists and is an array
+                if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
+                    foreach ($inputArr['activityLog'] as $event) {
+                        // inserts each event separately, passing current single event array
+                        sendActivityStmt($conn, $event);
+                    }
+                } else {
+                    // case where no events are sent or structure is unexpected
+                    http_response_code(400);
+                    echo json_encode(["error" => "No activity log found or invalid structure"]);
+                }
+            }
             echo json_encode(["message" => "POST recieved successfully", "data" => $input]);
             break;
 
         case 'PUT':
             if ($id) {
                 $payload = json_decode(file_get_contents('php://input'), true);
+
                 // insert update logic for working with the data base HERE
                 echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
             } 
@@ -123,5 +143,182 @@ if ($resource) {
 else {
   http_response_code(404); // 404 means not found (applied since we only support "static")
   echo json_encode(["error" => "Resource $resource not found"]);
+}
+
+
+
+function inputToArr() {
+    $contentType = $_SERVER["CONTENT_TYPE"] ?? '';
+    
+    if (strpos($contentType, 'application/json') === true) {
+        // parse JSON body
+        $inputArr = json_decode(file_get_contents('php://input'), true);
+    } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === true) {
+        // use $_POST for form data
+        $input = $_POST;
+        parse_str($input, $inputArr);
+    } else {
+        http_response_code(400);
+        echo json_encode(["error" => "Unsupported content type"]);
+        exit();
+    }
+    return $inputArr;
+}
+
+function sendStaticStmt($conn, $inputArr) {
+
+    // cleans input, assigning nonexistent values to null
+    $input = [
+        'userAgent' => $inputArr['userAgent'] ?? null,
+        'userLang' => $inputArr['userLang'] ?? null,
+        'acceptsCookies' => isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null,
+        'allowsJavaScript' => isset($inputArr['allowsJavaScript']) ? ($inputArr['allowsJavaScript'] ? 1 : 0) : null,
+        'allowsImages' => isset($inputArr['allowsImages']) ? ($inputArr['allowsImages'] ? 1 : 0) : null,
+        'allowsCSS' => isset($inputArr['allowsCSS']) ? ($inputArr['allowsCSS'] ? 1 : 0) : null,
+        'userScreenWidth' => isset($inputArr['userScreenWidth']) ? (int)$inputArr['userScreenWidth'] : null,
+        'userScreenHeight' => isset($inputArr['userScreenHeight']) ? (int)$inputArr['userScreenHeight'] : null,
+        'userWindowWidth' => isset($inputArr['userWindowWidth']) ? (int)$inputArr['userWindowWidth'] : null,
+        'userWindowHeight' => isset($inputArr['userWindowHeight']) ? (int)$inputArr['userWindowHeight'] : null,
+        'userNetConnType' => $inputArr['userNetConnType'] ?? null,
+    ];
+
+    // prepares insert statement with placeholders (nullable fields allowed in DB schema)
+    $sql = "INSERT INTO static_data (
+        userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
+        allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
+        userNetConnType
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["error" => "Prepare failed: " . $conn->error]);
+        exit();
+    }
+
+    // Bind parameters with explicit types (s = string, i = integer)
+    $stmt->bind_param(
+        "ssiii iiiii s",
+        $input['userAgent'],
+        $input['userLang'],
+        $input['acceptsCookies'],
+        $input['allowsJavaScript'],
+        $input['allowsImages'],
+        $input['allowsCSS'],
+        $input['userScreenWidth'],
+        $input['userScreenHeight'],
+        $input['userWindowWidth'],
+        $input['userWindowHeight'],
+        $input['userNetConnType']
+    );
+
+    execStmt($stmt);
+    $stmt->close();
+}
+
+function sendPerfStmt($conn, $inputArr) {
+
+    // cleans input associative array
+    $input = [
+        'pageLoadTimingObject' => $inputArr['pageLoadTimingObject'] ?? null,  // could be complex object, store as JSON
+        'pageLoadTimeTotal' => isset($inputArr['pageLoadTimeTotal']) ? (float)$inputArr['pageLoadTimeTotal'] : null,
+        'pageLoadStart' => isset($inputArr['pageLoadStart']) ? (float)$inputArr['pageLoadStart'] : null,
+        'pageLoadEnd' => isset($inputArr['pageLoadEnd']) ? (float)$inputArr['pageLoadEnd'] : null,
+    ];
+
+    // JSON-encode complex objects for storage (nullable)
+    $pageLoadTimingObjectJson = $input['pageLoadTimingObject'] ? json_encode($input['pageLoadTimingObject']) : null;
+
+    // prepares insert statement with placeholders
+    $sql = "INSERT INTO performance_data (
+        pageLoadTimingObject,
+        pageLoadTimeTotal,
+        pageLoadStart,
+        pageLoadEnd
+    ) VALUES (?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["error" => "Prepare failed: " . $conn->error]);
+        exit();
+    }
+
+    // binds parameters (s = string, d = double/float), nullable fields use null
+    $stmt->bind_param(
+        "sddd",
+        $pageLoadTimingObjectJson,
+        $input['pageLoadTimeTotal'],
+        $input['pageLoadStart'],
+        $input['pageLoadEnd']
+    );
+
+    execStmt($stmt);
+    $stmt->close();
+}
+
+function sendActivityStmt($conn, $inputArr) {
+    $input = [
+        'type' => $inputArr['type'] ?? null,
+        'message' => $inputArr['message'] ?? null,
+        'filename' => $inputArr['filename'] ?? null,
+        'lineno' => isset($inputArr['lineno']) ? (int)$inputArr['lineno'] : null,
+        'colno' => isset($inputArr['colno']) ? (int)$inputArr['colno'] : null,
+        'error' => isset($inputArr['error']) ? json_encode($inputArr['error']) : null,
+        'clientX' => isset($inputArr['clientX']) ? (int)$inputArr['clientX'] : null,
+        'clientY' => isset($inputArr['clientY']) ? (int)$inputArr['clientY'] : null,
+        'button' => isset($inputArr['button']) ? (int)$inputArr['button'] : null,
+        'scrollX' => isset($inputArr['scrollX']) ? (int)$inputArr['scrollX'] : null,
+        'scrollY' => isset($inputArr['scrollY']) ? (int)$inputArr['scrollY'] : null,
+        'key' => $inputArr['key'] ?? null,
+        'code' => $inputArr['code'] ?? null,
+        'timestamp' => isset($inputArr['timestamp']) ? (int)$inputArr['timestamp'] : null,
+        'sessionId' => $inputArr['sessionId'] ?? null // for tying to specific user session if available
+    ];
+
+    $sql = "INSERT INTO activity_data (
+        type, message, filename, lineno, colno, error,
+        clientX, clientY, button, scrollX, scrollY,
+        `key`, `code`, timestamp, sessionId
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["error" => "Prepare failed: " . $conn->error]);
+        exit();
+    }
+
+    $stmt->bind_param(
+        "sssii s iiii ss ii s",
+        $input['type'],
+        $input['message'],
+        $input['filename'],
+        $input['lineno'],
+        $input['colno'],
+        $input['error'],
+        $input['clientX'],
+        $input['clientY'],
+        $input['button'],
+        $input['scrollX'],
+        $input['scrollY'],
+        $input['key'],
+        $input['code'],
+        $input['timestamp'],
+        $input['sessionId']
+    );
+
+    execStmt($stmt);
+    $stmt->close();
+}
+
+function execStmt($stmt) {
+    if ($stmt->execute()) {
+        http_response_code(201);
+        echo json_encode(["success" => true, "insertId" => $stmt->insert_id]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "Execute failed: " . $stmt->error]);
+    }
 }
 ?>
