@@ -154,6 +154,7 @@ function inputToArr() {
     } else {
         // use $_POST for x-www-form-urlencoded data
         $input = $_POST;
+        console.log("input is $input");
         parse_str($input, $inputArr);
     }
     return $inputArr;
