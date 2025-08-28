@@ -171,20 +171,18 @@ function inputToArr() {
 function sendStaticStmt($conn, $inputArr) {
 
     // cleans input, assigning nonexistent values to null
-    $input = [
-        'id' => $inputArr['id'] ?? time(),
-        'userAgent' => $inputArr['userAgent'] ?? null,
-        'userLang' => $inputArr['userLang'] ?? null,
-        'acceptsCookies' => isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null,
-        'allowsJavaScript' => isset($inputArr['allowsJavaScript']) ? ($inputArr['allowsJavaScript'] ? 1 : 0) : null,
-        'allowsImages' => isset($inputArr['allowsImages']) ? ($inputArr['allowsImages'] ? 1 : 0) : null,
-        'allowsCSS' => isset($inputArr['allowsCSS']) ? ($inputArr['allowsCSS'] ? 1 : 0) : null,
-        'userScreenWidth' => isset($inputArr['userScreenWidth']) ? (int)$inputArr['userScreenWidth'] : null,
-        'userScreenHeight' => isset($inputArr['userScreenHeight']) ? (int)$inputArr['userScreenHeight'] : null,
-        'userWindowWidth' => isset($inputArr['userWindowWidth']) ? (int)$inputArr['userWindowWidth'] : null,
-        'userWindowHeight' => isset($inputArr['userWindowHeight']) ? (int)$inputArr['userWindowHeight'] : null,
-        'userNetConnType' => $inputArr['userNetConnType'] ?? null,
-    ];
+    $id = $inputArr['id'] ?? time();
+    $userAgent = $inputArr['userAgent'] ?? null;
+    $userLang = $inputArr['userLang'] ?? null;
+    $acceptsCookies = isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null;
+    $allowsJavaScript = isset($inputArr['allowsJavaScript']) ? ($inputArr['allowsJavaScript'] ? 1 : 0) : null;
+    $allowsImages = isset($inputArr['allowsImages']) ? ($inputArr['allowsImages'] ? 1 : 0) : null;
+    $allowsCSS = isset($inputArr['allowsCSS']) ? ($inputArr['allowsCSS'] ? 1 : 0) : null;
+    $userScreenWidth = isset($inputArr['userScreenWidth']) ? (int)$inputArr['userScreenWidth'] : null;
+    $userScreenHeight = isset($inputArr['userScreenHeight']) ? (int)$inputArr['userScreenHeight'] : null;
+    $userWindowWidth = isset($inputArr['userWindowWidth']) ? (int)$inputArr['userWindowWidth'] : null;
+    $userWindowHeight = isset($inputArr['userWindowHeight']) ? (int)$inputArr['userWindowHeight'] : null;
+    $userNetConnType = $inputArr['userNetConnType'] ?? null;
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     $sql = "INSERT INTO static (
@@ -203,18 +201,18 @@ function sendStaticStmt($conn, $inputArr) {
     // Bind parameters with explicit types (s = string, i = integer)
     $stmt->bind_param(
         "issiiiiiiiis",
-        $input['id'],
-        $input['userAgent'],
-        $input['userLang'],
-        $input['acceptsCookies'],
-        $input['allowsJavaScript'],
-        $input['allowsImages'],
-        $input['allowsCSS'],
-        $input['userScreenWidth'],
-        $input['userScreenHeight'],
-        $input['userWindowWidth'],
-        $input['userWindowHeight'],
-        $input['userNetConnType']
+        $id,
+        $userAgent,
+        $userLang,
+        $acceptsCookies,
+        $allowsJavaScript,
+        $allowsImages,
+        $allowsCSS,
+        $userScreenWidth,
+        $userScreenHeight,
+        $userWindowWidth,
+        $userWindowHeight,
+        $userNetConnType
     );
 
     execStmt($stmt);
