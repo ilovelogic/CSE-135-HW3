@@ -3,6 +3,22 @@
  */
 
 /**
+ * Steps to refactor this process to be DRY and efficient:
+ * We only want to send static data one time and be done with it for a new session.
+ * This means on this scripts run (every time the user loads this script for the first time, we want to):
+ *  - Find a currently existing sessionID from localstorage
+ *  - If it exists, use it; if not, create a new one
+ *  - Collect static data
+ * 
+ * Then we want to start collecting all the dynamic data, associating/tagging it with the sessionID.
+ * 
+ * What about constantly changing data like the mouse movement and stuff?
+ *  - Think the solution here is like he said in class, send all of it dirty, then we can worry about "packing" it later.
+ * For sessionization we can either do crypto.randomUUID() or Date timenow and + random or something.
+ * Then we store this session as a Cookie or LocalStorage or both
+ */
+
+/**
  * STATIC COLLECTION
  */
 
