@@ -1,92 +1,90 @@
 /**
- * You should be able to tie this data to a specific user session.
+ * COLLECTOR.JS
  */
 
+let sessionID = localStorage.getItem('sessionID');
+if (!sessionID) {
+  const sessionID = (window.crypto?.randomUUID?.())
+    || (Date.now().toString() + Math.random().toString(36).substring(2));
+  localStorage.setItem('sessionID', sessionID);
+} else {
+  /**
+ * STATIC COLLECTION
+ */
+
+  // user agent string
+  const userAgent = window.navigator.userAgent;
+
+  // the user's language
+  const userLang = window.navigator.language;
+
+  // if the user accepts cookies
+  const acceptsCookies = window.navigator.cookieEnabled;
+
+  // if the user allows JavaScript
+  let allowsJavaScript = true;
+
+  // if the user allows images
+  let allowsImages = false;
+  const testImg = new Image();
+  testImg.onload = function () {
+    allowsImages = true;
+  };
+
+  // set the test image to a 1x1 pixel gif to fire events on the image
+  testImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="; 
+
+  // if the user allows CSS, checks if generated element is styled properly
+  let allowsCSS = false;
+  const cssDiv = document.createElement('div');
+  cssDiv.className = 'css-check';
+  document.body.appendChild(cssDiv);
+  const computedCSS = window.getComputedStyle(cssDiv).getPropertyValue('color');
+  allowsCSS = (computedCSS === 'red');
+
+  // User's screen dimensions
+  const [userScreenWidth, userScreenHeight] = [window.screen.width, window.screen.height];
+
+  // User's window dimensions
+  const [userWindowWidth, userWindowHeight] = [window.innerWidth, window.innerHeight];
+
+  // User's network connection type
+  const userNetConnType = window.navigator.connection.effectiveType;
+
+  /**
+   * PERFORMANCE COLLECTION
+   * 
+   * Gathers the following performance-related information:
+   * - The whole timing object
+   * - Specifically when the page started loading
+   * - Specifically when the page ended loading
+   * - The total load time
+   */
+
+  const [timingObject] = performance.getEntriesByType('navigation');
+
+  if (timingObject) {
+    const pageLoadTimingObject = timingObject;
+    const pageLoadStart = timingObject.startTime;
+    const pageLoadEnd = pageLoadStart + pageLoadTimeTotal;
+    const pageLoadTimeTotal = timingObject.duration;
+  } else {
+    // use deprecated version if not supported
+    const pageLoadTimingObject = window.performance.timing;
+    const pageLoadStart = window.performance.timing.navigationStart;
+    const pageLoadEnd = window.performance.timing.loadEventEnd;
+    const pageLoadTimeTotal = pageLoadEnd - pageLoadStart;
+  }
+}
+
 /**
- * Steps to refactor this process to be DRY and efficient:
- * We only want to send static data one time and be done with it for a new session.
- * This means on this scripts run (every time the user loads this script for the first time, we want to):
- *  - Find a currently existing sessionID from localstorage
- *  - If it exists, use it; if not, create a new one
- *  - Collect static data
- * 
  * Then we want to start collecting all the dynamic data, associating/tagging it with the sessionID.
- * 
  * What about constantly changing data like the mouse movement and stuff?
  *  - Think the solution here is like he said in class, send all of it dirty, then we can worry about "packing" it later.
  * For sessionization we can either do crypto.randomUUID() or Date timenow and + random or something.
  * Then we store this session as a Cookie or LocalStorage or both
  */
 
-/**
- * STATIC COLLECTION
- */
-
-// user agent string
-userAgent = window.navigator.userAgent;
-
-// the user's language
-userLang = window.navigator.language;
-
-// if the user accepts cookies
-acceptsCookies = window.navigator.cookieEnabled;
-
-// if the user allows JavaScript
-allowsJavaScript = true;
-
-// if the user allows images
-allowsImages = false;
-const testImg = new Image();
-testImg.onload = function () {
-  allowsImages = true;
-};
-
-testImg.onerror = function () {
-  allowsImages = false;
-};
-
-// if the user allows CSS
-allowsCSS = false;
-const cssDiv = document.createElement('div');
-cssDiv.className = 'css-check';
-cssDiv.style.color = 'black';
-document.body.appendChild(cssDiv);
-const computedCSS = window.getComputedStyle(cssDiv).getPropertyValue('color');
-allowsCSS = (computedCSS === 'black');
-
-// User's screen dimensions
-userScreenWidth, userScreenHeight = window.screen.width, window.screen.height;
-
-// User's window dimensions
-userWindowWidth, userWindowHeight = window.innerWidth, window.innerHeight;
-
-// User's network connection type
-userNetConnType = window.navigator.connection.effectiveType;
-
-/**
- * PERFORMANCE COLLECTION
- * 
- * Gathers the following performance-related information:
- * - The whole timing object
- * - Specifically when the page started loading
- * - Specifically when the page ended loading
- * - The total load time
- */
-
-const [timingObject] = performance.getEntriesByType('navigation');
-
-if (timingObject) {
-  pageLoadTimingObject = timingObject;
-  pageLoadTimeTotal = timingObject.duration;
-  pageLoadStart = timingObject.startTime;
-  pageLoadEnd = pageLoadStart + pageLoadTimeTotal;
-} else {
-  // use deprecated version if not supported
-  pageLoadTimingObject = window.performance.timing;
-  pageLoadStart = window.performance.timing.navigationStart;
-  pageLoadEnd = window.performance.timing.loadEventEnd;
-  pageLoadTimeTotal = pageLoadEnd - pageLoadStart;
-}
 
 /**
  * ACTIVITY COLLECTION
