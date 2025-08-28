@@ -153,9 +153,7 @@ function inputToArr() {
         $inputArr = json_decode(file_get_contents('php://input'), true);
     } else {
         // use $_POST for x-www-form-urlencoded data
-        $input = $_POST;
-        echo "input is $input";
-        parse_str($input, $inputArr);
+        $inputArr = $_POST;
     }
     return $inputArr;
 }
