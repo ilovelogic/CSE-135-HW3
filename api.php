@@ -51,7 +51,7 @@ if ($resource === "static") {
                 # uses loose comparison since id from url is a string and id in mock data is an int
                 
                 # ? means that anything coming later should be treated as a literal
-                $sqlStmt = $conn->prepare("SELECT * FROM users WHERE id = ?"); # to present SQL injection
+                $sqlStmt = $conn->prepare("SELECT * FROM static WHERE id = ?"); # to present SQL injection
                 $sqlStmt.bind_param("i", $id); # "i" means treat as int
 
                 $sqlStmt->execute();
