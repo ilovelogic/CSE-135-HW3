@@ -11,6 +11,20 @@ PUT         | /api.php/static/{id} | Update a specific entry from the static tab
 DELETE      | /api.php/static/{id} | Delete a specific entry from the static table (that matches the given id)
 */
 
+# connection info for mySQL database
+$servername = "localhost";
+$username = "root";
+$password = "zpql1083!";
+$dbname = "web_analytics";
+
+// connect to mySQL database
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 header("Content-Type: application/json");
 
 # for testing, long-term goal is using a database
@@ -35,11 +49,30 @@ if ($resource === "static") {
             if ($id) {
                 # checks if any of the data entries have an id matching the requested id
                 # uses loose comparison since id from url is a string and id in mock data is an int
-                $entry = array_filter($mockStaticData, fn($dataEntry) => $dataEntry["id"] == $id);
-                echo json_encode(["requested entry" => $entry]);
+                
+                # ? means that anything coming later should be treated as a literal
+                $sqlStmt = $conn->prepare("SELECT * FROM users WHERE id = ?"); # to present SQL injection
+                $sqlStmt.bind_param("i", $id); # "i" means treat as int
+
+                $sqlStmt->execute();
+                $dbEntry = $sqlStmt->get_result(); # returns a mysqli_result object corresponding to id
+                $dbEntryArr = $dbEntry->fetchassoc(); # returns single row as associative array
+
+                if ($dbEntryArr) {
+                    echo json_encode($dbEntryArr);
+                }
+                else { # id did not match any found in the db
+                    http_response_code(400); // 400 means bad request
+                    echo json_encode(["error" => "ID $id not found in entries"]);
+                }
             }
-            else { # no id => return all static data
-                echo json_encode($mockStaticData); 
+            else { # no id provided => return all static data
+                $dbEntries = $conn->query("SELECT * FROM users"); # returns as mysqli_result object
+                $dbEntriesArr = []; # to create associative array
+                while ($row = $dbEntries->fetch_assoc()) {
+                    $dbEntriesArr[] = $row;
+                }
+                echo json_encode($dbEntriesArr);
             }
             break;
 
