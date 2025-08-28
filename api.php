@@ -14,7 +14,7 @@ DELETE      | /api.php/static/{id} | Delete a specific entry from the static tab
 # connection info for mySQL database
 $servername = "localhost";
 $username = "root";
-$password = "zpql1083!";
+$password = "jTsB472@^";
 $dbname = "web_analytics";
 
 // connect to mySQL database
