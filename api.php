@@ -52,7 +52,7 @@ if ($resource === "static") {
                 
                 # ? means that anything coming later should be treated as a literal
                 $sqlStmt = $conn->prepare("SELECT * FROM static WHERE id = ?"); # to present SQL injection
-                $sqlStmt.bind_param("i", $id); # "i" means treat as int
+                $sqlStmt->bind_param("i", $id); # "i" means treat as int
 
                 $sqlStmt->execute();
                 $dbEntry = $sqlStmt->get_result(); # returns a mysqli_result object corresponding to id
@@ -67,7 +67,7 @@ if ($resource === "static") {
                 }
             }
             else { # no id provided => return all static data
-                $dbEntries = $conn->query("SELECT * FROM users"); # returns as mysqli_result object
+                $dbEntries = $conn->query("SELECT * FROM static"); # returns as mysqli_result object
                 $dbEntriesArr = []; # to create associative array
                 while ($row = $dbEntries->fetch_assoc()) {
                     $dbEntriesArr[] = $row;
