@@ -3,12 +3,22 @@
 /*
 Implements the following routing:
 
-HTTP Method | Example              | Route Description
-GET         | /api.php/static      | Retrieve every entry logged in the static table
-GET         | /api.php/static/{id} | Retrieve a specific entry logged in the static table (that matches the given id)
-POST        | /api.php/static      | Add a new entry to the static table
-PUT         | /api.php/static/{id} | Update a specific entry from the static table (that matches the given id)
-DELETE      | /api.php/static/{id} | Delete a specific entry from the static table (that matches the given id)
+HTTP Method | Example                   | Route Description
+GET         | /api.php/static           | Retrieve every entry logged in the static table
+GET         | /api.php/static/{id}      | Retrieve a specific entry logged in the static table matching the id
+GET         | /api.php/performance      | Retrieve every entry logged in the performance table
+GET         | /api.php/performance/{id} | Retrieve a specific entry logged in the performance table matching the id
+GET         | /api.php/activity         | Retrieve every entry logged in the activity table
+GET         | /api.php/activity/{id}    | Retrieve a specific entry logged in the activity table matching the id
+POST        | /api.php/static           | Add a new entry to the static table
+POST        | /api.php/performance      | Add a new entry to the performance table
+POST        | /api.php/activity         | Add a new entry to the activity table
+PUT         | /api.php/static/{id}      | Update a specific entry from the static table matching the id
+PUT         | /api.php/performance/{id} | Update a specific entry from the performance table matching the id
+PUT         | /api.php/activity/{id}    | Update a specific entry from the activity table matching the id
+DELETE      | /api.php/static/{id}      | Delete a specific entry from the static table matching the id
+DELETE      | /api.php/performance/{id} | Delete a specific entry from the performance table matching the id
+DELETE      | /api.php/activity/{id}    | Delete a specific entry from the activity table matching the id
 */
 
 # connection info for mySQL database
@@ -108,7 +118,7 @@ if ($resource) {
                     echo json_encode(["error" => "No activity log found or invalid structure"]);
                 }
             }
-            echo json_encode(["message" => "POST recieved successfully", "data" => $input]);
+            echo json_encode(["message" => "POST recieved successfully", "data" => $inputArr]);
             break;
 
         case 'PUT':
