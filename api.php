@@ -40,10 +40,20 @@ if ($request[0] === "/") {
 
 $pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
 
-$resource = $pathArr[1] ?? null; // "static"
+$tmpResource = $pathArr[1] ?? null; // "static"
+if ($tmpResource === "static") {
+    $resource = "static";
+}
+else if ($tmpResource === "activity") {
+    $resource = "activity";
+}
+else if ($tmpResource === "performance") {
+    $resource = "performance";
+}
+
 $id = $pathArr[2] ?? null; // "123"
 
-if ($resource === "static") {
+if ($resource) {
     switch ($method) {
         case 'GET':
             if ($id) {
@@ -51,7 +61,7 @@ if ($resource === "static") {
                 # uses loose comparison since id from url is a string and id in mock data is an int
                 
                 # ? means that anything coming later should be treated as a literal
-                $sqlStmt = $conn->prepare("SELECT * FROM static WHERE id = ?"); # to present SQL injection
+                $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); # to present SQL injection
                 $sqlStmt->bind_param("i", $id); # "i" means treat as int
 
                 $sqlStmt->execute();
@@ -67,7 +77,7 @@ if ($resource === "static") {
                 }
             }
             else { # no id provided => return all static data
-                $dbEntries = $conn->query("SELECT * FROM static"); # returns as mysqli_result object
+                $dbEntries = $conn->query("SELECT * FROM $resource"); # returns as mysqli_result object
                 $dbEntriesArr = []; # to create associative array
                 while ($row = $dbEntries->fetch_assoc()) {
                     $dbEntriesArr[] = $row;
