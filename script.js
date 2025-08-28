@@ -1,3 +1,21 @@
+const data = {
+  userAgent: window.navigator.userAgent,
+  userLang: window.navigator.language,
+  acceptsCookies: window.navigator.cookieEnabled,
+  allowsJavaScript: true,  // you can set this manually if JS is running
+  allowsImages: false,     // will update after test
+  allowsCSS: false,        // will update after test
+  userScreenWidth: window.screen.width,
+  userScreenHeight: window.screen.height,
+  userWindowWidth: window.innerWidth,
+  userWindowHeight: window.innerHeight,
+  userNetConnType: window.navigator.connection?.effectiveType || null,
+};
+
+analyticsData = JSON.stringify(data);
+
+navigator.sendBeacon("/api.php/static", analyticsData);
+
 const quoteArray = ["Everything excellent is as difficult as it is rare.", 
     "You could leave life right now. Let that determine what you do and say and think.",
     "Trees that are slow to grow bear the best fruit",
