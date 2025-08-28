@@ -142,25 +142,19 @@ if ($resource) {
 }
 else {
   http_response_code(404); // 404 means not found (applied since we only support "static")
-  echo json_encode(["error" => "Resource $resource not found"]);
+  echo json_encode(["error" => "Resource $tmpResource not found"]);
 }
 
 
 
 function inputToArr() {
-    $contentType = $_SERVER["CONTENT_TYPE"] ?? '';
-    
-    if (strpos($contentType, 'application/json') === true) {
+    if (empty($_POST)) {
         // parse JSON body
         $inputArr = json_decode(file_get_contents('php://input'), true);
-    } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === true) {
-        // use $_POST for form data
+    } else {
+        // use $_POST for x-www-form-urlencoded data
         $input = $_POST;
         parse_str($input, $inputArr);
-    } else {
-        http_response_code(400);
-        echo json_encode(["error" => "Unsupported content type"]);
-        exit();
     }
     return $inputArr;
 }
