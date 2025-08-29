@@ -169,14 +169,17 @@ function inputToArr() {
         
         if (!empty($_SERVER['CONTENT_TYPE']) && strpos("application/json", $_SERVER['CONTENT_TYPE']) === true) {
             $inputArr = json_decode($rawInput, true); // parse JSON body
+            echo json_encode(["message" => "JSON encoded"]);
         }
         else { // assumes x-www-form-urlencoded
             parse_str($rawInput, $intputArr); // parses it into an associative array
+            echo json_encode(["message" => "PUT, form encoded"]);
         }      
     } 
     else {
         // use $_POST for x-www-form-urlencoded data submitted via POST
         $inputArr = $_POST;
+        echo json_encode(["message" => "POST, form encoded"]);
     }
     return $inputArr;
 }
