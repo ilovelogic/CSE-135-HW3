@@ -170,3 +170,10 @@ window.addEventListener('blur', () => {
  * Fetch API: https://developer.mozilla.org/en/docs/Web/API/Fetch_API
  */
 
+const response = await fetch("https://annekelley.site/api.php/post", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({username: "example", password: "password" }),
+});
