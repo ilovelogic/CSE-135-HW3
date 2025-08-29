@@ -105,32 +105,33 @@ else {
 
 function get($conn, $resource, $id) {
     if ($id) {
-        // checks if any of the data entries have an id matching the requested id
-        // uses loose comparison since id from url is a string and id in mock data is an int
-        
         // ? means that anything coming later should be treated as a literal
         $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); // to prevent SQL injection
         $sqlStmt->bind_param("s", $id); // "s" means treat as string
 
         $sqlStmt->execute();
-        $dbEntry = $sqlStmt->get_result(); // returns a mysqli_result object corresponding to id
-        $dbEntryArr = $dbEntry->fetch_assoc(); // returns single row as associative array
-
-        if ($dbEntryArr) {
-            echo json_encode($dbEntryArr);
-        }
-        else { // id did not match any found in the db
-            http_response_code(400); // 400 means bad request
-            echo json_encode(["error" => "ID $id not found in entries"]);
-        }
+        $dbEntries = $sqlStmt->get_result(); // returns a mysqli_result object corresponding to id
     }
     else { // no id provided => return all static data
         $dbEntries = $conn->query("SELECT * FROM $resource"); // returns as mysqli_result object
-        $dbEntriesArr = []; // to create associative array
-        while ($row = $dbEntries->fetch_assoc()) {
-            $dbEntriesArr[] = $row;
-        }
+    }
+
+    $dbEntriesArr = []; // to create associative array
+    while ($row = $dbEntries->fetch_assoc()) {
+        $dbEntriesArr[] = $row; // could have many rows even for a specific id
+        // since one id can have many events stored in activity table
+    }
+
+    if ($dbEntriesArr) {
         echo json_encode($dbEntriesArr);
+    }
+    else if ($id) { // id did not match any found in the db
+        http_response_code(400); // 400 means bad request
+        echo json_encode(["error" => "ID $id not found in entries"]);
+    }
+    else {
+        http_response_code(500);
+        echo json_encode(["error" => "Serverside error when trying to get all entries of $resource"]);
     }
 }
 
@@ -141,11 +142,9 @@ function setEntry($conn, $resource, $method, $id) {
     if ($resource === "static") {
         sendStaticStmt($conn, $method, $inputArr, $id);
     }
-
     else if ($resource === "performance") {
         sendPerfStmt($conn, $method, $inputArr, $id);
     }
-
     else if ($resource === "activity") {
         // checks if activityLog exists and is an array
         if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
@@ -159,7 +158,9 @@ function setEntry($conn, $resource, $method, $id) {
             echo json_encode(["error" => "No activity log found or invalid structure"]);
         }
     }
+
     echo json_encode(["data entered" => $inputArr]);
+    conn->close();
 }
 
 
