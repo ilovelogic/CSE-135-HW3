@@ -2,40 +2,48 @@
  * COLLECTOR.JS
  */
 
+let userAgent, userLang, acceptsCookies, allowsJavaScript;
+let allowsImages, allowsCSS;
+let userScreenWidth, userScreenHeight;
+let userWindowWidth, userWindowHeight;
+let userNetConnType;
+let pageLoadTimingObject, pageLoadStart, pageLoadEnd, pageLoadTimeTotal;
+
+
 let sessionID = localStorage.getItem('sessionID');
 if (!sessionID) {
-  const sessionID = (window.crypto?.randomUUID?.())
+  sessionID = (window.crypto?.randomUUID?.())
     || (Date.now().toString() + Math.random().toString(36).substring(2));
   localStorage.setItem('sessionID', sessionID);
 } else {
   /**
- * STATIC COLLECTION
- */
+   * STATIC COLLECTION
+   */
 
   // user agent string
-  const userAgent = window.navigator.userAgent;
+  userAgent = window.navigator.userAgent;
 
   // the user's language
-  const userLang = window.navigator.language;
+  userLang = window.navigator.language;
 
   // if the user accepts cookies
-  const acceptsCookies = window.navigator.cookieEnabled;
+  acceptsCookies = window.navigator.cookieEnabled;
 
   // if the user allows JavaScript
-  let allowsJavaScript = true;
+  allowsJavaScript = true;
 
   // if the user allows images
-  let allowsImages = false;
+  allowsImages = false;
   const testImg = new Image();
   testImg.onload = function () {
     allowsImages = true;
   };
 
   // set the test image to a 1x1 pixel gif to fire events on the image
-  testImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="; 
+  testImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
   // if the user allows CSS, checks if generated element is styled properly
-  let allowsCSS = false;
+  allowsCSS = false;
   const cssDiv = document.createElement('div');
   cssDiv.className = 'css-check';
   document.body.appendChild(cssDiv);
@@ -43,13 +51,13 @@ if (!sessionID) {
   allowsCSS = (computedCSS === 'red');
 
   // User's screen dimensions
-  const [userScreenWidth, userScreenHeight] = [window.screen.width, window.screen.height];
+  userScreenWidth, userScreenHeight = window.screen.width, window.screen.height;
 
   // User's window dimensions
-  const [userWindowWidth, userWindowHeight] = [window.innerWidth, window.innerHeight];
+  userWindowWidth, userWindowHeight = window.innerWidth, window.innerHeight;
 
   // User's network connection type
-  const userNetConnType = window.navigator.connection.effectiveType;
+  userNetConnType = window.navigator.connection.effectiveType;
 
   /**
    * PERFORMANCE COLLECTION
@@ -61,30 +69,21 @@ if (!sessionID) {
    * - The total load time
    */
 
-  const [timingObject] = performance.getEntriesByType('navigation');
+  const timingObject = performance.getEntriesByType('navigation');
 
   if (timingObject) {
-    const pageLoadTimingObject = timingObject;
-    const pageLoadStart = timingObject.startTime;
-    const pageLoadEnd = pageLoadStart + pageLoadTimeTotal;
-    const pageLoadTimeTotal = timingObject.duration;
+    pageLoadTimingObject = timingObject;
+    pageLoadStart = timingObject.startTime;
+    pageLoadEnd = pageLoadStart + pageLoadTimeTotal;
+    pageLoadTimeTotal = timingObject.duration;
   } else {
     // use deprecated version if not supported
-    const pageLoadTimingObject = window.performance.timing;
-    const pageLoadStart = window.performance.timing.navigationStart;
-    const pageLoadEnd = window.performance.timing.loadEventEnd;
-    const pageLoadTimeTotal = pageLoadEnd - pageLoadStart;
+    pageLoadTimingObject = window.performance.timing;
+    pageLoadStart = window.performance.timing.navigationStart;
+    pageLoadEnd = window.performance.timing.loadEventEnd;
+    pageLoadTimeTotal = pageLoadEnd - pageLoadStart;
   }
 }
-
-/**
- * Then we want to start collecting all the dynamic data, associating/tagging it with the sessionID.
- * What about constantly changing data like the mouse movement and stuff?
- *  - Think the solution here is like he said in class, send all of it dirty, then we can worry about "packing" it later.
- * For sessionization we can either do crypto.randomUUID() or Date timenow and + random or something.
- * Then we store this session as a Cookie or LocalStorage or both
- */
-
 
 /**
  * ACTIVITY COLLECTION
@@ -92,66 +91,50 @@ if (!sessionID) {
 
 let activityLog = [];
 
+// Helper function to log activity with session ID and timestamp
+function logActivity(eventData) {
+  activityLog.push({
+    sessionID,
+    timestamp: Date.now(),
+    ...eventData
+  });
+}
+
 // All thrown errors
 window.addEventListener('error', (event) => {
   const { message, filename, lineno, colno, error } = event;
-  activityLog.push({
-    type: 'error',
-    message,
-    filename,
-    lineno,
-    colno,
-    error
-  });
+  logActivity({ type: 'error', message, filename, lineno, colno, error });
 });
 
 // Cursor positions
 window.addEventListener('mousemove', (event) => {
   const { clientX, clientY } = event;
-  activityLog.push({
-    type: 'mousemove',
-    clientX,
-    clientY
-  });
+  // TODO: throttle this to avoid excessive logging
+  logActivity({ type: 'mousemove', clientX, clientY });
 });
 
 // Clicks and which mouse button it was
 window.addEventListener('click', (event) => {
   const { button } = event;
-  activityLog.push({
-    type: 'click',
-    button
-  });
+  logActivity({ type: 'click', button });
 });
 
 // Scrolling and coordinates of the scroll
-window.addEventListener('scroll', (event) => {
+window.addEventListener('scroll', () => {
   const { scrollX, scrollY } = window;
-  activityLog.push({
-    type: 'scroll',
-    scrollX,
-    scrollY
-  });
+  logActivity({ type: 'scroll', scrollX, scrollY });
 });
 
 // Key down events
 window.addEventListener('keydown', (event) => {
   const { key, code } = event;
-  activityLog.push({
-    type: 'keydown',
-    key,
-    code
-  });
+  logActivity({ type: 'keydown', key, code });
 });
 
 // Key up events
 window.addEventListener('keyup', (event) => {
   const { key, code } = event;
-  activityLog.push({
-    type: 'keyup',
-    key,
-    code
-  });
+  logActivity({ type: 'keyup', key, code });
 });
 
 // for idle detection, see: https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API
@@ -163,26 +146,24 @@ window.addEventListener('keyup', (event) => {
 // Record how long it lasted(in milliseconds)
 
 // When the user entered the page
-window.addEventListener('focus', (event) => {
-  activityLog.push({
-    type: 'focus',
-    timestamp: Date.now()
-  });
+window.addEventListener('focus', () => {
+  logActivity({ type: 'focus' });
 });
 
 // When the user left the page
-window.addEventListener('blur', (event) => {
-  activityLog.push({
-    type: 'blur',
-    timestamp: Date.now()
-  });
+window.addEventListener('blur', () => {
+  logActivity({ type: 'blur' });
 });
 
 // Which page the user was on
 
 /**
  * SENDING THE DATA
- *
+ */
+
+// store in local storage to stay persisitent between page loads/disconnects
+
+/**
  * Sends collected data to the server using the Fetch API.
  * Do not assume that every network request will work 100 % of the time.
  * Save the data locally, then make attempts to send updates to the server.
