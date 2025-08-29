@@ -168,7 +168,8 @@ function inputToArr() {
         // reads raw input from the request body
         $rawInput = file_get_contents('php://input');
         
-        if (!empty($_SERVER['CONTENT_TYPE']) && strpos("application/json", $_SERVER['CONTENT_TYPE']) === true) {
+        // $_SERVER['CONTENT_TYPE'] is haystack, 'application/json' is needle
+        if (!empty($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
             $inputArr = json_decode($rawInput, true); // parse JSON body
         }
         else { // assumes x-www-form-urlencoded
