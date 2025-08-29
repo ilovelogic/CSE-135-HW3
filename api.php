@@ -73,7 +73,7 @@ if ($resource) {
         case 'PUT':
             if ($id) {   // id is required, since we must know what resource we are updating      
                 setEntry($conn, $method, $resource, $id);
-                echo json_encode(["message" => "PUT received for ID $id"]);
+                echo json_encode(["message" => "PUT completed for ID $id"]);
             } 
             else {
                 http_response_code(400); // 400 means bad request
@@ -165,21 +165,20 @@ function setEntry($conn, $resource, $method, $id) {
 function inputToArr() {
     if (empty($_POST)) {
         // reads raw input from the request body
-            $rawInput = file_get_contents('php://input');
+        $rawInput = file_get_contents('php://input');
         
         if (!empty($_SERVER['CONTENT_TYPE']) && strpos("application/json", $_SERVER['CONTENT_TYPE']) === true) {
             $inputArr = json_decode($rawInput, true); // parse JSON body
-            echo json_encode(["message" => "JSON encoded"]);
         }
         else { // assumes x-www-form-urlencoded
+            echo $rawInput;
+            echo json_decode($rawInput, true);
             parse_str($rawInput, $intputArr); // parses it into an associative array
-            echo json_encode(["message" => "PUT, form encoded"]);
         }      
     } 
     else {
         // use $_POST for x-www-form-urlencoded data submitted via POST
         $inputArr = $_POST;
-        echo json_encode(["message" => "POST, form encoded"]);
     }
     return $inputArr;
 }
