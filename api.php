@@ -224,8 +224,11 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
             userNetConnType = ?
             WHERE id = ?";
     }
-
-    echo json_encode(["sql" => $sql]);
+    else {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid method: " . $method]);
+        exit();
+    }
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -284,6 +287,11 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
             pageLoadStart = ?,
             pageLoadEnd = ?
             WHERE id = ?";
+    }
+    else {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid method: " . $method]);
+        exit();
     }
 
     $stmt = $conn->prepare($sql);
@@ -349,6 +357,11 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             key_code = ?, 
             timestamp = ?
             WHERE id = ?";
+    }
+    else {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid method: " . $method]);
+        exit();
     }
     
     $stmt = $conn->prepare($sql);
