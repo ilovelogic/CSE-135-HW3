@@ -91,7 +91,7 @@ function persistLog() {
 function logActivity(eventData) {
   activityLog.push({
     sessionID,
-    timestamp: Date.now(),
+    event_timestamp: Date.now(),
     ...eventData
   });
   persistLog();
@@ -104,7 +104,7 @@ function logActivity(eventData) {
 // All thrown errors
 window.addEventListener('error', (event) => {
   const { message, filename, lineno, colno, error } = event;
-  logActivity({ type: 'error', message, filename, lineno, colno, error });
+  logActivity({ event_type: 'error', message, filename, lineno, colno, error });
 });
 
 // Helper function to throttle events
@@ -122,32 +122,32 @@ function throttle(fn, limit) {
 // Cursor positions
 window.addEventListener('mousemove', throttle((event) => {
   const { clientX, clientY } = event;
-  logActivity({ type: 'mousemove', clientX, clientY });
+  logActivity({ event_type: 'mousemove', clientX, clientY });
 }, 200)); // log at most every 200ms
 
 
 // Clicks and which mouse button it was
 window.addEventListener('click', (event) => {
   const { button } = event;
-  logActivity({ type: 'click', button });
+  logActivity({ event_type: 'click', button });
 });
 
 // Scrolling and coordinates of the scroll
 window.addEventListener('scroll', () => {
   const { scrollX, scrollY } = window;
-  logActivity({ type: 'scroll', scrollX, scrollY });
+  logActivity({ event_type: 'scroll', scrollX, scrollY });
 });
 
 // Key down events
 window.addEventListener('keydown', (event) => {
   const { key, code } = event;
-  logActivity({ type: 'keydown', key, code });
+  logActivity({ event_type: 'keydown', key, code });
 });
 
 // Key up events
 window.addEventListener('keyup', (event) => {
   const { key, code } = event;
-  logActivity({ type: 'keyup', key, code });
+  logActivity({ event_type: 'keyup', key, code });
 });
 
 // Idle detection
@@ -168,10 +168,10 @@ async function setupIdleDetection() {
         const screenState = idleDetector.screenState; // "locked" / "unlocked"
 
         logActivity({
-          type: "idle-detection",
+          event_type: "idle-detection",
           userState,
           screenState,
-          timestamp: Date.now()
+          event_timestamp: Date.now()
         });
       });
 
@@ -201,9 +201,9 @@ function setupFallbackIdleDetection() {
       // User just returned from idle
       const now = Date.now();
       logActivity({
-        type: "idle-return",
+        event_type: "idle-return",
         idleDuration: now - lastActive,
-        timestamp: now
+        event_timestamp: now
       });
       idle = false;
     }
@@ -221,8 +221,8 @@ function setupFallbackIdleDetection() {
     if (!idle && now - lastActive >= 2000) {
       idle = true;
       logActivity({
-        type: "idle-start",
-        timestamp: now
+        event_type: "idle-start",
+        event_timestamp: now
       });
     }
   }, 1000);
@@ -230,18 +230,18 @@ function setupFallbackIdleDetection() {
 
 // When the user entered the page
 window.addEventListener('focus', () => {
-  logActivity({ type: 'focus' });
+  logActivity({ event_type: 'focus' });
 });
 
 // When the user left the page
 window.addEventListener('blur', () => {
-  logActivity({ type: 'blur' });
+  logActivity({ event_type: 'blur' });
 });
 
 // Which page the user was on
 function trackPage() {
   logActivity({
-    type: "page-view",
+    event_type: "page-view",
     url: window.location.href,
     title: document.title
   });

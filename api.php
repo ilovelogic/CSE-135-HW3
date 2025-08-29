@@ -344,7 +344,13 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         'scrollY' => isset($inputArr['scrollY']) ? (int)$inputArr['scrollY'] : null,
         'key_val' => $inputArr['key'] ?? null,
         'key_code' => $inputArr['code'] ?? null,
-        'timestamp' => isset($inputArr['timestamp']) ? (int)$inputArr['timestamp'] : null
+        'event_timestamp' => isset($inputArr['event_timestamp']) ? (int)$inputArr['event_timestamp'] : null,
+        'event_time_ms' => isset($inputArr['event_time_ms']) ? (int)$inputArr['event_time_ms'] : null,
+        'userState' => $inputArr['userState'] ?? null,
+        'screenState' => $inputArr['screenState'] ?? null,
+        'idleDuration' => isset($inputArr['idleDuration']) ? (int)$inputArr['idleDuration'] : null,
+        'url' => $inputArr['url'] ?? null,
+        'title' => $inputArr['title'] ?? null
     ];
 
     if ($method === 'POST') {
@@ -355,15 +361,16 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             exit();
         }
         $sql = "INSERT INTO activity (
-            type, message, filename, lineno, colno, error,
+            event_type, message, filename, lineno, colno, error,
             clientX, clientY, button, scrollX, scrollY,
-            key_val, key_code, timestamp, id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            key_val, key_code, event_timestamp, event_time_ms,
+            userState, screenState, idleDuration, url, title, id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
     else if ($method === 'PUT') {
         $entryId = $id;
         $sql = "UPDATE static SET 
-            type = ?, 
+            event_type = ?, 
             message = ?, 
             filename = ?, 
             lineno = ?, 
@@ -376,7 +383,13 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             scrollY = ?,
             key_val = ?, 
             key_code = ?, 
-            timestamp = ?
+            event_timestamp = ?,
+            event_time_ms = ?,
+            userState = ?, 
+            screenState = ?, 
+            idleDuration = ?, 
+            url = ?, 
+            title = ?
             WHERE id = ?";
     }
     else {
@@ -394,7 +407,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
 
     $stmt->bind_param(
         "sssiisiiiiissis",
-        $input['type'],
+        $input['event_type'],
         $input['message'],
         $input['filename'],
         $input['lineno'],
@@ -407,7 +420,13 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         $input['scrollY'],
         $input['key'],
         $input['code'],
-        $input['timestamp'],
+        $input['event_timestamp'],
+        $input['event_time_ms'],
+        $input['userState'],
+        $input['screenState'],
+        $input['idleDuration'],
+        $input['url'],
+        $input['title'],
         $entryId
     );
 
