@@ -9,7 +9,17 @@ let userWindowWidth, userWindowHeight;
 let userNetConnType;
 let pageLoadTimingObject, pageLoadStart, pageLoadEnd, pageLoadTimeTotal;
 
-let sessionID = localStorage.getItem('sessionID');
+/*
+let userID = localStorage.getItem('userID');
+if (!userID) {
+  userID = (window.crypto?.randomUUID?.())
+    || (Date.now().toString() + Math.random().toString(36).substring(2));
+  localStorage.setItem('userID', userID);
+}
+*/
+
+
+let sessionID = sessionStorage.getItem('sessionID');
 if (!sessionID) {
   sessionID = (window.crypto?.randomUUID?.())
     || (Date.now().toString() + Math.random().toString(36).substring(2));
@@ -84,6 +94,7 @@ function collectPerformanceData() {
 let activityLog = [];
 const MAX_LOG_ENTRIES = 20;
 const FLUSH_INTERVAL = 20_000;
+let eventCount = 0;
 
 function persistLog() {
   localStorage.setItem("activityLog", JSON.stringify(activityLog));
@@ -91,10 +102,12 @@ function persistLog() {
 
 // Helper function to log activity with session ID and timestamp
 function logActivity(eventData) {
+  eventCount += 1;
   activityLog.push({
     sessionID,
-    event_timestamp: Date.now(),
-    ...eventData
+    eventTimestamp: Date.now(),
+    ...eventData,
+    eventCount
   });
   persistLog();
 
@@ -106,7 +119,7 @@ function logActivity(eventData) {
 // All thrown errors
 window.addEventListener('error', (event) => {
   const { message, filename, lineno, colno, error } = event;
-  logActivity({ event_type: 'error', message, filename, lineno, colno, error });
+  logActivity({ eventType: 'error', message, filename, lineno, colno, error });
 });
 
 // Helper function to throttle events
@@ -124,32 +137,32 @@ function throttle(fn, limit) {
 // Cursor positions
 window.addEventListener('mousemove', throttle((event) => {
   const { clientX, clientY } = event;
-  logActivity({ event_type: 'mousemove', clientX, clientY });
+  logActivity({ eventType: 'mousemove', clientX, clientY });
 }, 200)); // log at most every 200ms
 
 
 // Clicks and which mouse button it was
 window.addEventListener('click', (event) => {
   const { button } = event;
-  logActivity({ event_type: 'click', button });
+  logActivity({ eventType: 'click', button });
 });
 
 // Scrolling and coordinates of the scroll
 window.addEventListener('scroll', () => {
   const { scrollX, scrollY } = window;
-  logActivity({ event_type: 'scroll', scrollX, scrollY });
+  logActivity({ eventType: 'scroll', scrollX, scrollY });
 });
 
 // Key down events
 window.addEventListener('keydown', (event) => {
   const { key, code } = event;
-  logActivity({ event_type: 'keydown', key, code });
+  logActivity({ eventType: 'keydown', key, code });
 });
 
 // Key up events
 window.addEventListener('keyup', (event) => {
   const { key, code } = event;
-  logActivity({ event_type: 'keyup', key, code });
+  logActivity({ eventType: 'keyup', key, code });
 });
 
 // Idle detection
@@ -170,10 +183,10 @@ async function setupIdleDetection() {
         const screenState = idleDetector.screenState; // "locked" / "unlocked"
 
         logActivity({
-          event_type: "idle-detection",
+          eventType: "idle-detection",
           userState,
           screenState,
-          event_timestamp: Date.now()
+          eventTimestamp: Date.now()
         });
       });
 
@@ -203,9 +216,9 @@ function setupFallbackIdleDetection() {
       // User just returned from idle
       const now = Date.now();
       logActivity({
-        event_type: "idle-return",
+        eventType: "idle-return",
         idleDuration: now - lastActive,
-        event_timestamp: now
+        eventTimestamp: now
       });
       idle = false;
     }
@@ -223,8 +236,8 @@ function setupFallbackIdleDetection() {
     if (!idle && now - lastActive >= 2000) {
       idle = true;
       logActivity({
-        event_type: "idle-start",
-        event_timestamp: now
+        eventType: "idle-start",
+        eventTimestamp: now
       });
     }
   }, 1000);
@@ -232,18 +245,18 @@ function setupFallbackIdleDetection() {
 
 // When the user entered the page
 window.addEventListener('focus', () => {
-  logActivity({ event_type: 'focus' });
+  logActivity({ eventType: 'focus' });
 });
 
 // When the user left the page
 window.addEventListener('blur', () => {
-  logActivity({ event_type: 'blur' });
+  logActivity({ eventType: 'blur' });
 });
 
 // Which page the user was on
 function trackPage() {
   logActivity({
-    event_type: "page-view",
+    eventType: "page-view",
     url: window.location.href,
     title: document.title
   });
