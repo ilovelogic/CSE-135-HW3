@@ -47,8 +47,8 @@ if ($request[0] === "/") {
 $pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
 
 $tmpResource = $pathArr[1] ?? null; // "static"
-if ($tmpResource === "static_data") {
-    $resource = "static_data";
+if ($tmpResource === "static") {
+    $resource = "static";
 }
 else if ($tmpResource === "activity") {
     $resource = "activity";
