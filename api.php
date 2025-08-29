@@ -60,7 +60,7 @@ else if ($tmpResource === "performance") {
 }
 
 
-$id = $pathArr[2] ?? null; // "123"
+$id = $pathArr[2] ?? null; // "12gd3dfh"
 
 if ($resource) {
     switch ($method) {
@@ -110,7 +110,7 @@ function get($conn, $resource, $id) {
         
         // ? means that anything coming later should be treated as a literal
         $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); // to prevent SQL injection
-        $sqlStmt->bind_param("i", $id); // "i" means treat as int
+        $sqlStmt->bind_param("s", $id); // "i" means treat as int
 
         $sqlStmt->execute();
         $dbEntry = $sqlStmt->get_result(); // returns a mysqli_result object corresponding to id
@@ -200,7 +200,12 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     if ($method === 'POST') {
-        $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
+        $entryId = $inputArr['id'] ?? null; // must generate id if not sent
+        if(is_null($entryId)) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID must be sent in the message body for POST"]);
+            exit();
+        }
         $sql = "INSERT INTO static (
             userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
             allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
@@ -238,7 +243,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // Bind parameters with explicit types (s = string, i = integer)
     $stmt->bind_param(
-        "ssiiiiiiiisi",
+        "ssiiiiiiiiss",
         $userAgent,
         $userLang,
         $acceptsCookies,
@@ -272,7 +277,12 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
 
     // prepares statement with placeholders
     if ($method === 'POST') {
-        $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
+        $entryId = $inputArr['id'] ?? null; // must generate id if not sent
+        if(is_null($entryId)) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID must be sent in the message body for POST"]);
+            exit();
+        }
         $sql = "INSERT INTO performance (
             pageLoadTimingObject,
             pageLoadTimeTotal,
@@ -305,7 +315,7 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
 
     // binds parameters (s = string, d = double/float), nullable fields use null
     $stmt->bind_param(
-        "sdddi",
+        "sddds",
         $pageLoadTimingObjectJson,
         $input['pageLoadTimeTotal'],
         $input['pageLoadStart'],
@@ -336,7 +346,12 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     ];
 
     if ($method === 'POST') {
-        $entryId = isset($inputArr['sessionId']) ? (int)$inputArr['sessionId'] : null;
+        $entryId = $inputArr['sessionId'] ?? null;
+        if(is_null($entryId)) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID must be sent in the message body for POST"]);
+            exit();
+        }
         $sql = "INSERT INTO activity (
             type, message, filename, lineno, colno, error,
             clientX, clientY, button, scrollX, scrollY,
@@ -376,7 +391,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     }
 
     $stmt->bind_param(
-        "sssiisiiiiissii",
+        "sssiisiiiiissis",
         $input['type'],
         $input['message'],
         $input['filename'],
