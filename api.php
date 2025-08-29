@@ -171,8 +171,8 @@ function inputToArr() {
             $inputArr = json_decode($rawInput, true); // parse JSON body
         }
         else { // assumes x-www-form-urlencoded
-            echo $rawInput;
-            echo json_decode($rawInput, true);
+            echo "Raw: " . $rawInput;
+            echo "JSON: " . json_decode($rawInput, true);
             parse_str($rawInput, $intputArr); // parses it into an associative array
         }      
     } 
