@@ -110,7 +110,7 @@ function get($conn, $resource, $id) {
         
         // ? means that anything coming later should be treated as a literal
         $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); // to prevent SQL injection
-        $sqlStmt->bind_param("s", $id); // "i" means treat as int
+        $sqlStmt->bind_param("s", $id); // "s" means treat as string
 
         $sqlStmt->execute();
         $dbEntry = $sqlStmt->get_result(); // returns a mysqli_result object corresponding to id
@@ -331,7 +331,7 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
 
 function sendActivityStmt($conn, $method, $inputArr, $id) {
     $input = [
-        'type' => $inputArr['type'] ?? null,
+        'eventType' => $inputArr['eventType'] ?? null,
         'message' => $inputArr['message'] ?? null,
         'filename' => $inputArr['filename'] ?? null,
         'lineno' => isset($inputArr['lineno']) ? (int)$inputArr['lineno'] : null,
@@ -342,15 +342,16 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         'button' => isset($inputArr['button']) ? (int)$inputArr['button'] : null,
         'scrollX' => isset($inputArr['scrollX']) ? (int)$inputArr['scrollX'] : null,
         'scrollY' => isset($inputArr['scrollY']) ? (int)$inputArr['scrollY'] : null,
-        'key_val' => $inputArr['key'] ?? null,
-        'key_code' => $inputArr['code'] ?? null,
-        'event_timestamp' => isset($inputArr['event_timestamp']) ? (int)$inputArr['event_timestamp'] : null,
-        'event_time_ms' => isset($inputArr['event_time_ms']) ? (int)$inputArr['event_time_ms'] : null,
+        'keyVal' => $inputArr['key'] ?? null,
+        'keyCode' => $inputArr['code'] ?? null,
+        'eventTimestamp' => isset($inputArr['eventTimestamp']) ? (int)$inputArr['eventTimestamp'] : null,
+        'eventTimeMs' => isset($inputArr['eventTimeMs']) ? (int)$inputArr['eventTimeMs'] : null,
         'userState' => $inputArr['userState'] ?? null,
         'screenState' => $inputArr['screenState'] ?? null,
         'idleDuration' => isset($inputArr['idleDuration']) ? (int)$inputArr['idleDuration'] : null,
         'url' => $inputArr['url'] ?? null,
-        'title' => $inputArr['title'] ?? null
+        'title' => $inputArr['title'] ?? null,
+        'eventCount' => isset($inputArr['eventCount']) ? (int)$inputArr['eventCount'] : null
     ];
 
     if ($method === 'POST') {
@@ -361,16 +362,16 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             exit();
         }
         $sql = "INSERT INTO activity (
-            event_type, message, filename, lineno, colno, error,
+            eventType, message, filename, lineno, colno, error,
             clientX, clientY, button, scrollX, scrollY,
-            key_val, key_code, event_timestamp, event_time_ms,
-            userState, screenState, idleDuration, url, title, id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (FROM_UNIXTIME(? / 1000)), ?, ?, ?, ?, ?, ?, ?)";
+            keyVal, keyCode, eventTimestamp, eventTimeMs,
+            userState, screenState, idleDuration, url, title, eventCount, id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (FROM_UNIXTIME(? / 1000)), ?, ?, ?, ?, ?, ?, ?, ?)";
     } // (FROM_UNIXTIME(? / 1000)) converts from ms to timestamp formatting of 'YYYY-MM-DD HH:MM:SS'
     else if ($method === 'PUT') {
         $entryId = $id;
         $sql = "UPDATE static SET 
-            event_type = ?, 
+            eventType = ?, 
             message = ?, 
             filename = ?, 
             lineno = ?, 
@@ -381,15 +382,16 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             button = ?, 
             scrollX = ?, 
             scrollY = ?,
-            key_val = ?, 
-            key_code = ?, 
-            event_timestamp = (FROM_UNIXTIME(? / 1000)),
-            event_time_ms = ?,
+            keyVal = ?, 
+            keyCode = ?, 
+            eventTimestamp = (FROM_UNIXTIME(? / 1000)),
+            eventTimeMs = ?,
             userState = ?, 
             screenState = ?, 
             idleDuration = ?, 
             url = ?, 
-            title = ?
+            title = ?,
+            eventCount = ?
             WHERE id = ?";
     }
     else {
@@ -406,8 +408,8 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     }
 
     $stmt->bind_param(
-        "sssiisiiiiissisississ",
-        $input['event_type'],
+        "sssiisiiiiissisissisis",
+        $input['eventType'],
         $input['message'],
         $input['filename'],
         $input['lineno'],
@@ -420,13 +422,14 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         $input['scrollY'],
         $input['key'],
         $input['code'],
-        $input['event_timestamp'],
-        $input['event_time_ms'],
+        $input['eventTimestamp'],
+        $input['eventTimeMs'],
         $input['userState'],
         $input['screenState'],
         $input['idleDuration'],
         $input['url'],
         $input['title'],
+        $input['eventCount'],
         $entryId
     );
 
@@ -454,7 +457,7 @@ function deleteEntry($conn, $resource, $id) {
         exit();
     }
 
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param("s", $id);
 
     if ($stmt->execute()) {
         http_response_code(204); // No Content response code
