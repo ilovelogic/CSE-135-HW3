@@ -348,7 +348,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     ];
 
     if ($method === 'POST') {
-        $entryId = $inputArr['sessionId'] ?? null;
+        $entryId = $inputArr['sessionID'] ?? null;
         if(is_null($entryId)) {
             http_response_code(400);
             echo json_encode(["error" => "ID must be sent in the message body for POST"]);
@@ -357,7 +357,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         $sql = "INSERT INTO activity (
             type, message, filename, lineno, colno, error,
             clientX, clientY, button, scrollX, scrollY,
-            key_val, key_code, timestamp, sessionId
+            key_val, key_code, timestamp, id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
     else if ($method === 'PUT') {
