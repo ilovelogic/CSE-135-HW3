@@ -27,6 +27,8 @@ $username = "root";
 $password = "jTsB472@^";
 $dbname = "web_analytics";
 
+header("Content-Type: application/json");
+
 // connects to mySQL database
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -198,6 +200,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
     $userWindowHeight = isset($inputArr['userWindowHeight']) ? (int)$inputArr['userWindowHeight'] : null;
     $userNetConnType = $inputArr['userNetConnType'] ?? null;
 
+    echo json_encode(["mssg" => "We made it past the var declarations!"]);
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     if ($method === 'POST') {
         $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
@@ -206,6 +209,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
             allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
             userNetConnType, id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        echo json_encode(["mssg" => "We made it into the if statement!"]);
     }
     else if ($method === 'PUT') {
         $entryId = $id;
