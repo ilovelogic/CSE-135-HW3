@@ -21,7 +21,7 @@ DELETE      | /api.php/performance/{id} | Delete a specific entry from the perfo
 DELETE      | /api.php/activity/{id}    | Delete a specific entry from the activity table matching the id
 */
 
-# connection info for mySQL database
+// connection info for mySQL database
 $servername = "localhost";
 $username = "root";
 $password = "jTsB472@^";
@@ -47,8 +47,8 @@ if ($request[0] === "/") {
 $pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
 
 $tmpResource = $pathArr[1] ?? null; // "static"
-if ($tmpResource === "static") {
-    $resource = "static";
+if ($tmpResource === "static_data") {
+    $resource = "static_data";
 }
 else if ($tmpResource === "activity") {
     $resource = "activity";
@@ -104,10 +104,10 @@ else {
 
 function get($conn, $resource, $id) {
     if ($id) {
-        # checks if any of the data entries have an id matching the requested id
-        # uses loose comparison since id from url is a string and id in mock data is an int
+        // checks if any of the data entries have an id matching the requested id
+        // uses loose comparison since id from url is a string and id in mock data is an int
         
-        # ? means that anything coming later should be treated as a literal
+        // ? means that anything coming later should be treated as a literal
         $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); // to prevent SQL injection
         $sqlStmt->bind_param("i", $id); // "i" means treat as int
 
@@ -123,9 +123,9 @@ function get($conn, $resource, $id) {
             echo json_encode(["error" => "ID $id not found in entries"]);
         }
     }
-    else { # no id provided => return all static data
-        $dbEntries = $conn->query("SELECT * FROM $resource"); # returns as mysqli_result object
-        $dbEntriesArr = []; # to create associative array
+    else { // no id provided => return all static data
+        $dbEntries = $conn->query("SELECT * FROM $resource"); // returns as mysqli_result object
+        $dbEntriesArr = []; // to create associative array
         while ($row = $dbEntries->fetch_assoc()) {
             $dbEntriesArr[] = $row;
         }
@@ -200,7 +200,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     if ($method === "POST") {
-        $id = $inputArr['id'] ?? time(); // must generate id if not sent
+        $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO static (
             userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
             allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
@@ -208,6 +208,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
     else if ($method === "PUT") {
+        $entryId = $id;
         $sql = "UPDATE static SET 
             userAgent = ?, 
             userLang = ?, 
@@ -244,7 +245,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
         $userWindowWidth,
         $userWindowHeight,
         $userNetConnType,
-        $id
+        $entryId
     );
 
     execStmt($stmt);
