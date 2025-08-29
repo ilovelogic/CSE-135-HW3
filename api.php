@@ -199,7 +199,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
     $userNetConnType = $inputArr['userNetConnType'] ?? null;
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
-    if ($method === "POST") {
+    if ($method === 'POST') {
         $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO static (
             userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
@@ -207,7 +207,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
             userNetConnType, id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
-    else if ($method === "PUT") {
+    else if ($method === 'PUT') {
         $entryId = $id;
         $sql = "UPDATE static SET 
             userAgent = ?, 
@@ -223,6 +223,8 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
             userNetConnType = ?
             WHERE id = ?";
     }
+
+    echo json_encode(["sql" => $sql]);
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -266,7 +268,7 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
     $pageLoadTimingObjectJson = $input['pageLoadTimingObject'] ? json_encode($input['pageLoadTimingObject']) : null;
 
     // prepares statement with placeholders
-    if (method === "POST") {
+    if (method === 'POST') {
         $sql = "INSERT INTO performance (
             pageLoadTimingObject,
             pageLoadTimeTotal,
@@ -274,7 +276,7 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
             pageLoadEnd
         ) VALUES (?, ?, ?, ?)";
     }
-    else if ($method === "PUT") {
+    else if ($method === 'PUT') {
         $sql = "UPDATE static SET 
             pageLoadTimingObject = ?,
             pageLoadTimeTotal = ?,
@@ -321,7 +323,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         'timestamp' => isset($inputArr['timestamp']) ? (int)$inputArr['timestamp'] : null
     ];
 
-    if ($method === "POST") {
+    if ($method === 'POST') {
         $id = $inputArr['sessionId'] ?? null;
         $sql = "INSERT INTO activity (
             type, message, filename, lineno, colno, error,
@@ -329,7 +331,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             key_val, key_code, timestamp, sessionId
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
-    else if ($method === "PUT") {
+    else if ($method === 'PUT') {
         $sql = "UPDATE static SET 
             type = ?, 
             message = ?, 
