@@ -441,7 +441,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
 function execStmt($stmt) {
     if ($stmt->execute()) {
         http_response_code(201);
-        echo json_encode(["success" => true, "insertId" => $stmt->insert_id]);
+        echo json_encode(["success" => true, "ID of inserted entry" => $stmt->insert_id]);
     } else {
         http_response_code(500);
         echo json_encode(["error" => "Execute failed: " . $stmt->error]);
