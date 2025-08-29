@@ -138,7 +138,7 @@ function get($conn, $resource, $id) {
 // handles POST and PUT requests
 function setEntry($conn, $resource, $method, $id) {
     $inputArr = inputToArr();
-
+    sendStaticStmt($conn, $method, $inputArr, $id);
     if ($resource === "static") {
         echo json_encode(["mssg" => "Made it into the first if statement!"]);
         sendStaticStmt($conn, $method, $inputArr, $id);
@@ -186,9 +186,6 @@ function inputToArr() {
 }
 
 function sendStaticStmt($conn, $method, $inputArr, $id) {
-    http_response_code(400);
-    echo json_encode(["error" => "No activity log found or invalid structure"]);
-    die();
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
 
