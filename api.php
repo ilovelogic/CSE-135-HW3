@@ -406,7 +406,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     }
 
     $stmt->bind_param(
-        "sssiisiiiiissis",
+        "sssiisiiiiissisississ",
         $input['event_type'],
         $input['message'],
         $input['filename'],
