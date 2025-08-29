@@ -69,7 +69,7 @@ if ($resource) {
             break;
 
         case 'POST':
-            setEntry($conn, $method, $resource, null);
+            setEntry($conn, $method, $resource, 0);
             break;
 
         case 'PUT':
@@ -140,7 +140,9 @@ function setEntry($conn, $resource, $method, $id) {
     $inputArr = inputToArr();
 
     if ($resource === "static") {
+        echo json_encode(["mssg" => "Made it into the first if statement!"]);
         sendStaticStmt($conn, $method, $inputArr, $id);
+        echo json_encode(["mssg" => "sendStaticStmt was called!"]);
     }
 
     else if ($resource === "performance") {
@@ -187,6 +189,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
+    echo json_encode(["mssg" => "successfully in sendStaticStmt"]);
     
     $userAgent = $inputArr['userAgent'] ?? null;
     $userLang = $inputArr['userLang'] ?? null;
