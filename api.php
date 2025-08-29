@@ -63,80 +63,21 @@ $id = $pathArr[2] ?? null; // "123"
 if ($resource) {
     switch ($method) {
         case 'GET':
-            if ($id) {
-                # checks if any of the data entries have an id matching the requested id
-                # uses loose comparison since id from url is a string and id in mock data is an int
-                
-                # ? means that anything coming later should be treated as a literal
-                $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); # to present SQL injection
-                $sqlStmt->bind_param("i", $id); # "i" means treat as int
-
-                $sqlStmt->execute();
-                $dbEntry = $sqlStmt->get_result(); # returns a mysqli_result object corresponding to id
-                $dbEntryArr = $dbEntry->fetch_assoc(); # returns single row as associative array
-
-                if ($dbEntryArr) {
-                    echo json_encode($dbEntryArr);
-                }
-                else { # id did not match any found in the db
-                    http_response_code(400); // 400 means bad request
-                    echo json_encode(["error" => "ID $id not found in entries"]);
-                }
-            }
-            else { # no id provided => return all static data
-                $dbEntries = $conn->query("SELECT * FROM $resource"); # returns as mysqli_result object
-                $dbEntriesArr = []; # to create associative array
-                while ($row = $dbEntries->fetch_assoc()) {
-                    $dbEntriesArr[] = $row;
-                }
-                echo json_encode($dbEntriesArr);
-            }
+            get($conn, $resource);
             break;
 
         case 'POST':
             // reads in payload to associative array
-            $inputArr = inputToArr();
-
-            if ($resource === "static") {
-                sendStaticStmt($conn, $inputArr);
-            }
-
-            else if ($resource === "performance") {
-                sendPerfStmt($conn, $inputArr);
-            }
-
-            else if ($resource === "activity") {
-                // checks if activityLog exists and is an array
-                if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
-                    foreach ($inputArr['activityLog'] as $event) {
-                        // inserts each event separately, passing current single event array
-                        sendActivityStmt($conn, $event);
-                    }
-                } else {
-                    // case where no events are sent or structure is unexpected
-                    http_response_code(400);
-                    echo json_encode(["error" => "No activity log found or invalid structure"]);
-                }
-            }
-            echo json_encode(["data" => $inputArr]);
+            post($conn, $resource);
             break;
 
         case 'PUT':
-            if ($id) {
-                $payload = json_decode(file_get_contents('php://input'), true);
-
-                // insert update logic for working with the data base HERE
-                echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
-            } 
-            else {
-                http_response_code(400); // 400 means bad request
-                echo json_encode(["error" => "ID required for PUT"]);
-            }
+            put($conn, $resource, $id);
             break;
 
         case 'DELETE':
             if ($id) {
-                // insert delete logic for interacting with the data base HERE
+                deleteEntry($conn, $resource, $id);
                 echo json_encode(["message" => "DELETE received for ID $id"]);
             } 
             else {
@@ -155,7 +96,75 @@ else {
   echo json_encode(["error" => "Resource $tmpResource not found"]);
 }
 
+function get($conn, $resource) {
+    if ($id) {
+        # checks if any of the data entries have an id matching the requested id
+        # uses loose comparison since id from url is a string and id in mock data is an int
+        
+        # ? means that anything coming later should be treated as a literal
+        $sqlStmt = $conn->prepare("SELECT * FROM $resource WHERE id = ?"); // to prevent SQL injection
+        $sqlStmt->bind_param("i", $id); // "i" means treat as int
 
+        $sqlStmt->execute();
+        $dbEntry = $sqlStmt->get_result(); // returns a mysqli_result object corresponding to id
+        $dbEntryArr = $dbEntry->fetch_assoc(); // returns single row as associative array
+
+        if ($dbEntryArr) {
+            echo json_encode($dbEntryArr);
+        }
+        else { // id did not match any found in the db
+            http_response_code(400); // 400 means bad request
+            echo json_encode(["error" => "ID $id not found in entries"]);
+        }
+    }
+    else { # no id provided => return all static data
+        $dbEntries = $conn->query("SELECT * FROM $resource"); # returns as mysqli_result object
+        $dbEntriesArr = []; # to create associative array
+        while ($row = $dbEntries->fetch_assoc()) {
+            $dbEntriesArr[] = $row;
+        }
+        echo json_encode($dbEntriesArr);
+    }
+}
+
+function post($conn, $resource) {
+    $inputArr = inputToArr();
+
+    if ($resource === "static") {
+        sendStaticStmt($conn, $inputArr);
+    }
+
+    else if ($resource === "performance") {
+        sendPerfStmt($conn, $inputArr);
+    }
+
+    else if ($resource === "activity") {
+        // checks if activityLog exists and is an array
+        if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
+            foreach ($inputArr['activityLog'] as $event) {
+                // inserts each event separately, passing current single event array
+                sendActivityStmt($conn, $event);
+            }
+        } else {
+            // case where no events are sent or structure is unexpected
+            http_response_code(400);
+            echo json_encode(["error" => "No activity log found or invalid structure"]);
+        }
+    }
+    echo json_encode(["data" => $inputArr]);
+}
+
+function put($conn, $resource, $id) {
+    if ($id) {            
+        deleteEntry($conn, $resource, $id);
+        post($conn, $resource, $id);
+        echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
+    } 
+    else {
+        http_response_code(400); // 400 means bad request
+        echo json_encode(["error" => "ID required for PUT"]);
+    }
+}
 
 function inputToArr() {
     if (empty($_POST)) {
@@ -171,8 +180,8 @@ function inputToArr() {
 function sendStaticStmt($conn, $inputArr) {
 
     // cleans input, assigning nonexistent values to null
+    // I switched to using vals rather than an array for debugging purposes
     $id = $inputArr['id'] ?? time();
-
     $userAgent = $inputArr['userAgent'] ?? null;
     $userLang = $inputArr['userLang'] ?? null;
     $acceptsCookies = isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null;
@@ -324,5 +333,21 @@ function execStmt($stmt) {
         http_response_code(500);
         echo json_encode(["error" => "Execute failed: " . $stmt->error]);
     }
+}
+
+function deleteEntry($conn, $resource, $id) {
+    
+    $stmt = $conn->prepare("DELETE FROM $resource WHERE id = ?");
+
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["error" => "Prepare failed: " . $conn->error]);
+        exit();
+    }
+
+    $stmt->bind_param("i", $id);
+
+    $stmt->execute();
+    $stmt->close();
 }
 ?>
