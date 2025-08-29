@@ -140,9 +140,7 @@ function setEntry($conn, $resource, $method, $id) {
     $inputArr = inputToArr();
 
     if ($resource === "static") {
-        echo json_encode(["mssg" => "Made it into the first if statement!"]);
         sendStaticStmt($conn, $method, $inputArr, $id);
-        echo json_encode(["mssg" => "sendStaticStmt was called!"]);
     }
 
     else if ($resource === "performance") {
@@ -188,8 +186,6 @@ function inputToArr() {
 function sendStaticStmt($conn, $method, $inputArr, $id) {
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
-
-    echo json_encode(["mssg" => "successfully in sendStaticStmt"]);
     
     $userAgent = $inputArr['userAgent'] ?? null;
     $userLang = $inputArr['userLang'] ?? null;
@@ -203,9 +199,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
     $userWindowHeight = isset($inputArr['userWindowHeight']) ? (int)$inputArr['userWindowHeight'] : null;
     $userNetConnType = $inputArr['userNetConnType'] ?? null;
 
-    echo json_encode(["mssg" => "We made it past the var declarations!"]);
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
-    echo json_encode(["resource" => $resource, "method" => $method]);
     if ($method === 'POST') {
         $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO static (
@@ -213,7 +207,6 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
             allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
             userNetConnType, id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        echo json_encode(["mssg" => "We made it into the if statement!"]);
     }
     else if ($method === 'PUT') {
         $entryId = $id;
