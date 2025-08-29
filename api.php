@@ -63,16 +63,22 @@ $id = $pathArr[2] ?? null; // "123"
 if ($resource) {
     switch ($method) {
         case 'GET':
-            get($conn, $resource);
+            get($conn, $resource, $id);
             break;
 
         case 'POST':
-            // reads in payload to associative array
-            post($conn, $resource);
+            setEntry($conn, $method, $resource);
             break;
 
         case 'PUT':
-            put($conn, $resource, $id);
+            if ($id) {   // id is required, since we must know what resource we are updating      
+                setEntry($conn, $method, $resource);
+                echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
+            } 
+            else {
+                http_response_code(400); // 400 means bad request
+                echo json_encode(["error" => "ID required for PUT"]);
+            }
             break;
 
         case 'DELETE':
@@ -96,7 +102,7 @@ else {
   echo json_encode(["error" => "Resource $tmpResource not found"]);
 }
 
-function get($conn, $resource) {
+function get($conn, $resource, $id) {
     if ($id) {
         # checks if any of the data entries have an id matching the requested id
         # uses loose comparison since id from url is a string and id in mock data is an int
@@ -124,19 +130,18 @@ function get($conn, $resource) {
             $dbEntriesArr[] = $row;
         }
         echo json_encode($dbEntriesArr);
-        echo json_encode(["huh" => "correct area at least"]);
     }
 }
 
-function post($conn, $resource) {
+function setEntry($conn, $resource, $method) {
     $inputArr = inputToArr();
 
     if ($resource === "static") {
-        sendStaticStmt($conn, $inputArr);
+        sendStaticStmt($conn, $method, $inputArr);
     }
 
     else if ($resource === "performance") {
-        sendPerfStmt($conn, $inputArr);
+        sendPerfStmt($conn, $method, $inputArr);
     }
 
     else if ($resource === "activity") {
@@ -144,7 +149,7 @@ function post($conn, $resource) {
         if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
             foreach ($inputArr['activityLog'] as $event) {
                 // inserts each event separately, passing current single event array
-                sendActivityStmt($conn, $event);
+                sendActivityStmt($conn, $method, $event);
             }
         } else {
             // case where no events are sent or structure is unexpected
@@ -152,20 +157,9 @@ function post($conn, $resource) {
             echo json_encode(["error" => "No activity log found or invalid structure"]);
         }
     }
-    echo json_encode(["data" => $inputArr]);
+    echo json_encode(["data entered" => $inputArr]);
 }
 
-function put($conn, $resource, $id) {
-    if ($id) {            
-        deleteEntry($conn, $resource, $id);
-        post($conn, $resource, $id);
-        echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
-    } 
-    else {
-        http_response_code(400); // 400 means bad request
-        echo json_encode(["error" => "ID required for PUT"]);
-    }
-}
 
 function inputToArr() {
     if (empty($_POST)) {
@@ -178,7 +172,7 @@ function inputToArr() {
     return $inputArr;
 }
 
-function sendStaticStmt($conn, $inputArr) {
+function sendStaticStmt($conn, $method, $inputArr) {
 
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
@@ -196,11 +190,28 @@ function sendStaticStmt($conn, $inputArr) {
     $userNetConnType = $inputArr['userNetConnType'] ?? null;
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
-    $sql = "INSERT INTO static (
-        id, userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
-        allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
-        userNetConnType
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    if ($method === "POST") {
+        $sql = "INSERT INTO static (
+            userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
+            allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
+            userNetConnType, id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+    else if ($method === "PUT") {
+        $sql = "UPDATE static SET 
+            userAgent = ?, 
+            userLang = ?, 
+            acceptsCookies = ?, 
+            allowsJavaScript = ?, 
+            allowsImages = ?, 
+            allowsCSS = ?, 
+            userScreenWidth = ?, 
+            userScreenHeight = ?, 
+            userWindowWidth = ?, 
+            userWindowHeight = ?, 
+            userNetConnType = ?
+            WHERE id = ?";
+    }
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -211,8 +222,7 @@ function sendStaticStmt($conn, $inputArr) {
 
     // Bind parameters with explicit types (s = string, i = integer)
     $stmt->bind_param(
-        "issiiiiiiiis",
-        $id,
+        "ssiiiiiiiisi",
         $userAgent,
         $userLang,
         $acceptsCookies,
@@ -223,7 +233,8 @@ function sendStaticStmt($conn, $inputArr) {
         $userScreenHeight,
         $userWindowWidth,
         $userWindowHeight,
-        $userNetConnType
+        $userNetConnType,
+        $id
     );
 
     execStmt($stmt);
