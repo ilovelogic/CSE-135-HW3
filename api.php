@@ -186,10 +186,12 @@ function inputToArr() {
 }
 
 function sendStaticStmt($conn, $method, $inputArr, $id) {
-
+    http_response_code(400);
+    echo json_encode(["error" => "No activity log found or invalid structure"]);
+    die();
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
-    header("We made it: To sendStaticStmt");
+
     echo json_encode(["mssg" => "successfully in sendStaticStmt"]);
     
     $userAgent = $inputArr['userAgent'] ?? null;
