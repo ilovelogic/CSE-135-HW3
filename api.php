@@ -69,12 +69,12 @@ if ($resource) {
             break;
 
         case 'POST':
-            setEntry($conn, $method, $resource, 0);
+            setEntry($conn, $resource, $method, 0);
             break;
 
         case 'PUT':
             if ($id) {   // id is required, since we must know what resource we are updating      
-                setEntry($conn, $method, $resource, $id);
+                setEntry($conn, $resource, $method, $id);
                 echo json_encode(["message" => "PUT completed for ID $id"]);
             } 
             else {
@@ -138,7 +138,7 @@ function get($conn, $resource, $id) {
 // handles POST and PUT requests
 function setEntry($conn, $resource, $method, $id) {
     $inputArr = inputToArr();
-    sendStaticStmt($conn, $method, $inputArr, $id);
+
     if ($resource === "static") {
         echo json_encode(["mssg" => "Made it into the first if statement!"]);
         sendStaticStmt($conn, $method, $inputArr, $id);
