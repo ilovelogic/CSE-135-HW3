@@ -9,33 +9,23 @@
 </head>
 
 <body>
-    <!--Grid Component Placement[2]-->
-    <zing-grid caption="Hello Futurama" data='[{
-        "name": "Philip J. Fry",
-        "origin": "Earth"
-      },
-      {
-        "name": "Turanga Leela",
-        "origin": "Earth"
-      },
-      {
-        "name": "Bender Bending Rodriguez",
-        "origin": "Earth"
-      },
-      {
-        "name": "Amy Wong",
-        "origin": "Mars"
-      },
-      {
-        "name": "Doctor John Zoidberg",
-        "origin": "Decapod 10"
-      },
-      {
-        "name": "Lord Nibbler",
-        "origin": "Earth"
-      }
-    ]'>
-    </zing-grid>
+  <!--Grid Component Placement[2]-->
+  <zing-grid id="staticGrid" caption="Static Data" pager page-size="10" filter sort></zing-grid>
+  <zing-grid id="performanceGrid" caption="Performance Data" pager page-size="10" filter sort></zing-grid>
+  <zing-grid id="eventGrid" caption="Activity Data" pager page-size="10" filter sort></zing-grid>
+
+  fetch('api.php/static')
+    .then(res => res.json())
+    .then(data => { document.getElementById('staticGrid').data = data; });
+
+  fetch('api.php/performance')
+    .then(res => res.json())
+    .then(data => { document.getElementById('performanceGrid').data = data; });
+
+  fetch('api.php/activity')
+    .then(res => res.json())
+    .then(data => { document.getElementById('eventGrid').data = data; });
+    
 </body>
 
 </html>
