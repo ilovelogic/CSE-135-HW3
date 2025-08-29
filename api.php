@@ -116,6 +116,7 @@ function get($conn, $resource) {
             http_response_code(400); // 400 means bad request
             echo json_encode(["error" => "ID $id not found in entries"]);
         }
+        echo json_encode(["huh" => "correct area at least"]);
     }
     else { # no id provided => return all static data
         $dbEntries = $conn->query("SELECT * FROM $resource"); # returns as mysqli_result object
