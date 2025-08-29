@@ -365,8 +365,8 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             clientX, clientY, button, scrollX, scrollY,
             key_val, key_code, event_timestamp, event_time_ms,
             userState, screenState, idleDuration, url, title, id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    }
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (FROM_UNIXTIME(? / 1000)), ?, ?, ?, ?, ?, ?, ?)";
+    } // (FROM_UNIXTIME(? / 1000)) converts from ms to timestamp formatting of 'YYYY-MM-DD HH:MM:SS'
     else if ($method === 'PUT') {
         $entryId = $id;
         $sql = "UPDATE static SET 
@@ -383,7 +383,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
             scrollY = ?,
             key_val = ?, 
             key_code = ?, 
-            event_timestamp = ?,
+            event_timestamp = (FROM_UNIXTIME(? / 1000)),
             event_time_ms = ?,
             userState = ?, 
             screenState = ?, 
