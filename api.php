@@ -271,7 +271,7 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
     $pageLoadTimingObjectJson = $input['pageLoadTimingObject'] ? json_encode($input['pageLoadTimingObject']) : null;
 
     // prepares statement with placeholders
-    if (method === 'POST') {
+    if ($method === 'POST') {
         $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO performance (
             pageLoadTimingObject,
