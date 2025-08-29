@@ -67,12 +67,12 @@ if ($resource) {
             break;
 
         case 'POST':
-            setEntry($conn, $method, $resource);
+            setEntry($conn, $method, $resource, null);
             break;
 
         case 'PUT':
             if ($id) {   // id is required, since we must know what resource we are updating      
-                setEntry($conn, $method, $resource);
+                setEntry($conn, $method, $resource, $id);
                 echo json_encode(["message" => "PUT received for ID $id", "data" => $input]);
             } 
             else {
