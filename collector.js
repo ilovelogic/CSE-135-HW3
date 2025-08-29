@@ -32,12 +32,14 @@ function collectStaticData() {
   testImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
   // CSS
-  allowsCSS = false;
-  const cssDiv = document.createElement('div');
-  cssDiv.className = 'css-check';
-  document.body.appendChild(cssDiv);
-  const computedCSS = window.getComputedStyle(cssDiv).getPropertyValue('color');
-  allowsCSS = (computedCSS === 'red');
+  document.addEventListener('DOMContentLoaded', function() {
+    allowsCSS = false;
+    const cssDiv = document.createElement('div');
+    cssDiv.className = 'css-check';
+    document.body.appendChild(cssDiv);
+    const computedCSS = window.getComputedStyle(cssDiv).getPropertyValue('color');
+    allowsCSS = (computedCSS === 'red');
+  });
 
   // Dimensions
   userScreenWidth = window.screen.width;
