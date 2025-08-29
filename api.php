@@ -205,6 +205,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     echo json_encode(["mssg" => "We made it past the var declarations!"]);
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
+    echo json_encode(["resource" => $resource, "method" => $method]);
     if ($method === 'POST') {
         $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO static (
