@@ -86,7 +86,6 @@ if ($resource) {
         case 'DELETE':
             if ($id) {
                 deleteEntry($conn, $resource, $id);
-                echo json_encode(["message" => "DELETE received for ID $id"]);
             } 
             else {
                 http_response_code(400); // 400 means bad request
@@ -273,14 +272,17 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
 
     // prepares statement with placeholders
     if (method === 'POST') {
+        $entryId = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO performance (
             pageLoadTimingObject,
             pageLoadTimeTotal,
             pageLoadStart,
-            pageLoadEnd
-        ) VALUES (?, ?, ?, ?)";
+            pageLoadEnd,
+            id
+        ) VALUES (?, ?, ?, ?, ?)";
     }
     else if ($method === 'PUT') {
+        $entryId = $id;
         $sql = "UPDATE static SET 
             pageLoadTimingObject = ?,
             pageLoadTimeTotal = ?,
@@ -303,11 +305,12 @@ function sendPerfStmt($conn, $method, $inputArr, $id) {
 
     // binds parameters (s = string, d = double/float), nullable fields use null
     $stmt->bind_param(
-        "sddd",
+        "sdddi",
         $pageLoadTimingObjectJson,
         $input['pageLoadTimeTotal'],
         $input['pageLoadStart'],
-        $input['pageLoadEnd']
+        $input['pageLoadEnd'],
+        $entryId
     );
 
     execStmt($stmt);
@@ -333,7 +336,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     ];
 
     if ($method === 'POST') {
-        $id = $inputArr['sessionId'] ?? null;
+        $entryId = isset($inputArr['sessionId']) ? (int)$inputArr['sessionId'] : null;
         $sql = "INSERT INTO activity (
             type, message, filename, lineno, colno, error,
             clientX, clientY, button, scrollX, scrollY,
@@ -341,6 +344,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
     else if ($method === 'PUT') {
+        $entryId = $id;
         $sql = "UPDATE static SET 
             type = ?, 
             message = ?, 
@@ -372,7 +376,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
     }
 
     $stmt->bind_param(
-        "sssiisiiiissiis",
+        "sssiisiiiiissii",
         $input['type'],
         $input['message'],
         $input['filename'],
@@ -387,7 +391,7 @@ function sendActivityStmt($conn, $method, $inputArr, $id) {
         $input['key'],
         $input['code'],
         $input['timestamp'],
-        $id
+        $entryId
     );
 
     execStmt($stmt);
@@ -417,8 +421,8 @@ function deleteEntry($conn, $resource, $id) {
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        http_response_code(201);
-        echo json_encode(["success" => true, "message" => "Delete completed"]);
+        http_response_code(204); // No Content response code
+        echo json_encode(["success" => true, "message" => "Delete completed for ID $id"]);
     } else {
         http_response_code(500);
         echo json_encode(["error" => "Execute failed: " . $stmt->error]);
