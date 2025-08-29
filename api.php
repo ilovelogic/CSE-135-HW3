@@ -27,10 +27,10 @@ $username = "root";
 $password = "jTsB472@^";
 $dbname = "web_analytics";
 
-// connect to mySQL database
+// connects to mySQL database
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// checks connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -39,9 +39,9 @@ if ($conn->connect_error) {
 $request = $_SERVER['REQUEST_URI']; // ex. /api.php/static/123
 $method = $_SERVER['REQUEST_METHOD']; // GET, POST, PUT, DELETE
 
-
+// removes leading /
 if ($request[0] === "/") {
-    $request = substr($request,1); // remove leading /
+    $request = substr($request,1);
 }
 
 $pathArr = explode('/', $request); // breaks up into ["api.php", "static", "123"]
@@ -133,15 +133,15 @@ function get($conn, $resource, $id) {
     }
 }
 
-function setEntry($conn, $resource, $method) {
+function setEntry($conn, $resource, $method, $id) {
     $inputArr = inputToArr();
 
     if ($resource === "static") {
-        sendStaticStmt($conn, $method, $inputArr);
+        sendStaticStmt($conn, $method, $inputArr, $id);
     }
 
     else if ($resource === "performance") {
-        sendPerfStmt($conn, $method, $inputArr);
+        sendPerfStmt($conn, $method, $inputArr, $id);
     }
 
     else if ($resource === "activity") {
@@ -149,7 +149,7 @@ function setEntry($conn, $resource, $method) {
         if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
             foreach ($inputArr['activityLog'] as $event) {
                 // inserts each event separately, passing current single event array
-                sendActivityStmt($conn, $method, $event);
+                sendActivityStmt($conn, $method, $event, $id);
             }
         } else {
             // case where no events are sent or structure is unexpected
@@ -172,11 +172,11 @@ function inputToArr() {
     return $inputArr;
 }
 
-function sendStaticStmt($conn, $method, $inputArr) {
+function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
-    $id = $inputArr['id'] ?? time();
+    
     $userAgent = $inputArr['userAgent'] ?? null;
     $userLang = $inputArr['userLang'] ?? null;
     $acceptsCookies = isset($inputArr['acceptsCookies']) ? ($inputArr['acceptsCookies'] ? 1 : 0) : null;
@@ -191,11 +191,12 @@ function sendStaticStmt($conn, $method, $inputArr) {
 
     // prepares insert statement with placeholders (nullable fields allowed in DB schema)
     if ($method === "POST") {
+        $id = $inputArr['id'] ?? time(); // must generate id if not sent
         $sql = "INSERT INTO static (
             userAgent, userLang, acceptsCookies, allowsJavaScript, allowsImages,
             allowsCSS, userScreenWidth, userScreenHeight, userWindowWidth, userWindowHeight,
             userNetConnType, id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
     else if ($method === "PUT") {
         $sql = "UPDATE static SET 
@@ -241,7 +242,7 @@ function sendStaticStmt($conn, $method, $inputArr) {
     $stmt->close();
 }
 
-function sendPerfStmt($conn, $inputArr) {
+function sendPerfStmt($conn, $method, $inputArr, $id) {
 
     // cleans input associative array
     $input = [
@@ -254,13 +255,23 @@ function sendPerfStmt($conn, $inputArr) {
     // JSON-encode complex objects for storage (nullable)
     $pageLoadTimingObjectJson = $input['pageLoadTimingObject'] ? json_encode($input['pageLoadTimingObject']) : null;
 
-    // prepares insert statement with placeholders
-    $sql = "INSERT INTO performance (
-        pageLoadTimingObject,
-        pageLoadTimeTotal,
-        pageLoadStart,
-        pageLoadEnd
-    ) VALUES (?, ?, ?, ?)";
+    // prepares statement with placeholders
+    if (method === "POST") {
+        $sql = "INSERT INTO performance (
+            pageLoadTimingObject,
+            pageLoadTimeTotal,
+            pageLoadStart,
+            pageLoadEnd
+        ) VALUES (?, ?, ?, ?)";
+    }
+    else if ($method === "PUT") {
+        $sql = "UPDATE static SET 
+            pageLoadTimingObject = ?,
+            pageLoadTimeTotal = ?,
+            pageLoadStart = ?,
+            pageLoadEnd = ?
+            WHERE id = ?";
+    }
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -282,7 +293,7 @@ function sendPerfStmt($conn, $inputArr) {
     $stmt->close();
 }
 
-function sendActivityStmt($conn, $inputArr) {
+function sendActivityStmt($conn, $method, $inputArr, $id) {
     $input = [
         'type' => $inputArr['type'] ?? null,
         'message' => $inputArr['message'] ?? null,
@@ -295,18 +306,38 @@ function sendActivityStmt($conn, $inputArr) {
         'button' => isset($inputArr['button']) ? (int)$inputArr['button'] : null,
         'scrollX' => isset($inputArr['scrollX']) ? (int)$inputArr['scrollX'] : null,
         'scrollY' => isset($inputArr['scrollY']) ? (int)$inputArr['scrollY'] : null,
-        'key' => $inputArr['key'] ?? null,
-        'code' => $inputArr['code'] ?? null,
-        'timestamp' => isset($inputArr['timestamp']) ? (int)$inputArr['timestamp'] : null,
-        'sessionId' => $inputArr['sessionId'] ?? null // for tying to specific user session if available
+        'key_val' => $inputArr['key'] ?? null,
+        'key_code' => $inputArr['code'] ?? null,
+        'timestamp' => isset($inputArr['timestamp']) ? (int)$inputArr['timestamp'] : null
     ];
 
-    $sql = "INSERT INTO activity (
-        type, message, filename, lineno, colno, error,
-        clientX, clientY, button, scrollX, scrollY,
-        `key`, `code`, timestamp, sessionId
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+    if ($method === "POST") {
+        $id = $inputArr['sessionId'] ?? null;
+        $sql = "INSERT INTO activity (
+            type, message, filename, lineno, colno, error,
+            clientX, clientY, button, scrollX, scrollY,
+            key_val, key_code, timestamp, sessionId
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+    else if ($method === "PUT") {
+        $sql = "UPDATE static SET 
+            type = ?, 
+            message = ?, 
+            filename = ?, 
+            lineno = ?, 
+            colno = ?, 
+            error = ?,
+            clientX = ?, 
+            clientY = ?, 
+            button = ?, 
+            scrollX = ?, 
+            scrollY = ?,
+            key_val = ?, 
+            key_code = ?, 
+            timestamp = ?
+            WHERE id = ?";
+    }
+    
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         http_response_code(500);
@@ -330,7 +361,7 @@ function sendActivityStmt($conn, $inputArr) {
         $input['key'],
         $input['code'],
         $input['timestamp'],
-        $input['sessionId']
+        $id
     );
 
     execStmt($stmt);
