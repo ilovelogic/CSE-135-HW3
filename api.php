@@ -189,6 +189,7 @@ function sendStaticStmt($conn, $method, $inputArr, $id) {
 
     // cleans input, assigning nonexistent values to null
     // I switched to using vals rather than an array for debugging purposes
+    header("We made it: To sendStaticStmt");
     echo json_encode(["mssg" => "successfully in sendStaticStmt"]);
     
     $userAgent = $inputArr['userAgent'] ?? null;
