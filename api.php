@@ -328,7 +328,7 @@ function sendActivityStmt($conn, $inputArr) {
 function execStmt($stmt) {
     if ($stmt->execute()) {
         http_response_code(201);
-        echo json_encode(["success" => true, "message" => "Delete completed"]);
+        echo json_encode(["success" => true, "insertId" => $stmt->insert_id]);
     } else {
         http_response_code(500);
         echo json_encode(["error" => "Execute failed: " . $stmt->error]);
@@ -347,7 +347,13 @@ function deleteEntry($conn, $resource, $id) {
 
     $stmt->bind_param("i", $id);
 
-    $stmt->execute();
+    if ($stmt->execute()) {
+        http_response_code(201);
+        echo json_encode(["success" => true, "message" => "Delete completed"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "Execute failed: " . $stmt->error]);
+    }
     $stmt->close();
 }
 ?>
