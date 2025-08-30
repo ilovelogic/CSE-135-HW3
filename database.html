@@ -10,14 +10,16 @@
 
 <body>
   <!--Grid Component Placement[2]-->
-  <zing-grid id="staticGrid" caption="Static Data" pager page-size="10" filter sort></zing-grid>
+  <zing-grid id="staticGrid" caption="Static Data" pager page-size="10" editor-controls="all" filter sort>
+    <zg-data src="/api.php/static"></zg-data>
+  </zing-grid>
   <zing-grid id="performanceGrid" caption="Performance Data" pager page-size="10" filter sort></zing-grid>
   <zing-grid id="eventGrid" caption="Activity Data" pager page-size="10" filter sort></zing-grid>
 
   <script>
-  fetch('api.php/static')
-    .then(res => res.json())
-    .then(data => { document.getElementById('staticGrid').data = data; });
+  //fetch('api.php/static')
+    //.then(res => res.json())
+    //.then(data => { document.getElementById('staticGrid').data = data; });
 
   fetch('api.php/performance')
     .then(res => res.json())
