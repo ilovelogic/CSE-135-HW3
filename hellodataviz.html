@@ -38,6 +38,14 @@
             plot: {
                 valueBox: {
                     rules: [
+                        {
+                        // shows label (text) OUTSIDE each slice
+                        rule: true,
+                        placement: "out",
+                        text: "%t",
+                        fontColor: "#000000", // black font
+                        fontSize: 14
+                    },
                     {
                         // shows percentage INSIDE each slice
                         rule: true,
@@ -45,25 +53,17 @@
                         text: "%np", // could alternatively use %percent for xx.x% format
                         fontColor: "#fff", // white font
                         fontSize: 14
-                    },
-                    {
-                        // shows label (text) OUTSIDE each slice
-                        rule: true,
-                        placement: "out",
-                        text: "%t",
-                        fontColor: "#000000", // black font
-                        fontSize: 12
                     }
                     ]
                 }
             },
             series: [{
-                values: [69],
+                values: [100],
                 text: "slow-2g",
                 palette: 0
             },
             {
-                values: [51],
+                values: [200],
                 text: "2g",
                 palette: 1
             },
