@@ -9,98 +9,84 @@
 <body>
     <!-- ZingChart -->
     <div id='myChart'></div>
-  <script>
-    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
-    var pieConfig = {
-      graphset: [{
-        type: "navpie",
-        title: {
-          text: 'navpie chart'
-        },
-        options: { 
-          threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
-          others: {
-            backgroundColor: "#999 #333"
-          },
-          slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
-          back: {
-            padding: 10,
-            fontWeight: "bold",
-            color: "#fff",
-            fontSize: 12,
-            border: "3px solid #47a",
-            borderRadius: 9,
-            backgroundColor: "#369",
-            shadow: true,
-            shadowAlpha: 0.5
-          }
-        },
-        plot: {
-            valueBox: {
-                rules: [
-                {
-                    // shows percentage INSIDE each slice
-                    rule: true,
-                    placement: "in",
-                    text: "%np",         // Or use %percent for xx.x% format
-                    fontColor: "#fff",
-                    fontSize: 14
-                },
-                {
-                    // shows label (text) OUTSIDE each slice
-                    rule: true,
-                    placement: "out",
-                    text: "%t",
-                    fontColor: "#fff",
-                    fontSize: 12
-                }
-                ]
+    <script>
+        ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var pieConfig = {
+        graphset: [{
+            type: "navpie",
+            title: {
+            text: 'Network Connection Pie Chart'
+            },
+            options: { 
+            threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
+            others: {
+                backgroundColor: "#999 #333"
+            },
+            slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
+            back: {
+                padding: 10,
+                fontWeight: "bold",
+                color: "#fff",
+                fontSize: 12,
+                border: "3px solid #47a",
+                borderRadius: 9,
+                backgroundColor: "#369",
+                shadow: true,
+                shadowAlpha: 0.5
             }
-        },
-        series: [{
-            values: [69],
-            text: "Apple",
-            palette: 0
-          },
-          {
-            values: [51],
-            text: "Microsoft",
-            palette: 1
-          },
-          {
-            values: [42],
-            text: "Oracle",
-            palette: 2
-          },
-          {
-            values: [25],
-            text: "Dell",
-            palette: 3
-          },
-          {
-            values: [19],
-            text: "Amazon",
-            palette: 4
-          },
-          {
-            values: [9],
-            detach: false,
-            dataGroup: [1],
-            tooltipText: "IBM:4<br>HP:3<br>Qualcomm:2",
-            text: "Click for more...",
-            backgroundColor: "#999 #333",
-            palette: 5
-          }
-        ]
-      }],
-    };
- 
-    zingchart.render({
-      id: 'myChart',
-      data: pieConfig,
-      height: 350,
-      width: '100%'
-    });
+            },
+            plot: {
+                valueBox: {
+                    rules: [
+                    {
+                        // shows percentage INSIDE each slice
+                        rule: true,
+                        placement: "in",
+                        text: "%np", // could alternatively use %percent for xx.x% format
+                        fontColor: "#fff", // white font
+                        fontSize: 14
+                    },
+                    {
+                        // shows label (text) OUTSIDE each slice
+                        rule: true,
+                        placement: "out",
+                        text: "%t",
+                        fontColor: "#000000", // black font
+                        fontSize: 12
+                    }
+                    ]
+                }
+            },
+            series: [{
+                values: [69],
+                text: "slow-2g",
+                palette: 0
+            },
+            {
+                values: [51],
+                text: "2g",
+                palette: 1
+            },
+            {
+                values: [42],
+                text: "3g",
+                palette: 2
+            },
+            {
+                values: [25],
+                text: "4g",
+                palette: 3
+            }
+            ]
+        }],
+        };
+    
+        zingchart.render({
+        id: 'myChart',
+        data: pieConfig,
+        height: 350,
+        width: '100%'
+        });
   </script>
 </body>
 </html>
