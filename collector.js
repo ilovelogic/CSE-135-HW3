@@ -1,3 +1,18 @@
+/** 
+ * DISCLAIMER - While yes, it is dangerous to leave
+ * an exposed DEBUG flag or even allow one at all, I argue that:
+ * 1. We are not collecting any sensitive user information that
+ *    users should not already be aware of.
+ * 2. The collector.js file has to be sent to the client anyways,
+ *    so anyone determined enough can find out what is being collected.
+ * 3. This is a learning exercise, and we are not a company!
+*/
+const DEBUG = true;
+
+if (DEBUG) {
+  console.log("Debugging.");
+}
+
 /**
  * COLLECTOR.JS
  */
@@ -25,6 +40,10 @@ if (!sessionID) {
   sessionID = (window.crypto?.randomUUID?.())
     || (Date.now().toString() + Math.random().toString(36).substring(2));
   localStorage.setItem('sessionID', sessionID);
+
+  if (DEBUG) {
+    console.log("New session ID:", sessionID);
+  }
 }
 
 /**
@@ -66,24 +85,32 @@ function collectStaticData() {
  * PERFORMANCE COLLECTION
  * 
  * Gathers the following performance-related information:
- * - The whole timing object
- * - Specifically when the page started loading
- * - Specifically when the page ended loading
- * - The total load time
+ * - The whole timing object 
+ * - pageLoadStart always 0 or close to it
+ * - pageLoadEnd in ms
+ * - pageLoadTimeTotal in ms
  */
 function collectPerformanceData() {
-  const timingObject = performance.getEntriesByType('navigation')[0];
+  const timingObject = performance.getEntriesByType("navigation")[0];
+  const t = performance.timing;
+
+  pageLoadTimingObject = timingObject || t
 
   if (timingObject) {
     pageLoadTimingObject = timingObject;
-    pageLoadStart = timingObject.startTime;
-    pageLoadEnd = timingObject.startTime + timingObject.duration;
-    pageLoadTimeTotal = timingObject.duration;
+
+    // For modern browsers
+    pageLoadStart = timingObject.startTime || 0; // usually 0
+    pageLoadEnd = timingObject.loadEventEnd || timingObject.domComplete;
+    pageLoadTimeTotal = (pageLoadEnd && pageLoadStart !== undefined)
+      ? pageLoadEnd - pageLoadStart
+      : timingObject.duration;
   } else {
-    // fallback to deprecated API
-    pageLoadTimingObject = performance.timing;
-    pageLoadStart = performance.timing.navigationStart;
-    pageLoadEnd = performance.timing.loadEventEnd;
+    // Fallback for older browsers
+    
+    pageLoadTimingObject = t;
+    pageLoadStart = t.navigationStart;
+    pageLoadEnd = t.loadEventEnd;
     pageLoadTimeTotal = pageLoadEnd - pageLoadStart;
   }
 }
@@ -272,6 +299,8 @@ setInterval(() => {
 }, FLUSH_INTERVAL);
 
 function sendStaticData() {
+  collectStaticData();
+
   const url = "/api.php/static";
   const data = JSON.stringify({
     userAgent,
@@ -288,9 +317,14 @@ function sendStaticData() {
     id: sessionID
   });
   navigator.sendBeacon(url, new Blob([data], { type: "application/json" }));
+
+  if (DEBUG) {
+    console.log("Sent static data:", data);
+  }
 }
 
 function sendPerformanceData() {
+  collectPerformanceData();
   const url = "/api.php/performance";
   const data = JSON.stringify({
     pageLoadTimingObject,
@@ -300,9 +334,17 @@ function sendPerformanceData() {
     id: sessionID
   });
   navigator.sendBeacon(url, new Blob([data], { type: "application/json" }));
+
+  if (DEBUG) {
+    console.log("Sent performance data:", data);
+  }
 }
 
 async function flushActivityLog() {
+  if (DEBUG) {
+    console.log("Flushing activity log:", activityLog);
+  }
+
   if (activityLog.length === 0) return;
 
   const url = "/api.php/activity";
@@ -319,9 +361,10 @@ async function flushActivityLog() {
   }
 }
 
-collectStaticData();
-collectPerformanceData();
+window.addEventListener('load', () => {
+  sendPerformanceData();
+});
+
 sendStaticData();
-sendPerformanceData();
 setupIdleDetection();
 trackPage();
