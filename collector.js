@@ -77,7 +77,7 @@ function collectPerformanceData() {
   if (timingObject) {
     pageLoadTimingObject = timingObject;
     pageLoadStart = timingObject.startTime;
-    pageLoadEnd = timingObject.startTime + timingObject.duration;
+    pageLoadEnd = timingObject.loadEventEnd;
     pageLoadTimeTotal = timingObject.duration;
   } else {
     // fallback to deprecated API
@@ -319,9 +319,12 @@ async function flushActivityLog() {
   }
 }
 
+window.addEventListener('load', () => {
+  collectPerformanceData();
+  sendPerformanceData();
+});
+
 collectStaticData();
-collectPerformanceData();
 sendStaticData();
-sendPerformanceData();
 setupIdleDetection();
 trackPage();
