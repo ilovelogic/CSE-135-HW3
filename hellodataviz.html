@@ -17,6 +17,9 @@
             title: {
             text: 'Network Connection Pie Chart'
             },
+            plotarea: {
+                marginTop: '60px' // spacing between title and pie chart
+            },
             options: { 
             threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
             others: {
@@ -36,11 +39,9 @@
             }
             },
             plot: {
-                valueBox: {
-                    rules: [
-                        {
+                valueBox: [
+                    {
                         // shows label (text) OUTSIDE each slice
-                        rule: true,
                         placement: "out",
                         text: "%t",
                         fontColor: "#000000", // black font
@@ -48,14 +49,12 @@
                     },
                     {
                         // shows percentage INSIDE each slice
-                        rule: true,
                         placement: "in",
                         text: "%np", // could alternatively use %percent for xx.x% format
                         fontColor: "#fff", // white font
                         fontSize: 14
                     }
-                    ]
-                }
+                ]
             },
             series: [{
                 values: [100],
