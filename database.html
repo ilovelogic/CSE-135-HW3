@@ -9,26 +9,16 @@
 </head>
 
 <body>
-  <!--Grid Component Placement[2]-->
+  <!--Serperate Grids for each type of Data-->
   <zing-grid id="staticGrid" caption="Static Data" pager page-size="10" editor-controls="all" filter sort>
     <zg-data src="/api.php/static"></zg-data>
   </zing-grid>
-  <zing-grid id="performanceGrid" caption="Performance Data" pager page-size="10" filter sort></zing-grid>
-  <zing-grid id="eventGrid" caption="Activity Data" pager page-size="10" filter sort></zing-grid>
-
-  <script>
-  //fetch('api.php/static')
-    //.then(res => res.json())
-    //.then(data => { document.getElementById('staticGrid').data = data; });
-
-  fetch('api.php/performance')
-    .then(res => res.json())
-    .then(data => { document.getElementById('performanceGrid').data = data; });
-
-  fetch('api.php/activity')
-    .then(res => res.json())
-    .then(data => { document.getElementById('eventGrid').data = data; });
-  </script>
+  <zing-grid id="performanceGrid" caption="Performance Data" pager page-size="10" editor-controls="all" filter sort>
+    <zg-data src="/api.php/performance"></zg-data>
+  </zing-grid>
+  <zing-grid id="eventGrid" caption="Activity Data" pager page-size="10" editor-controls="all" filter sort>
+    <zg-data src="/api.php/activity"></zg-data>
+  </zing-grid>
 
 </body>
 
