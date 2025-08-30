@@ -11,18 +11,18 @@
     <div id='myChart'></div>
   <script>
     ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
-    var myConfig = {
+    var pieConfig = {
       graphset: [{
         type: "navpie",
         title: {
           text: 'navpie chart'
         },
-        options: {
-          threshold: "15%",
+        options: { 
+          threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
           others: {
             backgroundColor: "#999 #333"
           },
-          slice: 0.65,
+          slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
           back: {
             padding: 10,
             fontWeight: "bold",
@@ -75,8 +75,8 @@
  
     zingchart.render({
       id: 'myChart',
-      data: myConfig,
-      height: 400,
+      data: pieConfig,
+      height: 350,
       width: '100%'
     });
   </script>
