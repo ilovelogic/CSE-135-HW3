@@ -14,30 +14,43 @@
   <script>
     ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
     var myConfig = {
-      "type": "pie3d",
-      "title": {
-        "text": "Network Connection Pie Chart"
-      },
-      "plot": {
-        "offset-r": "25%"
-      },
-      "series": [{
-          "values": [100],
-            "text": "4g"
-        },
-        {
-          "values": [155],
-            "text": "3g"
-        },
-        {
-          "values": [30],
-          "text": "2g"
-        },
-        {
-          "values": [28],
-          "text": "slow 2g"
-        }
-      ]
+        graphset: [{
+            type: "pie3d",
+            title: {
+                text: "Network Connection Pie Chart"
+            },
+            plotarea: {
+                marginTop: '60px' // spacing between title and pie chart
+            },
+            plot: {
+                valueBox: [
+                    {
+                        // shows percentage INSIDE each slice
+                        placement: "in",
+                        text: "%np", // could alternatively use %percent for xx.x% format
+                        fontColor: "#fff", // white font
+                        fontSize: 14
+                    }
+                ]
+            },
+            series: [{
+                values: [100],
+                    text: "4g"
+                },
+                {
+                values: [155],
+                    text: "3g"
+                },
+                {
+                values: [30],
+                text: "2g"
+                },
+                {
+                values: [28],
+                text: "slow 2g"
+                }
+            ]
+        }],
     };
  
     zingchart.render({
