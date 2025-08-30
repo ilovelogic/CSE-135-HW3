@@ -1,3 +1,12 @@
+/** 
+ * DISCLAIMER - While yes, it is dangerous to leave
+ * an exposed DEBUG flag or even allow one at all, I argue that:
+ * 1. We are not collecting any sensitive user information that
+ *    users should not already be aware of.
+ * 2. The collector.js file has to be sent to the client anyways,
+ *    so anyone determined enough can find out what is being collected.
+ * 3. This is a learning exercise, and we are not a company!
+*/
 const DEBUG = true;
 
 if (DEBUG) {
@@ -83,6 +92,9 @@ function collectStaticData() {
  */
 function collectPerformanceData() {
   const timingObject = performance.getEntriesByType("navigation")[0];
+  const t = performance.timing;
+
+  pageLoadTimingObject = timingObject || t
 
   if (timingObject) {
     pageLoadTimingObject = timingObject;
@@ -95,7 +107,7 @@ function collectPerformanceData() {
       : timingObject.duration;
   } else {
     // Fallback for older browsers
-    const t = performance.timing;
+    
     pageLoadTimingObject = t;
     pageLoadStart = t.navigationStart;
     pageLoadEnd = t.loadEventEnd;
