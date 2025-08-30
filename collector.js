@@ -10,6 +10,7 @@ let userNetConnType;
 let pageLoadTimingObject, pageLoadStart, pageLoadEnd, pageLoadTimeTotal;
 
 /*
+If we later want to keep track of users (long-term) in addition to individual sessions, we can use:
 let userID = localStorage.getItem('userID');
 if (!userID) {
   userID = (window.crypto?.randomUUID?.())
