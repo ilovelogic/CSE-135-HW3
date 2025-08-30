@@ -160,7 +160,7 @@ function setEntry($conn, $resource, $method, $id) {
     }
 
     echo json_encode(["data entered" => $inputArr]);
-    conn->close();
+    $conn->close();
 }
 
 
@@ -181,7 +181,6 @@ function inputToArr() {
         // use $_POST for x-www-form-urlencoded data submitted via POST
         $inputArr = $_POST;
     }
-    error_log(print_r($inputArr, true)); // for debugging purposes
     return $inputArr;
 }
 
