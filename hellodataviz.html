@@ -1,0 +1,84 @@
+<!doctype html>
+<head>
+    <meta charset = "UTF-8">
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    <title>Data Visuals</title>
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+</head>
+
+<body>
+    <!-- ZingChart -->
+    <div id='myChart'></div>
+  <script>
+    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+    var myConfig = {
+      graphset: [{
+        type: "navpie",
+        title: {
+          text: 'navpie chart'
+        },
+        options: {
+          threshold: "15%",
+          others: {
+            backgroundColor: "#999 #333"
+          },
+          slice: 0.65,
+          back: {
+            padding: 10,
+            fontWeight: "bold",
+            color: "#fff",
+            fontSize: 12,
+            border: "3px solid #47a",
+            borderRadius: 9,
+            backgroundColor: "#369",
+            shadow: true,
+            shadowAlpha: 0.5
+          }
+        },
+        series: [{
+            values: [69],
+            text: "Apple",
+            palette: 0
+          },
+          {
+            values: [51],
+            text: "Microsoft",
+            palette: 1
+          },
+          {
+            values: [42],
+            text: "Oracle",
+            palette: 2
+          },
+          {
+            values: [25],
+            text: "Dell",
+            palette: 3
+          },
+          {
+            values: [19],
+            text: "Amazon",
+            palette: 4
+          },
+          {
+            values: [9],
+            detach: false,
+            dataGroup: [1],
+            tooltipText: "IBM:4<br>HP:3<br>Qualcomm:2",
+            text: "Click for more...",
+            backgroundColor: "#999 #333",
+            palette: 5
+          }
+        ]
+      }],
+    };
+ 
+    zingchart.render({
+      id: 'myChart',
+      data: myConfig,
+      height: 400,
+      width: '100%'
+    });
+  </script>
+</body>
+</html>
