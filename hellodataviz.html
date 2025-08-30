@@ -37,11 +37,24 @@
         },
         plot: {
             valueBox: {
-                text: "%t: %v",         // shows the series text (label) and value
-                placement: "out",
-                fontColor: "#000000",
-                fontSize: 16,
-                fontWeight: "bold"
+                rules: [
+                {
+                    // shows percentage INSIDE each slice
+                    rule: true,
+                    placement: "in",
+                    text: "%np",         // Or use %percent for xx.x% format
+                    fontColor: "#fff",
+                    fontSize: 14
+                },
+                {
+                    // shows label (text) OUTSIDE each slice
+                    rule: true,
+                    placement: "out",
+                    text: "%t",
+                    fontColor: "#fff",
+                    fontSize: 12
+                }
+                ]
             }
         },
         series: [{
