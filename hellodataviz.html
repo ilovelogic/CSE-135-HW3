@@ -1,65 +1,96 @@
-<!DOCTYPE html>
-<html>
- 
+<!doctype html>
 <head>
-  <meta charset="utf-8">
-  <title>Pie Chart</title>
- 
-  <script nonce="undefined" src="https://cdn.zingchart.com/zingchart.min.js"></script>
-  <style></style>
+    <meta charset = "UTF-8">
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    <title>Data Visuals</title>
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 </head>
- 
+
 <body>
-  <div id='myChart'></div>
-  <script>
-    ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
-    var myConfig = {
+    <!-- ZingChart -->
+    <div id='myChart'></div>
+    <script>
+        ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+        var pieConfig = {
         graphset: [{
-            type: "pie3d",
+            type: "navpie",
             title: {
-                text: "Network Connection Pie Chart"
+            text: 'Network Connection Pie Chart'
             },
             plotarea: {
                 marginTop: '60px' // spacing between title and pie chart
             },
+            options: { 
+            threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
+            others: {
+                backgroundColor: "#999 #333"
+            },
+            slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
+            back: {
+                padding: 10,
+                fontWeight: "bold",
+                color: "#fff",
+                fontSize: 12,
+                border: "3px solid #47a",
+                borderRadius: 9,
+                backgroundColor: "#369",
+                shadow: true,
+                shadowAlpha: 0.5
+            }
+            },
             plot: {
-                valueBox: [
-                    {
-                        // shows percentage INSIDE each slice
-                        placement: "in",
-                        text: "%t: %np", // shows title of slice and percent
-                        fontColor: "#fff", // white font
-                        fontSize: 14
-                    }
-                ]
+                borderColor: "#2B313B",
+                borderWidth: 5,
+                // slice: 90,
+                valueBox: {
+                    placement: 'out',
+                    text: '%t\n%npv%',
+                    fontFamily: "Open Sans"
+                },
+                tooltip: {
+                    fontSize: '18',
+                    fontFamily: "Open Sans",
+                    padding: "5 10",
+                    text: "%npv%"
+                },
+                animation: {
+                    effect: 2,
+                    method: 5,
+                    speed: 900,
+                    sequence: 1,
+                    delay: 3000
+                }
             },
             series: [{
                 values: [100],
-                    text: "4g"
-                },
-                {
-                values: [155],
-                    text: "3g"
-                },
-                {
-                values: [30],
-                text: "2g"
-                },
-                {
-                values: [28],
-                text: "slow 2g"
-                }
+                text: "slow-2g",
+                palette: 0
+            },
+            {
+                values: [200],
+                text: "2g",
+                palette: 1
+            },
+            {
+                values: [14],
+                text: "3g",
+                palette: 2
+            },
+            {
+                values: [16],
+                text: "4g",
+                palette: 3
+            }
             ]
         }],
-    };
- 
-    zingchart.render({
-      id: 'myChart',
-      data: myConfig,
-      height: 400,
-      width: "100%"
-    });
+        };
+    
+        zingchart.render({
+        id: 'myChart',
+        data: pieConfig,
+        height: 350,
+        width: '100%'
+        });
   </script>
 </body>
- 
 </html>
