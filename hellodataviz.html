@@ -61,20 +61,25 @@
         async function renderCharts() {
             try {
                 // Dynamic fetch of data
+                
+                const rawStaticData = await getData('static', 
+                ['userScreenWidth', 'userScreenHeight','userWindowWidth', 'userWindowHeight', 'userNetConnType']);
+                
                 // Gets id in addition to other columns
                 // to allow for association between static data and activity data
-                const rawStaticData = await getData('id', 'static', 
-                ['userScreenWidth', 'userWindowWidth', 'userWindowHeight', 'userNetConnType']);
-                const rawActivityData = await getData('id', 'eventType');
+                //const rawActivityData = await getData('id', 'eventType');
                 // we are interested in mousemove, scroll, and click
                 
                 console.log("Fetched static data:", rawStaticData);
 
                 // Aggregate counts
                 const pieCounts = {};
-                const bar1280Counts = {}; // window height counts window width is 1280
-                const bar500Counts = {}; // window height counts window width is 500
-                //const bar3Counts = {};
+                const bar1280Counts2 = {}; // window height counts window width is 1280
+                const bar500Counts2 = {}; // window height counts window width is 500
+
+                const bar1280Counts3 = {}; // window height counts window width is 1280
+                const bar1920Counts3 = {}; // window height counts window width is 500
+                const barOtherCounts3 = {}; // window height counts window width is 500
 
                 rawStaticData.forEach(item => {
                     // Pie chart labels and values
@@ -89,29 +94,34 @@
                     const uWH = item.userWindowHeight;
 
                     if (uWW == "1280") { 
-                        bar1280Counts[uWH] = (bar1280Counts[uWH] || 0) + 1;
-                        bar500Counts[uWH] = bar500Counts[uWH] || 0; // need at least a 0 stored here
+                        bar1280Counts2[uWH] = (bar1280Counts2[uWH] || 0) + 1;
+                        bar500Counts2[uWH] = bar500Counts2[uWH] || 0; // need at least a 0 stored here
                         // so new keys are added to both arrays in the same order
                     }
                     else if (uWW == "500") {
-                        bar500Counts[uWH] = (bar500Counts[uWH] || 0) + 1;
-                        bar1280Counts[uWH] = bar1280Counts[uWH] || 0;
+                        bar500Counts2[uWH] = (bar500Counts2[uWH] || 0) + 1;
+                        bar1280Counts2[uWH] = bar1280Counts2[uWH] || 0;
                     }
 
                     // 3 series bar chart lables and values
-                    // comparing 3 groups of user window width in terms of their window height
+                    // comparing 3 groups of user screen width in terms of their screen height
                     const uSH = item.userScreenHeight;
-                    if (uWW == "1280") { 
-                        bar1280Counts[uWH] = (bar1280Counts[uWH] || 0) + 1;
-                        bar500Counts[uWH] = bar500Counts[uWH] || 0; // need at least a 0 stored here
+                    if (uSW == "1280") { 
+                        bar1280Counts3[uSH] = (bar1280Counts3[uSH] || 0) + 1;
+                        bar1920Counts3[uSH] = bar1920Counts3[uSH] || 0; // need at least a 0 stored here
                         // so new keys are added to both arrays in the same order
+                        barOtherCounts3[uSH] = barOtherCounts3[uSH] || 0;
                     }
-                    else if (uWW == "500") {
-                        bar500Counts[uWH] = (bar500Counts[uWH] || 0) + 1;
-                        bar1280Counts[uWH] = bar1280Counts[uWH] || 0;
+                    else if (uSW == "1920") {
+                        bar1920Counts3[uSH] = (bar1920Counts3[uSH] || 0) + 1;
+                        bar1280Counts3[uSH] = bar1280Counts3[uSH] || 0;
+                        barOtherCounts3[uSH] = barOtherCounts3[uSH] || 0;
                     }
-                    bar3Counts[uSW] = (bar2Counts[uSW] || 0) + 1;
-                    bar3Counts[uSH] = (bar2Counts[uSH] || 0) + 1;
+                    else { // other
+                        barOtherCounts3[uSH] = (barOtherCounts3[uSH] || 0) + 1;
+                        bar1280Counts3[uSH] = bar1280Counts3[uSH] || 0;
+                        bar1920Counts3[uSH] = bar1920Counts3[uSH] || 0;
+                    }
                     
                 });
 
@@ -121,20 +131,63 @@
                 const pieLabels = Object.keys(pieCounts);
                 const pieValues = Object.values(pieCounts);
 
-                const bar2Labels = Object.keys(bar1280Counts); // either 1280 or 500 would work here
+                const barLabels2 = Object.keys(bar1280Counts2); // either 1280 or 500 would work here
+                const bar1280Values2 = Object.values(bar1280Counts2);
+                const bar500Values2 = Object.values(bar500Counts2);
 
-                const bar1280Values = Object.values(bar1280Counts);
-                const bar500Values = Object.values(bar500Counts);
+                const barLabels3 = Object.keys(barOtherCounts3); // any of the three would work here
+                const bar1280Values3 = Object.values(bar1280Counts3);
+                const bar1920Values3 = Object.values(bar1920Counts3);
+                const barOtherValues3 = Object.values(barOtherCounts3);
 
                 // --- 3-Series Bar Chart ---
                 const bar3Config = {
                     type: 'bar',
-                    title: { text: '3-Series Bar Chart Example' },
-                    scaleX: { pieLabels },
+                    title: { text: 'Screen Dimensions' },
+                    scaleX: { 
+                        values: barLabels3,
+                        "label": {
+                            "text": "Screen Height",
+                            "font-family": "arial",
+                            "bold": true,
+                            "font-size": "12px",
+                            "font-color": "#7E7E7E",
+                        }
+                    },
+                    "plot": {
+                        "bars-space-left": 0.15,
+                        "bars-space-right": 0.15,
+                    },
+                    "scale-y": {
+                        "line-color": "#7E7E7E",
+                        "item": {
+                            "font-color": "#7e7e7e"
+                        },
+                        "values": "0:60:10",
+                        "guide": {
+                            "visible": true
+                        },
+                        "label": {
+                            "text": "Count",
+                            "font-family": "arial",
+                            "bold": true,
+                            "font-size": "12px",
+                            "font-color": "#7E7E7E",
+                        }
+                    },
                     series: [
-                        { pieValues },                                // actual counts
-                        { values: pieValues.map(v => v * 2) },        // example transformation
-                        { values: pieValues.map(v => v + 1) }         // example transformation
+                        {
+                            values: bar1280Values3,
+                            text: "Screen Width: 1280"
+                        },         
+                        { 
+                            values: bar1920Values3,
+                            text: "Screen Width: 1920"
+                        },     
+                        { 
+                            values: barOtherValues3,
+                            text: "Screen Width: Other"
+                        }  
                     ]
                 };
 
@@ -204,7 +257,7 @@
                     },
 
                     "scaleX": {
-                        "values": bar2Labels,
+                        "values": barLabels2,
                         "placement": "default",
                         "tick": {
                             "size": 58,
@@ -225,11 +278,11 @@
 
                     series: [
                         {
-                            values: bar500Values,
+                            values: bar500Values2,
                             text: "Window Width: 500"
                         },
                         {
-                            values: bar1280Values,
+                            values: bar1280Values2,
                             text: "Window Width: 1280"
                         }
                     ]
