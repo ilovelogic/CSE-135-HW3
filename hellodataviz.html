@@ -58,63 +58,66 @@
 
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
 
-        try {
-            const rawData = await getData('static', ['userScreenWidth']); // <== dynamic fetch
-            console.log("Fetched data:", rawData);
+        async function renderCharts() {
+            try {
+                const rawData = await getData('static', ['userScreenWidth']); // <== dynamic fetch
+                console.log("Fetched data:", rawData);
 
-            // Aggregate counts
-            const counts = {};
-            rawData.forEach(item => {
-                const w = item.userScreenWidth;
-                counts[w] = (counts[w] || 0) + 1;
-            });
+                // Aggregate counts
+                const counts = {};
+                rawData.forEach(item => {
+                    const w = item.userScreenWidth;
+                    counts[w] = (counts[w] || 0) + 1;
+                });
 
-            // Convert to arrays
-            const labels = Object.keys(counts);
-            const values = Object.values(counts);
+                // Convert to arrays
+                const labels = Object.keys(counts);
+                const values = Object.values(counts);
 
-            // --- 3-Series Bar Chart ---
-            const bar3Config = {
-                type: 'bar',
-                title: { text: '3-Series Bar Chart Example' },
-                scaleX: { labels },
-                series: [
-                    { values },                                // actual counts
-                    { values: values.map(v => v * 2) },        // example transformation
-                    { values: values.map(v => v + 1) }         // example transformation
-                ]
-            };
+                // --- 3-Series Bar Chart ---
+                const bar3Config = {
+                    type: 'bar',
+                    title: { text: '3-Series Bar Chart Example' },
+                    scaleX: { labels },
+                    series: [
+                        { values },                                // actual counts
+                        { values: values.map(v => v * 2) },        // example transformation
+                        { values: values.map(v => v + 1) }         // example transformation
+                    ]
+                };
 
-            // --- 2-Series Bar Chart ---
-            const bar2Config = {
-                type: 'bar',
-                title: { text: '2-Series Bar Chart Example' },
-                scaleX: { labels },
-                series: [
-                    { values },
-                    { values: values.map(v => v * 1.5) }
-                ]
-            };
+                // --- 2-Series Bar Chart ---
+                const bar2Config = {
+                    type: 'bar',
+                    title: { text: '2-Series Bar Chart Example' },
+                    scaleX: { labels },
+                    series: [
+                        { values },
+                        { values: values.map(v => v * 1.5) }
+                    ]
+                };
 
-            // --- Pie Chart ---
-            const pieConfig = {
-                type: 'pie',
-                title: { text: 'Screen Width Distribution' },
-                series: labels.map((label, i) => ({
-                    text: label,
-                    values: [values[i]]
-                }))
-            };
+                // --- Pie Chart ---
+                const pieConfig = {
+                    type: 'pie',
+                    title: { text: 'Screen Width Distribution' },
+                    series: labels.map((label, i) => ({
+                        text: label,
+                        values: [values[i]]
+                    }))
+                };
 
-            // Render
-            zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
-            zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
-            zingchart.render({ id: 'pie', data: pieConfig, height: 400, width: '100%' });
+                // Render
+                zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
+                zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
+                zingchart.render({ id: 'pie', data: pieConfig, height: 400, width: '100%' });
 
-        } catch (err) {
-            console.error("Error rendering charts:", err);
+            } catch (err) {
+                console.error("Error rendering charts:", err);
+            }
         }
 
+        renderCharts();
     </script>
 </body>
 
