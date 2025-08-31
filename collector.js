@@ -411,5 +411,5 @@ function getData(resource, colNames) {
   }
 }
 
-result = getData("static", ["userScreenWidth", "userScreenHeight"]);
+let result = getData("static", ["userScreenWidth", "userScreenHeight"]);
 console.error(result);
