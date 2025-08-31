@@ -8,7 +8,7 @@ Returns JSON encoding of response
  !--- Need to get the JSON encoding into the right format for ZingChart ---!
 */
 
-async function getData(resource, colNames) {
+export async function getData(resource, colNames) {
   let url = "/api.php";
 
   if (resource == "static") {
