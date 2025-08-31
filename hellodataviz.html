@@ -61,8 +61,12 @@
         async function renderCharts() {
             try {
                 // Dynamic fetch of data
-                const rawStaticData = await getData('static', 
+                // Gets id in addition to other columns
+                // to allow for association between static data and activity data
+                const rawStaticData = await getData('id', 'static', 
                 ['userScreenWidth', 'userWindowWidth', 'userWindowHeight', 'userNetConnType']);
+                const rawActivityData = await getData('id', 'eventType');
+                // we are interested in mousemove, scroll, and click
                 
                 console.log("Fetched static data:", rawStaticData);
 
@@ -94,13 +98,21 @@
                         bar1280Counts[uWH] = bar1280Counts[uWH] || 0;
                     }
 
-                    /* 3 series bar chart lables and values
+                    // 3 series bar chart lables and values
                     // comparing 3 groups of user window width in terms of their window height
-                    const uWW = item.userWindowWidth;
-                    const uWH = item.userWindowHeight;
-                    bar3Counts[uWW] = (bar2Counts[uWW] || 0) + 1;
-                    bar3Counts[uWH] = (bar2Counts[uWH] || 0) + 1;
-                    */
+                    const uSH = item.userScreenHeight;
+                    if (uWW == "1280") { 
+                        bar1280Counts[uWH] = (bar1280Counts[uWH] || 0) + 1;
+                        bar500Counts[uWH] = bar500Counts[uWH] || 0; // need at least a 0 stored here
+                        // so new keys are added to both arrays in the same order
+                    }
+                    else if (uWW == "500") {
+                        bar500Counts[uWH] = (bar500Counts[uWH] || 0) + 1;
+                        bar1280Counts[uWH] = bar1280Counts[uWH] || 0;
+                    }
+                    bar3Counts[uSW] = (bar2Counts[uSW] || 0) + 1;
+                    bar3Counts[uSH] = (bar2Counts[uSH] || 0) + 1;
+                    
                 });
 
                 
@@ -114,7 +126,7 @@
                 const bar1280Values = Object.values(bar1280Counts);
                 const bar500Values = Object.values(bar500Counts);
 
-                /* --- 3-Series Bar Chart ---
+                // --- 3-Series Bar Chart ---
                 const bar3Config = {
                     type: 'bar',
                     title: { text: '3-Series Bar Chart Example' },
@@ -124,7 +136,7 @@
                         { values: pieValues.map(v => v * 2) },        // example transformation
                         { values: pieValues.map(v => v + 1) }         // example transformation
                     ]
-                }; */
+                };
 
                 // --- 2-Series Bar Chart ---
                 const bar2Config = {
