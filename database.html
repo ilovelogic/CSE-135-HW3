@@ -12,13 +12,23 @@
       }
   
       .pink {
-        background: #f8bbd0;
+        background: #ffdfea;
       }
       .purple {
-        background: #e1bee7;
+        background: #fadcff;
       }
       .blue {
-        background: #bbdefb;
+        background: #cfe6f9;
+      }
+
+      .orange {
+        background: #fceecf;
+      }
+      .yellow {
+        background: #f9f6c7;
+      }
+      .green {
+        background: #d9fed1;
       }
  
       zing-grid[loading] {
@@ -29,13 +39,13 @@
 
 <body>
   <!--Serperate Grids for each type of Data-->
-  <zing-grid id="staticGrid" caption="Static Data" gridlines="both"  zebra="pink, purple, blue" pager page-size="10" filter sort>
+  <zing-grid id="staticGrid" caption="Static Data" gridlines="both"  zebra="pink, purple, blue, purple" pager page-size="10" filter sort>
     <zg-data src="/api.php/static"></zg-data>
   </zing-grid>
-  <zing-grid id="performanceGrid" caption="Performance Data" gridlines="both" pager page-size="10" filter sort>
+  <zing-grid id="performanceGrid" caption="Performance Data" gridlines="both" zebra="green, yellow, orange, yellow" pager page-size="10" filter sort>
     <zg-data src="/api.php/performance"></zg-data>
   </zing-grid>
-  <zing-grid id="eventGrid" caption="Activity Data" gridlines="both" pager page-size="10" filter sort>
+  <zing-grid id="eventGrid" caption="Activity Data" gridlines="both" zebra="pink, purple, blue, purple" pager page-size="10" filter sort>
     <zg-data src="/api.php/activity"></zg-data>
   </zing-grid>
 
