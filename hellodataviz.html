@@ -112,16 +112,24 @@
                     plot: {
                         borderColor: "#2B313B",
                         borderWidth: 5,
-                        valueBox: {
-                            placement: 'out',
-                            text: '%t\n%npv%',
-                            fontFamily: "Open Sans"
-                        },
+                        valueBox: [
+                            {
+                                placement: 'out',
+                                text: '%t\n',
+                                fontFamily: "Open Sans"
+                            },
+                            {
+                                placement: 'in',
+                                text: '%npv%',
+                                fontFamily: "Open Sans",
+                                color: "#fff" // white 
+                            },
+                        ],
                         tooltip: {
                             fontSize: '18',
                             fontFamily: "Open Sans",
                             padding: "5 10",
-                            text: "%npv%"
+                            text: "Count: %v"
                         },
                     },
                     series: labels.map((label, i) => ({
