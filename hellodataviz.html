@@ -10,7 +10,7 @@
 <body>
     <!-- ZingChart -->
     <div id="charts">
-        <div id="bar3"></div>
+        <!-- <div id="bar3"></div> -->
         <div id="bar2"></div>
         <div id="pie"></div>
     </div>
@@ -83,19 +83,20 @@
                     const aC = item.acceptsCookies;
                     const uNCT = item.userNetConnType;
 
-                    if (aC) { // user accepts cookies
+                    if (aC === true) { // user accepts cookies
                         bar2AC1Counts[uNCT] = (bar2AC1Counts[uNCT] || 0) + 1;
                     }
                     else { // user rejects cookies
                         bar2AC0Counts[uNCT] = (bar2AC1Counts[uNCT] || 0) + 1;
                     }
 
-                    // 3 series bar chart lables and values
+                    /* 3 series bar chart lables and values
                     // comparing 3 groups of user window width in terms of their window height
                     const uWW = item.userWindowWidth;
                     const uWH = item.userWindowHeight;
                     bar3Counts[uWW] = (bar2Counts[uWW] || 0) + 1;
                     bar3Counts[uWH] = (bar2Counts[uWH] || 0) + 1;
+                    */
                 });
 
                 // Convert to arrays
@@ -107,7 +108,7 @@
                 const bar2AC0Values = Object.values(bar2AC0Counts);
                 const bar2AC1Values = Object.values(bar2AC1Counts);
 
-                // --- 3-Series Bar Chart ---
+                /* --- 3-Series Bar Chart ---
                 const bar3Config = {
                     type: 'bar',
                     title: { text: '3-Series Bar Chart Example' },
@@ -117,7 +118,7 @@
                         { values: pieValues.map(v => v * 2) },        // example transformation
                         { values: pieValues.map(v => v + 1) }         // example transformation
                     ]
-                };
+                }; */
 
                 // --- 2-Series Bar Chart ---
                 const bar2Config = {
@@ -175,7 +176,7 @@
                 
 
                 // Render
-                zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
+                //zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
                 zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
                 zingchart.render({ id: 'pie', data: pieConfig, height: 400, width: '100%' });
 
