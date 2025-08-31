@@ -11,7 +11,7 @@
     <!-- ZingChart -->
     <div id="charts">
         <!-- <div id="bar3"></div> -->
-        <div id="bar2"></div>
+        <!--  <div id="bar2"></div> -->
         <div id="pie"></div>
     </div>
     <script>
@@ -120,7 +120,7 @@
                     ]
                 }; */
 
-                // --- 2-Series Bar Chart ---
+                /* --- 2-Series Bar Chart ---
                 const bar2Config = {
                     type: 'bar',
                     title: { text: 'Accepting Cookies vs. Network Connectivity' },
@@ -136,7 +136,7 @@
                             text: "Accepts Cookies"
                         }
                     ]
-                };
+                }; */
 
                 // --- Pie Chart ---
                 const pieConfig = {
@@ -177,7 +177,7 @@
 
                 // Render
                 //zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
-                zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
+                // zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
                 zingchart.render({ id: 'pie', data: pieConfig, height: 400, width: '100%' });
 
             } catch (err) {
