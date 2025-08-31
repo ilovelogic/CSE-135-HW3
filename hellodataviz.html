@@ -15,130 +15,106 @@
         <div id="pie"></div>
     </div>
     <script>
+        async function getData(resource, colNames) {
+            let url = "/api.php";
+
+            if (resource == "static") {
+                url += "/static";
+            }
+            else if (resource == "performance") {
+                url += "/performance";
+            }
+            else if (resource == "activity") {
+                url += "/activity";
+            }
+            else {
+                // send an error message
+            }
+
+            // path will be /api.php/{resource}/{col_1}&{col_2}&...&{col_n}
+            if (colNames.length != 0) {
+                url += "/";
+                let lastIndex = colNames.length - 1;
+                for (let i = 0; i < lastIndex; i++) {
+                    url += colNames[i] + "&"; // & purely for purposes of debugging, php api would work fine without it
+                    // since we are using strpos and no colName is a subset of another colName
+                }
+                url += colNames[lastIndex];
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log(result);
+                return result;
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
 
-        // Example dynamic data
-        const rawData = [
-            { "id": "00cbadc5-a039-48e6-9d9c-7e9ca68e2fbd", "userScreenWidth": "1280" },
-            { "id": "0110c77d-2225-481b-86af-530ef9c0ce4f", "userScreenWidth": "412" },
-            { "id": "040e793a-d509-4c20-86fc-bf6235930d97", "userScreenWidth": "1280" }
-        ];
+        try {
+            const rawData = await getData('static', ['userScreenWidth']); // <== dynamic fetch
+            console.log("Fetched data:", rawData);
 
-        // Aggregate counts of screen widths
-        const counts = {};
-        rawData.forEach(item => {
-            const w = item.userScreenWidth;
-            counts[w] = (counts[w] || 0) + 1;
-        });
+            // Aggregate counts
+            const counts = {};
+            rawData.forEach(item => {
+                const w = item.userScreenWidth;
+                counts[w] = (counts[w] || 0) + 1;
+            });
 
-        // Convert to arrays for charting
-        const labels = Object.keys(counts);
-        const values = Object.values(counts);
+            // Convert to arrays
+            const labels = Object.keys(counts);
+            const values = Object.values(counts);
 
-
-        // --- 3-Series Bar Chart Example ---
-        const bar3Config = {
-            type: 'bar',
-            title: { text: '3-Series Bar Chart Example' },
-            scaleX: { labels },
-            series: [
-                { values },                                // Series 1: raw counts
-                { values: values.map(v => v * 2) },        // Series 2: mock transformation
-                { values: values.map(v => v + 1) }         // Series 3: mock transformation
-            ]
-        };
-
-        // --- 2-Series Bar Chart Example ---
-        const bar2Config = {
-            type: 'bar',
-            title: { text: '2-Series Bar Chart Example' },
-            scaleX: { labels },
-            series: [
-                { values },
-                { values: values.map(v => v * 1.5) }
-            ]
-        };
-
-        // --- Pie Chart ---
-        var pieConfig = {
-            graphset: [{
-                type: "navpie",
-                title: {
-                    text: 'Network Connection Pie Chart'
-                },
-                plotarea: {
-                    marginTop: '60px' // spacing between title and pie chart
-                },
-                options: {
-                    threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
-                    others: {
-                        text: "Other Connections",
-                        backgroundColor: "#999 #333"
-                    },
-                    slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
-                    back: {
-                        padding: 10,
-                        fontWeight: "bold",
-                        color: "#fff",
-                        fontSize: 12,
-                        border: "3px solid #47a",
-                        borderRadius: 9,
-                        backgroundColor: "#369",
-                        shadow: true,
-                        shadowAlpha: 0.6
-                    }
-                },
-                plot: {
-                    borderColor: "#2B313B",
-                    borderWidth: 5,
-                    // slice: 90,
-                    valueBox: {
-                        placement: 'out',
-                        text: '%t\n%npv%',
-                        fontFamily: "Open Sans"
-                    },
-                    tooltip: {
-                        fontSize: '18',
-                        fontFamily: "Open Sans",
-                        padding: "5 10",
-                        text: "%npv%"
-                    },
-                    animation: {
-                        effect: 2,
-                        method: 5,
-                        speed: 900,
-                        sequence: 1,
-                        delay: 1
-                    }
-                },
-                series: [{
-                    values: [100],
-                    text: "slow-2g",
-                    palette: 0
-                },
-                {
-                    values: [200],
-                    text: "2g",
-                    palette: 1
-                },
-                {
-                    values: [14],
-                    text: "3g",
-                    palette: 2
-                },
-                {
-                    values: [16],
-                    detach: false,
-                    text: "4g",
-                    palette: 4
-                },
+            // --- 3-Series Bar Chart ---
+            const bar3Config = {
+                type: 'bar',
+                title: { text: '3-Series Bar Chart Example' },
+                scaleX: { labels },
+                series: [
+                    { values },                                // actual counts
+                    { values: values.map(v => v * 2) },        // example transformation
+                    { values: values.map(v => v + 1) }         // example transformation
                 ]
-            }],
-        };
+            };
 
-        zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
-        zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
-        zingchart.render({ id: 'pie', data: pieConfig, height: 500, width: '100%' });
+            // --- 2-Series Bar Chart ---
+            const bar2Config = {
+                type: 'bar',
+                title: { text: '2-Series Bar Chart Example' },
+                scaleX: { labels },
+                series: [
+                    { values },
+                    { values: values.map(v => v * 1.5) }
+                ]
+            };
+
+            // --- Pie Chart ---
+            const pieConfig = {
+                type: 'pie',
+                title: { text: 'Screen Width Distribution' },
+                series: labels.map((label, i) => ({
+                    text: label,
+                    values: [values[i]]
+                }))
+            };
+
+            // Render
+            zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
+            zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
+            zingchart.render({ id: 'pie', data: pieConfig, height: 400, width: '100%' });
+
+        } catch (err) {
+            console.error("Error rendering charts:", err);
+        }
+
     </script>
 </body>
 

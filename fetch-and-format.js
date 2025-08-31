@@ -9,7 +9,7 @@ Returns JSON encoding of response
 */
 
 async function getData(resource, colNames) {
-  const url = "/api.php";
+  let url = "/api.php";
 
   if (resource == "static") {
     url += "/static";
