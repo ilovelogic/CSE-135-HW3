@@ -128,12 +128,17 @@
 
                 // --- 2-Series Bar Chart ---
                 const bar2Config = {
-                    type: 'bar',
-                    title: { 
-                        text: 'Window Width vs. Window Height',
+                    "type": "bar",
+                    "title": { 
+                        "text": "Window Width vs. Window Height",
+                        "font-color": "#7E7E7E",
+                        "backgroundColor": "none",
+                        "font-size": "22px",
+                        "alpha": 1,
+                        "adjust-layout": true
                     },
                     "plotarea": {
-                        "margin": "30"
+                        "margin": "dynamic"
                     },
                     "legend": {
                         "layout": "x3",
