@@ -101,11 +101,35 @@
                 const pieConfig = {
                     type: 'pie',
                     title: { text: 'Screen Width Distribution' },
+                    options: { 
+                        threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
+                        others: {
+                            text: "Other Connections",
+                            backgroundColor: "#999 #333"
+                        },
+                        slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
+                    },
+                    plot: {
+                        borderColor: "#2B313B",
+                        borderWidth: 5,
+                        valueBox: {
+                            placement: 'out',
+                            text: '%t\n%npv%',
+                            fontFamily: "Open Sans"
+                        },
+                        tooltip: {
+                            fontSize: '18',
+                            fontFamily: "Open Sans",
+                            padding: "5 10",
+                            text: "%npv%"
+                        },
+                    },
                     series: labels.map((label, i) => ({
                         text: label,
                         values: [values[i]]
                     }))
                 };
+                
 
                 // Render
                 zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
