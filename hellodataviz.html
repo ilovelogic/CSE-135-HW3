@@ -62,14 +62,14 @@
             try {
                 // Dynamic fetch of data
                 const rawStaticData = await getData('static', 
-                ['userScreenWidth', 'userWindowWidth', 'userWindowHeight', 'acceptsCookies', 'userNetConnType']);
+                ['userScreenWidth', 'userWindowWidth', 'userWindowHeight', 'userNetConnType']);
                 
                 console.log("Fetched static data:", rawStaticData);
 
                 // Aggregate counts
                 const pieCounts = {};
-                const bar2AC1Counts = {}; // network type counts where acceptsCookies is true
-                const bar2AC0Counts = {}; // network type counts where acceptsCookies is false
+                const bar1280Counts = {}; // window height counts window width is 1280
+                const bar500Counts = {}; // window height counts window width is 500
                 //const bar3Counts = {};
 
                 rawStaticData.forEach(item => {
@@ -78,16 +78,20 @@
                     pieCounts[uSW] = (pieCounts[uSW] || 0) + 1;
 
                     // 2 series bar chart lables and values
+                    // Chart comparing screen widths with 
                     // comparing users who accept cookies with those who do not
                     // in terms of their network connection
-                    const aC = item.acceptsCookies;
-                    const uNCT = item.userNetConnType;
+                    const uWW = item.userWindowWidth;
+                    const uWH = item.userWindowHeight;
 
-                    if (aC === "1") { // user accepts cookies
-                        bar2AC1Counts[uNCT] = (bar2AC1Counts[uNCT] || 0) + 1;
+                    if (uWW == "1280") { 
+                        bar1280Counts[uWH] = (bar1280Counts[uWH] || 0) + 1;
+                        bar500Counts[uWH] = bar500Counts[uWH] || 0; // need at least a 0 stored here
+                        // so new keys are added to both arrays in the same order
                     }
-                    else { // user rejects cookies
-                        bar2AC0Counts[uNCT] = (bar2AC1Counts[uNCT] || 0) + 1;
+                    else if (uWW == "500") {
+                        bar500Counts[uWH] = (bar500Counts[uWH] || 0) + 1;
+                        bar1280Counts[uWH] = bar1280Counts[uWH] || 0;
                     }
 
                     /* 3 series bar chart lables and values
@@ -99,14 +103,16 @@
                     */
                 });
 
+                
+
                 // Convert to arrays
                 const pieLabels = Object.keys(pieCounts);
                 const pieValues = Object.values(pieCounts);
 
-                const bar2Labels = Object.keys(bar2AC0Counts); // either AC0 or AC1 would work here
+                const bar2Labels = Object.keys(bar1280Counts); // either 1280 or 500 would work here
 
-                const bar2AC0Values = Object.values(bar2AC0Counts);
-                const bar2AC1Values = Object.values(bar2AC1Counts);
+                const bar1280Values = Object.values(bar1280Counts);
+                const bar500Values = Object.values(bar500Counts);
 
                 /* --- 3-Series Bar Chart ---
                 const bar3Config = {
@@ -124,16 +130,16 @@
                 const bar2Config = {
                     type: 'bar',
                     title: { text: 'Accepting Cookies vs. Network Connectivity' },
-                    scaleX: { bar2Labels },
+                    scaleX: { values: bar2Labels },
 
                     series: [
                         {
-                            values: bar2AC0Counts,
-                            text: "Rejects Cookies"
+                            values: bar500Values,
+                            text: "Window Width: 500"
                         },
                         {
-                            values: bar2AC1Counts,
-                            text: "Accepts Cookies"
+                            values: bar1280Values,
+                            text: "Window Width: 1280"
                         }
                     ]
                 };
