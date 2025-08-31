@@ -1,98 +1,145 @@
 <!doctype html>
+
 <head>
-    <meta charset = "UTF-8">
-    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Visuals</title>
     <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 </head>
 
 <body>
     <!-- ZingChart -->
-    <div id='myChart'></div>
+    <div id="charts">
+        <div id="bar3"></div>
+        <div id="bar2"></div>
+        <div id="pie"></div>
+    </div>
     <script>
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
-        var pieConfig = {
-        graphset: [{
-            type: "navpie",
-            title: {
-            text: 'Network Connection Pie Chart'
-            },
-            plotarea: {
-                marginTop: '60px' // spacing between title and pie chart
-            },
-            options: { 
-            threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
-            others: {
-                text: "Other Connections",
-                backgroundColor: "#999 #333"
-            },
-            slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
-            back: {
-                padding: 10,
-                fontWeight: "bold",
-                color: "#fff",
-                fontSize: 12,
-                border: "3px solid #47a",
-                borderRadius: 9,
-                backgroundColor: "#369",
-                shadow: true,
-                shadowAlpha: 0.6
-            }
-            },
-            plot: {
-                borderColor: "#2B313B",
-                borderWidth: 5,
-                // slice: 90,
-                valueBox: {
-                    placement: 'out',
-                    text: '%t\n%npv%',
-                    fontFamily: "Open Sans"
-                },
-                tooltip: {
-                    fontSize: '18',
-                    fontFamily: "Open Sans",
-                    padding: "5 10",
-                    text: "%npv%"
-                },
-                animation: {
-                    effect: 2,
-                    method: 5,
-                    speed: 900,
-                    sequence: 1,
-                    delay: 1
-                }
-            },
-            series: [{
-                values: [100],
-                text: "slow-2g",
-                palette: 0
-            },
-            {
-                values: [200],
-                text: "2g",
-                palette: 1
-            },
-            {
-                values: [14],
-                text: "3g",
-                palette: 2
-            },
-            {
-                values: [16],
-                detach: false,
-                text: "4g",
-                palette: 4
-            },
-            ]
-        }],
-        };
-    
-        zingchart.render({
-        id: 'myChart',
-        data: pieConfig,
-        height: 500,
-        width: '100%'
+
+        // Example dynamic data
+        const rawData = [
+            { "id": "00cbadc5-a039-48e6-9d9c-7e9ca68e2fbd", "userScreenWidth": "1280" },
+            { "id": "0110c77d-2225-481b-86af-530ef9c0ce4f", "userScreenWidth": "412" },
+            { "id": "040e793a-d509-4c20-86fc-bf6235930d97", "userScreenWidth": "1280" }
+        ];
+
+        // Aggregate counts of screen widths
+        const counts = {};
+        rawData.forEach(item => {
+            const w = item.userScreenWidth;
+            counts[w] = (counts[w] || 0) + 1;
         });
-  </script>
+
+        // Convert to arrays for charting
+        const labels = Object.keys(counts);
+        const values = Object.values(counts);
+
+
+        // --- 3-Series Bar Chart Example ---
+        const bar3Config = {
+            type: 'bar',
+            title: { text: '3-Series Bar Chart Example' },
+            scaleX: { labels },
+            series: [
+                { values },                                // Series 1: raw counts
+                { values: values.map(v => v * 2) },        // Series 2: mock transformation
+                { values: values.map(v => v + 1) }         // Series 3: mock transformation
+            ]
+        };
+
+        // --- 2-Series Bar Chart Example ---
+        const bar2Config = {
+            type: 'bar',
+            title: { text: '2-Series Bar Chart Example' },
+            scaleX: { labels },
+            series: [
+                { values },
+                { values: values.map(v => v * 1.5) }
+            ]
+        };
+
+        // --- Pie Chart ---
+        var pieConfig = {
+            graphset: [{
+                type: "navpie",
+                title: {
+                    text: 'Network Connection Pie Chart'
+                },
+                plotarea: {
+                    marginTop: '60px' // spacing between title and pie chart
+                },
+                options: {
+                    threshold: "10%", // slices smaller than %10 are grouped into the "others" slice
+                    others: {
+                        text: "Other Connections",
+                        backgroundColor: "#999 #333"
+                    },
+                    slice: 0.65, // "slice out" amount of focused (selected) pie slide, 65% of radius
+                    back: {
+                        padding: 10,
+                        fontWeight: "bold",
+                        color: "#fff",
+                        fontSize: 12,
+                        border: "3px solid #47a",
+                        borderRadius: 9,
+                        backgroundColor: "#369",
+                        shadow: true,
+                        shadowAlpha: 0.6
+                    }
+                },
+                plot: {
+                    borderColor: "#2B313B",
+                    borderWidth: 5,
+                    // slice: 90,
+                    valueBox: {
+                        placement: 'out',
+                        text: '%t\n%npv%',
+                        fontFamily: "Open Sans"
+                    },
+                    tooltip: {
+                        fontSize: '18',
+                        fontFamily: "Open Sans",
+                        padding: "5 10",
+                        text: "%npv%"
+                    },
+                    animation: {
+                        effect: 2,
+                        method: 5,
+                        speed: 900,
+                        sequence: 1,
+                        delay: 1
+                    }
+                },
+                series: [{
+                    values: [100],
+                    text: "slow-2g",
+                    palette: 0
+                },
+                {
+                    values: [200],
+                    text: "2g",
+                    palette: 1
+                },
+                {
+                    values: [14],
+                    text: "3g",
+                    palette: 2
+                },
+                {
+                    values: [16],
+                    detach: false,
+                    text: "4g",
+                    palette: 4
+                },
+                ]
+            }],
+        };
+
+        zingchart.render({ id: 'bar3', data: bar3Config, height: 400, width: '100%' });
+        zingchart.render({ id: 'bar2', data: bar2Config, height: 400, width: '100%' });
+        zingchart.render({ id: 'pie', data: pieConfig, height: 500, width: '100%' });
+    </script>
 </body>
+
 </html>
