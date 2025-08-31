@@ -10,13 +10,13 @@
 
 <body>
   <!--Serperate Grids for each type of Data-->
-  <zing-grid id="staticGrid" caption="Static Data" pager page-size="10" filter sort>
+  <zing-grid id="staticGrid" caption="Static Data" gridlines="both"  zebra="pink, purple, blue" pager page-size="10" filter sort>
     <zg-data src="/api.php/static"></zg-data>
   </zing-grid>
-  <zing-grid id="performanceGrid" caption="Performance Data" pager page-size="10" filter sort>
+  <zing-grid id="performanceGrid" caption="Performance Data" gridlines="both" pager page-size="10" filter sort>
     <zg-data src="/api.php/performance"></zg-data>
   </zing-grid>
-  <zing-grid id="eventGrid" caption="Activity Data" pager page-size="10" filter sort>
+  <zing-grid id="eventGrid" caption="Activity Data" gridlines="both" pager page-size="10" filter sort>
     <zg-data src="/api.php/activity"></zg-data>
   </zing-grid>
 
