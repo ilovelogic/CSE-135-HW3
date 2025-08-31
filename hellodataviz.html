@@ -83,7 +83,7 @@
                     const aC = item.acceptsCookies;
                     const uNCT = item.userNetConnType;
 
-                    if (aC === true) { // user accepts cookies
+                    if (aC === "1") { // user accepts cookies
                         bar2AC1Counts[uNCT] = (bar2AC1Counts[uNCT] || 0) + 1;
                     }
                     else { // user rejects cookies
