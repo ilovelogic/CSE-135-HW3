@@ -132,18 +132,20 @@
                     title: { 
                         text: 'Window Width vs. Window Heigt',
                     },
-                    scaleX: { values: bar2Labels },
-                    legend: {
-                        layout: "x3",
-                        overflow: "page",
-                        alpha: 0.05,
-                        shadow: false,
-                        align: "center",
+                    "plotarea": {
+                        "margin": "dynamic"
+                    },
+                    "legend": {
+                        "layout": "x3",
+                        "overflow": "page",
+                        "alpha": 0.05,
+                        "shadow": false,
+                        "align": "center",
                         "adjust-layout": true,
-                        marker: {
-                            type: "circle",
+                        "marker": {
+                            "type": "circle",
                             "border-color": "none",
-                            size: "10px"
+                            "size": "10px"
                         },
                         "border-width": 0,
                         "maxItems": 3,
@@ -165,6 +167,43 @@
                     "plot": {
                         "bars-space-left": 0.15,
                         "bars-space-right": 0.15,
+                    },
+                    "scale-y": {
+                        "line-color": "#7E7E7E",
+                        "item": {
+                            "font-color": "#7e7e7e"
+                        },
+                        "values": "0:60:10",
+                        "guide": {
+                            "visible": true
+                        },
+                        "label": {
+                            "text": "Count",
+                            "font-family": "arial",
+                            "bold": true,
+                            "font-size": "12px",
+                            "font-color": "#7E7E7E",
+                        }
+                    },
+
+                    "scaleX": {
+                        "values": bar2Labels,
+                        "placement": "default",
+                        "tick": {
+                            "size": 58,
+                            "placement": "cross"
+                        },
+                        "itemsOverlap": true,
+                        "item": {
+                            "offsetY": -55
+                        },
+                        "label": {
+                            "text": "Window Height",
+                            "font-family": "arial",
+                            "bold": true,
+                            "font-size": "12px",
+                            "font-color": "#7E7E7E",
+                        }
                     },
 
                     series: [
