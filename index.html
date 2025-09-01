@@ -16,18 +16,25 @@
         </script>
         <link rel="stylesheet" href="styles.css" />
         <script src="script.js"></script>
-        <script src="collector.js"></script>
+
+        <!-- Collecting session data -->
+        <!-- Including collector.js for all pages is hanndled by mod_substitute -->
+
+        <!--- Detecting that JS is off -->
         <noscript>
                 <img src="/logger.php?javascript=off" alt="JS Off Logger"/>
         </noscript>
+
+        <!--- Detecting CSS not allowed -->
         <style>
                 .css-check { color: rgb(255, 0, 0) }
         </style>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
         
-        <!-- for client hints -->
-        <meta http-equiv="Accept-CH" content="Width, Downlink, RTT, ECT, Device-Memory" />      
+        <!-- Client Hints -->
+        <meta http-equiv="Accept-CH" content="Width, Downlink, RTT, ECT, Device-Memory" /> 
+
         <title>CSE 135</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico" />
 </head>
