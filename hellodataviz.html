@@ -25,9 +25,8 @@
         async function renderCharts() {
             try {
                 // Dynamic fetch of data
-                
                 const rawStaticData = await getData('static', 
-                ['userScreenWidth', 'userScreenHeight','userWindowWidth', 'userWindowHeight', 'userNetConnType']);
+                ['userScreenWidth', 'userScreenHeight','userWindowWidth', 'userWindowHeight']);
                 
                 // Gets id in addition to other columns
                 // to allow for association between static data and activity data
@@ -38,42 +37,41 @@
 
                 // Aggregate counts
                 const pieCounts = {};
-                const bar1280Counts2 = {}; // window height counts window width is 1280
-                const bar500Counts2 = {}; // window height counts window width is 500
 
-                const bar1280Counts3 = {}; // window height counts window width is 1280
-                const bar1920Counts3 = {}; // window height counts window width is 500
-                const barOtherCounts3 = {}; // window height counts window width is 500
+                const bar1280Counts2 = {}; // window height counts where window width is 1280
+                const bar500Counts2 = {}; // window height counts where window width is 500
+
+                const bar1280Counts3 = {}; // screen height counts where screen width is 1280
+                const bar1920Counts3 = {}; // screen height counts where screen width is 500
+                const barOtherCounts3 = {}; // screen height counts where screen width is not 1280 or 500
 
                 rawStaticData.forEach(item => {
                     // Pie chart labels and values
                     const uSW = item.userScreenWidth;
                     pieCounts[uSW] = (pieCounts[uSW] || 0) + 1;
 
-                    // 2 series bar chart lables and values
-                    // Chart comparing screen widths with 
-                    // comparing users who accept cookies with those who do not
-                    // in terms of their network connection
+                    // 2 series bar chart
+                    // Chart comparing screen widths in terms of corresponding screen height counts
                     const uWW = item.userWindowWidth;
                     const uWH = item.userWindowHeight;
 
                     if (uWW == "1280") { 
+                        // setup assures that new keys are added to both arrays in the same order
+                        // which allows for mapping labels to values in the 2-series bar chart
                         bar1280Counts2[uWH] = (bar1280Counts2[uWH] || 0) + 1;
-                        bar500Counts2[uWH] = bar500Counts2[uWH] || 0; // need at least a 0 stored here
-                        // so new keys are added to both arrays in the same order
+                        bar500Counts2[uWH] = bar500Counts2[uWH] || 0;
                     }
                     else if (uWW == "500") {
                         bar500Counts2[uWH] = (bar500Counts2[uWH] || 0) + 1;
                         bar1280Counts2[uWH] = bar1280Counts2[uWH] || 0;
                     }
 
-                    // 3 series bar chart lables and values
+                    // 3 series bar chart
                     // comparing 3 groups of user screen width in terms of their screen height
                     const uSH = item.userScreenHeight;
                     if (uSW == "1280") { 
                         bar1280Counts3[uSH] = (bar1280Counts3[uSH] || 0) + 1;
-                        bar1920Counts3[uSH] = bar1920Counts3[uSH] || 0; // need at least a 0 stored here
-                        // so new keys are added to both arrays in the same order
+                        bar1920Counts3[uSH] = bar1920Counts3[uSH] || 0;
                         barOtherCounts3[uSH] = barOtherCounts3[uSH] || 0;
                     }
                     else if (uSW == "1920") {
@@ -198,6 +196,7 @@
                     "type": "bar",
                     "title": { 
                         "text": "Window Dimensions",
+                        "font-family": "verdana",
                         "font-color": "#7E7E7E",
                         "backgroundColor": "none",
                         "font-size": "22px",
@@ -211,11 +210,11 @@
                         "layout": "x3",
                         "overflow": "page",
                         "alpha": 0.05,
-                        "shadow": false,
+                        "shadow": true,
                         "align": "center",
                         "adjust-layout": true,
                         "marker": {
-                            "type": "circle",
+                            "type": "square",
                             "border-color": "none",
                             "size": "10px"
                         },
@@ -251,7 +250,7 @@
                         },
                         "label": {
                             "text": "Count",
-                            "font-family": "arial",
+                            "font-family": "verdana",
                             "bold": true,
                             "font-size": "12px",
                             "font-color": "#7E7E7E",
@@ -262,7 +261,7 @@
                         "values": barLabels2,
                         "placement": "default",
                         "tick": {
-                            "size": 58,
+                            "size": 40,
                             "placement": "cross"
                         },
                         "itemsOverlap": true,
@@ -271,7 +270,7 @@
                         },
                         "label": {
                             "text": "Window Height",
-                            "font-family": "arial",
+                            "font-family": "verdana",
                             "bold": true,
                             "font-size": "12px",
                             "font-color": "#7E7E7E",
