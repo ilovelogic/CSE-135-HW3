@@ -10,14 +10,12 @@
 <body>
     <!-- ZingChart -->
     <div id="charts">
-        <div id="bar3"></div>
+        <div id="bar3"></div><br><br>
         <div id="bar2"></div><br><br>
         <div id="pie"></div>
     </div>
     <script type="module">
-        /*
-        Retrieves 
-        */
+        // Retrieves getData function, which requests columns from a table of the web_analytics DB
         import {getData} from '/fetch.js';
 
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
@@ -27,11 +25,6 @@
                 // Dynamic fetch of data
                 const rawStaticData = await getData('static', 
                 ['userScreenWidth', 'userScreenHeight','userWindowWidth', 'userWindowHeight']);
-                
-                // Gets id in addition to other columns
-                // to allow for association between static data and activity data
-                //const rawActivityData = await getData('id', 'eventType');
-                // we are interested in mousemove, scroll, and click
                 
                 console.log("Fetched static data:", rawStaticData);
 
@@ -51,12 +44,12 @@
                     pieCounts[uSW] = (pieCounts[uSW] || 0) + 1;
 
                     // 2 series bar chart
-                    // Chart comparing screen widths in terms of corresponding screen height counts
+                    // Comparing screen widths in terms of corresponding screen height counts
                     const uWW = item.userWindowWidth;
                     const uWH = item.userWindowHeight;
 
                     if (uWW == "1280") { 
-                        // setup assures that new keys are added to both arrays in the same order
+                        // Setup assures that new keys are added to both arrays in the same order,
                         // which allows for mapping labels to values in the 2-series bar chart
                         bar1280Counts2[uWH] = (bar1280Counts2[uWH] || 0) + 1;
                         bar500Counts2[uWH] = bar500Counts2[uWH] || 0;
@@ -67,9 +60,9 @@
                     }
 
                     // 3 series bar chart
-                    // comparing 3 groups of user screen width in terms of their screen height
+                    // Comparing 3 groups of user screen width in terms of their screen height
                     const uSH = item.userScreenHeight;
-                    if (uSW == "1280") { 
+                    if (uSW == "1280") {
                         bar1280Counts3[uSH] = (bar1280Counts3[uSH] || 0) + 1;
                         bar1920Counts3[uSH] = bar1920Counts3[uSH] || 0;
                         barOtherCounts3[uSH] = barOtherCounts3[uSH] || 0;
@@ -284,7 +277,7 @@
                             "values": bar500Values2,
                             "text": "Window Width: 500",
                             "backgroundColor": '#3366FF #00BFFF',
-                            "alpha": 0.3
+                            "alpha": 0.7
                         },
                         {
                             "values": bar1280Values2,
@@ -297,15 +290,15 @@
 
                 // --- Pie Chart ---
                 const pieConfig = {
-                    type: 'pie',
+                    type: 'navpie',
                     title: { text: 'Screen Width Distribution' },
                     options: { 
-                        threshold: "15%", // slices smaller than %10 are grouped into the "others" slice
+                        threshold: "15%",
                         others: {
-                            text: "Other Connections",
+                            text: "Others",
                             backgroundColor: "#999 #333"
                         },
-                        slice: 0.75, // "slice out" amount of focused (selected) pie slide, 75% of radius
+                        slice: 0.6, // "slice out" amount of focused (selected) pie slide, 75% of radius
                     },
                     plot: {
                         borderColor: "#fff", // white
