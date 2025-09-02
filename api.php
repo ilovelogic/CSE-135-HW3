@@ -29,20 +29,15 @@ $dotenv->load();
 
 
 // Environment variables are accessible with getenv() or $_ENV
-$servername = getenv('DB_HOST');
-$username = getenv('DB_USER');
-$password = getenv('DB_PASS');
-$dbname = getenv('DB_NAME');
+$servername = $_ENV['DB_HOST'];
+$username = $_ENV['DB_USER'];
+$password = $_ENV['DB_PASS'];
+$dbname = $_ENV['DB_NAME'];
 
 
 
 // Responds with json encoding of requested data
 header("Content-Type: application/json");
-
-echo json_encode(["DB_HOST" => $servername]);
-echo json_encode(["DB_USER" => $username]);
-echo json_encode(["DB_PASS" => $password]);
-echo json_encode(["DB_NAME" => $dbname]);
 
 // Connects to mySQL database
 $conn = new mysqli($servername, $username, $password, $dbname);
