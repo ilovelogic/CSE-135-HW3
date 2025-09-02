@@ -34,6 +34,7 @@ $username = getenv('DB_USER');
 $password = getenv('DB_PASS');
 $dbname = getenv('DB_NAME');
 
+echo getenv('DB_HOST');
 
 // Responds with json encoding of requested data
 header("Content-Type: application/json");
