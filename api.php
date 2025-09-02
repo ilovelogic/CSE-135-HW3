@@ -33,6 +33,8 @@ $servername = $_ENV['DB_HOST'];
 $username = $_ENV['DB_USER'];
 $password = $_ENV['DB_PASS'];
 $dbname = $_ENV['DB_NAME'];
+$port = 25060;
+$cert = "ca-certificate.crt";
 
 
 
@@ -40,7 +42,8 @@ $dbname = $_ENV['DB_NAME'];
 header("Content-Type: application/json");
 
 // Connects to mySQL database
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
+// Note that ca-certificate.crt is not on the repo and is kept only on the server itself
 
 
 // Checks connection
