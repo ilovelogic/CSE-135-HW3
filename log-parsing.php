@@ -52,7 +52,9 @@ while (($line = fgets($handle)) !== false) {
     $line = trim($line); // Splits line by tab character
     $parts = explode("\t", $line);
     if (count($parts) !== 13) {
-        echo "Unexpected number of parts of log file provided, given delimiter /t, when parsing $line.";
+        // Given the volume of logs that do not fit this form (I recently changed what logs record),
+        // I removed this error message as it takes time to print, and it printed a lot
+        //echo "Unexpected number of parts of log file provided, given delimiter /t, when parsing $line.";
         continue; // Skips to processing next line without entering this line into the DB
     }
 
