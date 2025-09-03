@@ -122,12 +122,12 @@
                         const [x, y] = rawData;
                         const [countObj1, countObj2] = countObj;
                         const [valCheck1, valCheck2] = valueChecks;
-                        switch (x) {
-                            case valCheck1:
+                        switch (String(x)) {
+                            case String(valCheck1):
                                 countObj1[y] = (countObj1[y] || 0) + 1;
                                 countObj2[y] = countObj2[y] || 0;
                                 break;
-                            case valCheck2:
+                            case String(valCheck2):
                                 countObj1[y] = countObj1[y] || 0;
                                 countObj2[y] = (countObj2[y] || 0) + 1;
                                 break;
@@ -143,23 +143,19 @@
                         // rawData, countObj, and valueChecks are expected to be an array of two elements
                         const [x, y] = rawData;
                         const [countObj1, countObj2, countObj3] = countObj;
-                        const [valCheck1, valCheck2, valCheck3] = valueChecks;
-                        switch (x) {
-                            case valCheck1:
-                                countObj1[y] = (countObj1[y] || 0) + 1;
-                                countObj2[y] = countObj2[y] || 0;
-                                countObj3[y] = countObj3[y] || 0;
-                                break;
-                            case valCheck2:
-                                countObj1[y] = countObj1[y] || 0;
-                                countObj2[y] = (countObj2[y] || 0) + 1;
-                                countObj3[y] = countObj3[y] || 0;
-                                break;
-                            default:
-                                countObj1[y] = countObj1[y] || 0;
-                                countObj2[y] = countObj2[y] || 0;
-                                countObj3[y] = (countObj3[y] || 0) + 1;
-                                return;
+                        const [valCheck1, valCheck2] = valueChecks;
+                        if (String(x) === String(valCheck1)) {
+                            countObj1[y] = (countObj1[y] || 0) + 1;
+                            countObj2[y] = countObj2[y] || 0;
+                            countObj3[y] = countObj3[y] || 0;
+                        } else if (String(x) === String(valCheck2)) {
+                            countObj1[y] = countObj1[y] || 0;
+                            countObj2[y] = (countObj2[y] || 0) + 1;
+                            countObj3[y] = countObj3[y] || 0;
+                        } else {
+                            countObj1[y] = countObj1[y] || 0;
+                            countObj2[y] = countObj2[y] || 0;
+                            countObj3[y] = (countObj3[y] || 0) + 1;
                         }
                     } catch (err) {
                         console.error("Error parsing 3-series bar chart data:", err);
