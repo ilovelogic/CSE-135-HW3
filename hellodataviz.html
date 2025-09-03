@@ -77,7 +77,7 @@
                 );
 
                 // -- 2-Series Bar Chart --
-                const screenDimensions2 = generateBar2Config([bar500Values2, bar1280Values2],
+                const windowDimensions2 = generateBar2Config([bar500Values2, bar1280Values2],
                     "Window Dimensions", barLabels2, "Count", ["Window Width: 500", "Window Width: 1280"],
                     ["#3366FF", "#00BFFF"], { alpha: [1, 0.7] }
                 );
@@ -91,7 +91,7 @@
 
                 // Render
                 zingchart.render({ id: 'bar3', data: JSON.stringify(screenDimensions3), height: 400, width: '100%' });
-                zingchart.render({ id: 'bar2', data: JSON.stringify(screenDimensions2), height: 400, width: '100%' });
+                zingchart.render({ id: 'bar2', data: JSON.stringify(windowDimensions2), height: 400, width: '100%' });
                 zingchart.render({ id: 'pie', data: JSON.stringify(pieChart), height: 400, width: '100%' });
 
             } catch (err) {

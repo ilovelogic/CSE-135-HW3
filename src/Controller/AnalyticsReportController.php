@@ -5,8 +5,8 @@ use Model\AnalyticsModel;
 class AnalyticsController {
     private $model;
 
-    public function __construct($dbConn) {
-        $this->model = new AnalyticsModel($dbConn);
+    public function __construct() {
+        $this->model = new AnalyticsModel();
     }
 
     public function route($resource, $id, $method) {

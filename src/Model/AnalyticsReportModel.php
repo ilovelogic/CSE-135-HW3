@@ -1,57 +1,70 @@
 <?php
 namespace Model;
+
 use mysqli;
+use mysqli_sql_exception;
 
 class AnalyticsModel {
     private $conn;
-    
-    private $apacheLogColTypeMap = [
+
+    private $apacheLogColMap = [
         "entryNum"            => "i", // INT NOT NULL AUTO_INCREMENT
         "vhost"               => "s", // VARCHAR(255) NULL
         "port"                => "i", // SMALLINT UNSIGNED NULL
         "clientIP"            => "s", // VARCHAR(45) NOT NULL
         "authUser"            => "s", // VARCHAR(255) NULL
-        "datetimeReqReceived" => "s", // DATETIME NOT NULL
-        "requestLine"         => "s", // VARCHAR(2048) NULL
-        "httpStatus"          => "i", // SMALLINT UNSIGNED NULL
-        "bytesSent"           => "i", // INT UNSIGNED NULL
-        "referer"             => "s", // VARCHAR(2083) NULL
-        "userAgent"           => "s", // VARCHAR(512) NULL
-        "timeToServeMS"       => "i", // INT UNSIGNED NULL
-        "filename"            => "s", // VARCHAR(1024) NULL
-        "connStatus"          => "s", // CHAR(1) NULL
-        "cookie"              => "s", // VARCHAR(4096) NULL
+        "datetimeReqReceived" => "s", // DATETIME
+        "requestLine"         => "s", // VARCHAR(2048)
+        "httpStatus"          => "i", // SMALLINT UNSIGNED
+        "bytesSent"           => "i", // INT UNSIGNED
+        "referer"             => "s", // VARCHAR(2083)
+        "userAgent"           => "s", // VARCHAR(512)
+        "timeToServeMS"       => "i", // INT UNSIGNED
+        "filename"            => "s", // VARCHAR(1024)
+        "connStatus"          => "s", // CHAR(1)
+        "cookie"              => "s", // VARCHAR(4096)
     ];
 
-    private $activityColTypeMap = [
-        "id"            => "s", // VARCHAR(255) NOT NULL
-        "eventType"     => "s", // VARCHAR(20) NULL
-        "eventTimestamp"=> "s", // TIMESTAMP NULL (treated as string)
-        "message"       => "s", // TEXT NULL
-        "filename"      => "s", // VARCHAR(255) NULL
-        "lineno"        => "i", // INT NULL
-        "colno"         => "i", // INT NULL
-        "error"         => "s", // TEXT NULL
-        "clientX"       => "i", // INT NULL
-        "clientY"       => "i", // INT NULL
-        "button"        => "i", // TINYINT NULL
-        "scrollX"       => "i", // INT NULL
-        "scrollY"       => "i", // INT NULL
-        "keyVal"        => "s", // VARCHAR(50) NULL
-        "keyCode"       => "s", // VARCHAR(50) NULL
-        "eventTimeMs"   => "s", // BIGINT NULL (could be "s" or "d", look into this more)
-        "userState"     => "s", // VARCHAR(10) NULL
-        "screenState"   => "s", // VARCHAR(10) NULL
-        "idleDuration"  => "s", // BIGINT NULL (same as eventTimeMs)
-        "url"           => "s", // TEXT NULL
-        "title"         => "s", // TEXT NULL
-        "eventCount"    => "i", // INT UNSIGNED NOT NULL (primary key)
+    private $activityColMap = [
+        "id"            => "s", // VARCHAR(255)
+        "eventType"     => "s", // VARCHAR(20)
+        "eventTimestamp"=> "s", // TIMESTAMP
+        "message"       => "s", // TEXT
+        "filename"      => "s", // VARCHAR(255)
+        "lineno"        => "i", // INT
+        "colno"         => "i", // INT
+        "error"         => "s", // TEXT
+        "clientX"       => "i", // INT
+        "clientY"       => "i", // INT
+        "button"        => "i", // TINYINT
+        "scrollX"       => "i", // INT
+        "scrollY"       => "i", // INT
+        "keyVal"        => "s", // VARCHAR(50)
+        "keyCode"       => "s", // VARCHAR(50)
+        "eventTimeMs"   => "s", // BIGINT (use 's' or 'd')
+        "userState"     => "s", // VARCHAR(10)
+        "screenState"   => "s", // VARCHAR(10)
+        "idleDuration"  => "s", // BIGINT
+        "url"           => "s", // TEXT
+        "title"         => "s", // TEXT
+        "eventCount"    => "i", // INT UNSIGNED PRIMARY KEY
     ];
 
+    public function __construct() {
+        // Define your DB credentials here or load from config
+        $host = "localhost";
+        $user = "your_db_user";
+        $password = "your_db_password";
+        $dbname = "your_db_name";
 
-
-    public function __construct($conn) {
-        $this->conn = $conn;
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        try {
+            $this->conn = new mysqli($host, $user, $password, $dbname);
+            $this->conn->set_charset("utf8mb4");
+        } catch (mysqli_sql_exception $e) {
+            // Handle connection error
+            die("Database connection failed: " . $e->getMessage());
+        }
     }
 
     // Generic fetch helpers
