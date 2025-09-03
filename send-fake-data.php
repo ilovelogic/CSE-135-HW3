@@ -1,5 +1,5 @@
 <?php
-require_once 'vendor/autoload.php'; // Make sure Faker is installed via Composer
+require_once 'vendor/autoload.php';
 
 $faker = Faker\Factory::create();
 
@@ -7,7 +7,6 @@ use Dotenv\Dotenv;
 
 // Creates a Dotenv instance, pointing to project root directory
 $dotenv = Dotenv::createImmutable(__DIR__);
-
 
 // Loads vars from the .env file into environment (needed when connecting to api.php via server)
 $dotenv->load();
@@ -20,16 +19,23 @@ $userAgents = [
     ['Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148', 0.05],
 ];
 
-
+// Selects a random item from a list, weighted by the specified probabilities
 function weightedRandomChoice($items) {
-    $r = mt_rand() / mt_getrandmax();
+    $r = mt_rand() / mt_getrandmax(); // Generates a random float between 0 and 1
     $cumulative = 0.0;
+
+    // The idea here is to use a cumulative total to map every weight to a range of returning
+    // For example, if you had weight 0.2, 0.5, 0.3
+    // Then the item associated with 0.2 would be returned for $r in [0,0.2],
+    // the item associated with 0.5 would be returned for $r in [0.2,0.2+0.5],
+    // and the item associated with 0.3 would be returned for $r in [0.2+0.5, 0.2+0.5+0.3]
     foreach ($items as [$item, $weight]) {
         $cumulative += $weight;
         if ($r <= $cumulative) {
             return $item;
         }
     }
+    // If not returned in the loop (due to rounding errors), return the last item's value
     return end($items)[0];
 }
 
