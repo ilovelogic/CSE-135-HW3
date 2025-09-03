@@ -60,13 +60,15 @@
                 const pieValues = Object.values(pieCounts);
 
                 const barLabels2 = Object.keys(bar1280Counts2); // either 1280 or 500 would work here
-                const bar1280Values2 = Object.values(bar1280Counts2);
-                const bar500Values2 = Object.values(bar500Counts2);
+                // Ensure values are arrays and match the order of barLabels2
+                const bar1280Values2 = barLabels2.map(h => bar1280Counts2[h] || 0);
+                const bar500Values2 = barLabels2.map(h => bar500Counts2[h] || 0);
 
                 const barLabels3 = Object.keys(barOtherCounts3); // any of the three would work here
-                const bar1280Values3 = Object.values(bar1280Counts3);
-                const bar1920Values3 = Object.values(bar1920Counts3);
-                const barOtherValues3 = Object.values(barOtherCounts3);
+                // Ensure values are arrays and match the order of barLabels3
+                const bar1280Values3 = barLabels3.map(h => bar1280Counts3[h] || 0);
+                const bar1920Values3 = barLabels3.map(h => bar1920Counts3[h] || 0);
+                const barOtherValues3 = barLabels3.map(h => barOtherCounts3[h] || 0);
 
                 // --- 3-Series Bar Chart ---
                 const screenDimensions3 = generateBar3Config([bar1280Values3, bar1920Values3, barOtherValues3],
