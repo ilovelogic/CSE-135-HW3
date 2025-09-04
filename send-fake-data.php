@@ -75,8 +75,8 @@ function weightedRandomItem($items) {
 function generateFakeStatic($faker, $userAgents, $id) {
     $userAgent = weightedRandomItem($userAgents);
     $isMobile = strpos($userAgent, 'iPhone') !== false;
-    $screenWidth = $isMobile ? $faker->randomElement([320, 375, 414]) : $faker->numberBetween(1024, 1920);
-    $screenHeight = $isMobile ? $faker->randomElement([568, 667, 736]) : $faker->numberBetween(768, 1080);
+    $screenWidth = $isMobile ? $faker->randomElement([320, 375, 414]) : $faker->randomElement([1280, 1920, 1440]);
+    $screenHeight = $isMobile ? $faker->randomElement([568, 667, 736]) : $faker->randomElement([1024, 800, 720, 1080]);
 
     $langs = [["en-US", 0.8], ["es",0.15], ["fr", 0.05]];
     $lang = weightedRandomItem($langs);
