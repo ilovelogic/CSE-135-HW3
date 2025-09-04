@@ -7,7 +7,7 @@ use mysqli_sql_exception;
 class AnalyticsModel {
     private $conn;
 
-    private $apacheLogColMap = [
+    private $apacheLogsColMap = [
         "entryNum"            => "i", // INT NOT NULL AUTO_INCREMENT
         "vhost"               => "s", // VARCHAR(255) NULL
         "port"                => "i", // SMALLINT UNSIGNED NULL
