@@ -124,6 +124,12 @@ class AnalyticsModel {
 
     public function insert($table, $data) {
 
+        // For the activity data submission, all the cols and values are in $data['activityLog']
+        if ($table === "activity") { 
+            $inner_data = $data['activityLog']; 
+            $data = $inner_data;
+        }
+
         // Prepares a comma seperated list of the cols to be submitted for the new table entry
         $cols = implode(", ", array_keys($data)); 
         // implode makes a str of the entries of the array, seperated by the given delimiter (", ")
