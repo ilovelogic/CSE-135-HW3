@@ -16,6 +16,8 @@ DELETE      | /api.php/{resource}/{id}              | Delete a specific entry fr
 
 // Ensures we can use this API in reporting.annekelley.site
 header("Access-Control-Allow-Origin: https://reporting.annekelley.site");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type");
 
 // Loading Composer autoloader and using Dotenv\Dotenv in order to get login info from .env file
 require __DIR__ . '/vendor/autoload.php';
