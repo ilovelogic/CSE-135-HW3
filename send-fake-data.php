@@ -279,11 +279,11 @@ for ($i = 0; $i < 100; $i++) {
 
     // Static entry
     $staticEntry = generateFakeStatic($faker, $userAgents, $id);
-    //$model->insert('static', $staticEntry);
+    $model->insert('static', $staticEntry);
 
     // Performance entry
     $perfEntry = generateFakePerformance($faker, $id, $staticEntry['userAgent']);
-    //$model->insert('performance', $perfEntry);
+    $model->insert('performance', $perfEntry);
 
     // Activity entry (array of events per session)
     $activityPack = [];
@@ -291,7 +291,7 @@ for ($i = 0; $i < 100; $i++) {
     for ($i = 0; $i < 5; $i++) {
         array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
     }
-    //$model->insert('activity', $activityPack);
+    $model->insert('activity', $activityPack);
 
     // Apache log entry
     $apacheLog = generateFakeApacheLog($faker, $id, $staticEntry['userAgent']);
