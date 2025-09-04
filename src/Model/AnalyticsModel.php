@@ -128,7 +128,7 @@ class AnalyticsModel {
         if ($table === "activity") { 
             $inner_data = $data['activityLog']; 
             foreach($inner_data as $activity) {
-                insert("activity", $inner_data);
+                insert("activity", $activity);
             }
             exit(); // process complete
         }
