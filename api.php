@@ -279,7 +279,7 @@ function setEntry($conn, $resource, $method, $inputArr, $id) {
         if (isset($inputArr['activityLog']) && is_array($inputArr['activityLog'])) {
             foreach ($inputArr['activityLog'] as $event) {
                 // inserts each event separately, passing current single event array
-                $id = $event['sessionID'] ?? null;
+                $id = $event['id'] ?? null;
                 if(is_null($id)) {
                     http_response_code(400); // Bad Request
                     echo json_encode(["error" => "ID must be sent with the event $event in payload"]);

@@ -132,7 +132,7 @@ function persistLog() {
 function logActivity(eventData) {
   eventCount += 1;
   activityLog.push({
-    sessionID,
+    id: sessionID,
     eventTimestamp: Date.now(),
     ...eventData,
     eventCount

@@ -65,6 +65,85 @@ function generateFakeStatic($faker, $userAgents, $id) {
     ];
 }
 
+/**
+ * Gets a random filename from your real project files under cgi-bin and similar directories, with weighting.
+ */
+function getRandomProjectFilename() {
+    $files = [
+        // C files
+        ['cgi-bin/c-destroy-session.c', 1],
+        ['cgi-bin/c-destroy-session.cgi', 1],
+        ['cgi-bin/c-env.c', 1],
+        ['cgi-bin/c-env.cgi', 1],
+        ['cgi-bin/c-general-request-echo.c', 1],
+        ['cgi-bin/c-general-request-echo.cgi', 1],
+        ['cgi-bin/c-get-echo.c', 1],
+        ['cgi-bin/c-get-echo.cgi', 1],
+        ['cgi-bin/c-hello-html-world.c', 1],
+        ['cgi-bin/c-hello-html-world.cgi', 1],
+        ['cgi-bin/c-hello-json-world.c', 1],
+        ['cgi-bin/c-hello-json-world.cgi', 1],
+        ['cgi-bin/c-post-echo.c', 1],
+        ['cgi-bin/c-post-echo.cgi', 1],
+        ['cgi-bin/c-sessions-1.c', 1],
+        ['cgi-bin/c-sessions-1.cgi', 1],
+        ['cgi-bin/c-sessions-2.c', 1],
+        ['cgi-bin/c-sessions-2.cgi', 1],
+
+        // Perl files
+        ['cgi-bin/perl-destroy-session.pl', 1],
+        ['cgi-bin/perl-env-pm.pl', 1],
+        ['cgi-bin/perl-env.pl', 1],
+        ['cgi-bin/perl-general-echo.pl', 1],
+        ['cgi-bin/perl-get-echo.pl', 1],
+        ['cgi-bin/perl-html-world.pl', 1],
+        ['cgi-bin/perl-json-world.pl', 1],
+        ['cgi-bin/perl-post-echo.pl', 1],
+        ['cgi-bin/perl-sessions-1.pl', 1],
+        ['cgi-bin/perl-sessions-2.pl', 1],
+
+        // PHP files (twice the weight)
+        ['cgi-bin/php-URL-sessions-1.php', 2],
+        ['cgi-bin/php-URL-sessions-2.php', 2],
+        ['cgi-bin/php-cookie-sessions-1.php', 2],
+        ['cgi-bin/php-cookie-sessions-2.php', 2],
+        ['cgi-bin/php-destroy-URL-session.php', 2],
+        ['cgi-bin/php-destroy-cookie-session.php', 2],
+        ['cgi-bin/php-environment.php', 2],
+        ['cgi-bin/php-general-request-echo.php', 2],
+        ['cgi-bin/php-get-echo.php', 2],
+        ['cgi-bin/php-hello-html-world.php', 2],
+        ['cgi-bin/php-hello-json-world.php', 2],
+        ['cgi-bin/php-post-echo.php', 2],
+
+        // Node files
+        ['node/node-destroy-session.js', 1],
+        ['node/node-environment.js', 1],
+        ['node/node-general-request-echo.js', 1],
+        ['node/node-get-echo-form.js', 1],
+        ['node/node-get-echo.js', 1],
+        ['node/node-hello-html-world.js', 1],
+        ['node/node-hello-json-world.js', 1],
+        ['node/node-post-echo-form.js', 1],
+        ['node/node-post-echo.js', 1],
+        ['node/node-sessions-1.js', 1],
+    ];
+
+    // Normalizes weights and selects
+    $totalWeight = array_sum(array_column($files, 1));
+    $rand = mt_rand() / mt_getrandmax(); // random float in [0,1]
+    $cumulative = 0.0;
+
+    foreach ($files as [$file, $weight]) {
+        $cumulative += $weight / $totalWeight; // normalized, which keeps it in [0,1]
+        if ($rand <= $cumulative) {
+            return $file;
+        }
+    }
+    return $files[array_key_last($files)][0]; // fallback if none in the loop were returned
+}
+
+
 // Generates an array of fake 'activity' records, each simulating a user event (click, scroll, etc.) 
 // within a session
 function generateFakeActivity($faker, $id, $userAgent) {
@@ -76,7 +155,7 @@ function generateFakeActivity($faker, $id, $userAgent) {
         'eventType' => $faker->randomElement(['click', 'scroll', 'keypress', 'mousemove', 'error']),
         'eventTimestamp' => $faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
         'message' => $faker->optional(0.3, '')->sentence(),
-        'filename' => $faker->optional()->fileName('js'),
+        'filename' => getRandomProjectFilename(),
         'lineno' => $faker->optional()->numberBetween(1, 500),
         'colno' => $faker->optional()->numberBetween(1, 80),
         'error' => $faker->optional(0.1, '')->catchPhrase(),
@@ -122,7 +201,7 @@ function generateFakePerformance($faker, $id, $userAgent) {
     $pageLoadEnd = date('Y-m-d H:i:s', strtotime($pageLoadStart) + $baseLoadTime / 1000);
 
     return [
-        'id' => $id, // Parameter passed in, allows for connection to the other tables
+        'id' => $id, // parameter passed in, allows for connection to the other tables
         'pageLoadTimingObject' => json_encode([
             'start' => $pageLoadStart,
             'end' => $pageLoadEnd,
@@ -165,13 +244,12 @@ function generateFakeApacheLog($faker, $id, $userAgent) {
  */
 function sendToApi($resource, $data) {
     $domain = "annekelley.site";   // Fallback to localhost
-    $port = 443;
-    $url = "http://$domain:$port/api.php/$resource";
+    $url = "https://$domain/api.php/$resource";
 
     $ch = curl_init($url);
 
     // Handles authentication (HTTP Basic Auth)
-    curl_setopt($ch, CURLOPT_USERPWD, $ENV['WEB_USER'] . ':' . $_ENV['WEB_PASS']);
+    curl_setopt($ch, CURLOPT_USERPWD, $_ENV['WEB_USER'] . ':' . $_ENV['WEB_PASS']);
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
     // Sets POST and payload
@@ -189,4 +267,25 @@ function sendToApi($resource, $data) {
     }
     curl_close($ch);
 }
+
+// ---- SENDING DATA BATCH of 100 ---- //
+for ($i = 0; $i < 100; $i++) {
+    $id = $faker->uuid;
+
+    // Static entry
+    $staticEntry = generateFakeStatic($faker, $userAgents, $id);
+    sendToApi('static', $staticEntry);
+
+    // Performance entry
+    $perfEntry = generateFakePerformance($faker, $id, $staticEntry['userAgent']);
+    sendToApi('performance', $perfEntry);
+
+    // Activity entry (array of events per session)
+    $activityPack = [ 'activityLog' => generateFakeActivity($faker, $id, $staticEntry['userAgent']) ];
+    sendToApi('activity', $activityPack);
+
+    // Monitor progress
+    echo "Sent session $i/100\n";
+}
+?>
 ?>
