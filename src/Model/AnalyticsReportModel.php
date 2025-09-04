@@ -117,10 +117,43 @@ class AnalyticsModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function getTypes($table, $data) {
+        $colNames = array_keys($data); // array_keys returns an array of the input's keys
+
+        // Determines which column to type array to use based on the requested table
+        switch ($table) {
+            case "static":
+                $colMap = $this->staticColMap[$col]; // shallow copy
+                break;
+            case "performance":
+                $colMap = $this->performanceColMap[$col];
+                break;
+            case "activity":
+                $colMap =  $this->activityColMap[$col];
+                break;
+            case "apacheLogs":
+                $colMap = $this->apacheLogsColMap[$col];
+                break;
+        }
+
+        // Uses the column to type map to create the appropriate string of types (e.g. "ssiiss")
+        $types = "";
+        foreach($colNames as $col) {
+            $type = $colMap[$col];
+            if (is_null) {
+                http_response_code(400);
+                echo json_encode(["error" => "$col is not a column of the table $table"]);
+                die();
+            }
+            $types .= $type;
+        }
+        return $types;
+    }
+
     public function insert($table, $data) {
+
         // Prepares a comma seperated list of the cols to be submitted for the new table entry
         $cols = implode(", ", array_keys($data)); 
-        // array_keys returns an array of the input's keys
         // implode makes a str of the entries of the array, seperated by the given delimiter (", ")
 
         // Builds a string of "?, ?, ..." to use in the param binding
@@ -129,18 +162,18 @@ class AnalyticsModel {
 
         $stmt = $this->conn->prepare("INSERT INTO `$table` ($cols) VALUES ($place)");
 
-        // str_repeat returns a string comprised of count($data) number of "s"s
-        $stmt->bind_param(str_repeat("s", count($data)), ...array_values($data));
+        $types = $this->getTypes($table, $data);
 
+        $stmt->bind_param($types, ...array_values($data));
         return $stmt->execute();
     }
+
     public function update($table, $id, $data) {
         $assign = implode(", ", array_map(fn($k) => "$k = ?", array_keys($data)));
         $sql = "UPDATE `$table` SET $assign WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
 
-        // Types: one 's' per data item (string), plus one for $id
-        $types = str_repeat("s", count($data)) . "s";
+        $types = $this->getTypes($table, $data);
 
         $params = array_merge(array_values($data), [$id]); // Combines arrays $data and [$id]
         // Used instead of array_push because array_push returns the number of elements in new array
