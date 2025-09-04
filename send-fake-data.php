@@ -290,6 +290,7 @@ for ($i = 0; $i < 100; $i++) {
     $activityPack['activityLog'] = [];
     for ($j = 0; $j < 5; $j++) {
         array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
+    }
     $model->insert('activity', $activityPack);
 
     // Apache log entry
