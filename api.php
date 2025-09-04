@@ -14,6 +14,8 @@ PUT         | /api.php/{resource}}/{id}             | Update a specific entry fr
 DELETE      | /api.php/{resource}/{id}              | Delete a specific entry from the specified resource table matching the id
 */
 
+// Ensures we can use this API in reporting.annekelley.site
+header("Access-Control-Allow-Origin: https://reporting.annekelley.site");
 
 // Loading Composer autoloader and using Dotenv\Dotenv in order to get login info from .env file
 require __DIR__ . '/vendor/autoload.php';
