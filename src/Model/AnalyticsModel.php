@@ -129,11 +129,9 @@ class AnalyticsModel {
             if (!is_array($data['activityLog'])) {
                 http_response_code(400);
                 echo json_encode(["error" => "Missing or invalid activityLog data"]);
-                print_r($data);
                 exit();
             }
             $inner_data = $data['activityLog'];
-            print_r($inner_data);
             foreach($inner_data as $activity) {
                 $this->insert("activity", $activity);
             }
