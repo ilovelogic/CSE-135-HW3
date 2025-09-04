@@ -4,18 +4,6 @@ namespace Model;
 use mysqli;
 use mysqli_sql_exception;
 
-// Loading Composer autoloader and using Dotenv\Dotenv in order to get login info from .env file
-require __DIR__ . '/vendor/autoload.php';
-use Dotenv\Dotenv;
-
-
-// Creates a Dotenv instance, pointing to project root directory
-$dotenv = Dotenv::createImmutable(__DIR__);
-
-
-// Loads the variables from the .env file into environment
-$dotenv->load();
-
 class AnalyticsModel {
     private $conn;
 
@@ -85,24 +73,8 @@ class AnalyticsModel {
         "eventCount"    => "i", // INT UNSIGNED PRIMARY KEY
     ];
 
-    public function __construct() {
-        // Define your DB credentials here or load from config
-        // Environment variables are accessible with getenv() or $_ENV
-        $servername = $_ENV['DB_HOST'];
-        $username = $_ENV['DB_USER'];
-        $password = $_ENV['DB_PASS'];
-        $dbname = $_ENV['DB_NAME'];
-        $port = 25060;
-        $cert = "ca-certificate.crt";
-
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-        try {
-            $this->conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
-            $this->conn->set_charset("utf8mb4");
-        } catch (mysqli_sql_exception $e) {
-            // Handle connection error
-            die("Database connection failed: " . $e->getMessage());
-        }
+    public function __construct($conn) {
+        $this->conn = $conn;
     }
 
     // Generic fetch helpers
@@ -179,11 +151,13 @@ class AnalyticsModel {
         // Used instead of array_push because array_push returns the number of elements in new array
         // whereas array_merge returns the new array, which is what we want $params to be here
 
+        // Since we need them to be by reference and not value
         $bindNames = [];
         $bindNames[] = &$types;
         foreach ($params as $k => $v) {
             $bindNames[] = &$params[$k];
         }
+        
         // Allows for a dynamic number of elements, whereas bind_param works only for a fixed amount
         call_user_func_array([$stmt, "bind_param"], $bindNames); // [$stmt, "bind_param"] is a callable array,
         // so we call bind_param on $stmt, with argument $bindNames

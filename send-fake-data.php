@@ -1,15 +1,35 @@
 <?php
-require_once 'vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 $faker = Faker\Factory::create();
 
 use Dotenv\Dotenv;
+use mysqli;
 
 // Creates a Dotenv instance, pointing to project root directory
 $dotenv = Dotenv::createImmutable(__DIR__);
 
 // Loads vars from the .env file into environment (needed when connecting to api.php via server)
 $dotenv->load();
+
+$servername = $_ENV['DB_HOST'];
+$username = $_ENV['DB_USER'];
+$password = $_ENV['DB_PASS'];
+$dbname = $_ENV['DB_NAME'];
+$port = 25060;
+$cert = "ca-certificate.crt";
+
+header("Content-Type: application/json");
+
+// Connects to mySQL database
+$conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
+// Note that ca-certificate.crt is not on the repo and is kept only on the server itself
+
+
+// Checks connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Defines user agents with weights
 $userAgents = [
@@ -249,48 +269,18 @@ function generateFakeApacheLog($faker, $id, $userAgent) {
     ];
 }
 
-                                                                                                                                       /**
- * Sends data to the specified resource endpoint of our API using a POST request.
- * @param string $resource  The database table resource ("static", "performance", "activity", "apacheLogs").
- * @param array $data       The associative array of data to send as JSON payload.
- */
-function sendToApi($resource, $data) {
-    $domain = "annekelley.site";   // Fallback to localhost
-    $url = "https://$domain/api.php/$resource";
-
-    $ch = curl_init($url);
-
-    // Handles authentication (HTTP Basic Auth)
-    curl_setopt($ch, CURLOPT_USERPWD, $_ENV['WEB_USER'] . ':' . $_ENV['WEB_PASS']);
-    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-    // Sets POST and payload
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ]);
-
-    $response = curl_exec($ch);
-
-    if ($response === false) {
-        echo "Error sending to $resource: " . curl_error($ch) . "\n";
-    } else {
-        echo "Response from $resource: $response\n";
-    }
-    curl_close($ch);
-}
-
 // ---- SENDING DATA BATCH of 100 ---- //
+$model = new \Model\AnalyticsModel($conn);
 for ($i = 0; $i < 100; $i++) {
     $id = $faker->uuid;
 
     // Static entry
     $staticEntry = generateFakeStatic($faker, $userAgents, $id);
-    sendToApi('static', $staticEntry);
+    //$model->insert('static', $staticEntry);
 
     // Performance entry
     $perfEntry = generateFakePerformance($faker, $id, $staticEntry['userAgent']);
-    sendToApi('performance', $perfEntry);
+    //$model->insert('performance', $perfEntry);
 
     // Activity entry (array of events per session)
     $activityPack = [];
@@ -298,11 +288,11 @@ for ($i = 0; $i < 100; $i++) {
     for ($i = 0; $i < 5; $i++) {
         array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
     }
-    sendToApi('activity', $activityPack);
+    //$model->insert('activity', $activityPack);
 
     // Apache log entry
     $apacheLog = generateFakeApacheLog($faker, $id, $staticEntry['userAgent']);
-    sendToApi('apacheLogs', $apacheLog);
+    $model->insert('apacheLogs', $apacheLog);
 
     // Monitor progress
     echo "Sent session $i/100\n";
