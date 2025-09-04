@@ -282,6 +282,7 @@ function setEntry($conn, $resource, $method, $inputArr, $id) {
                 $id = $event['id'] ?? null;
                 if(is_null($id)) {
                     http_response_code(400); // Bad Request
+                    echo json_stringify($event);
                     echo json_encode(["error" => "ID must be sent with the event $event in payload"]);
                     exit();
                 }

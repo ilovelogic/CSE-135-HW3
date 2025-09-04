@@ -68,76 +68,75 @@ function generateFakeStatic($faker, $userAgents, $id) {
 /**
  * Gets a random filename from your real project files under cgi-bin and similar directories, with weighting.
  */
-function getRandomProjectFilename() {
-    $files = [
-        // C files
-        ['cgi-bin/c-destroy-session.c', 1],
-        ['cgi-bin/c-destroy-session.cgi', 1],
-        ['cgi-bin/c-env.c', 1],
-        ['cgi-bin/c-env.cgi', 1],
-        ['cgi-bin/c-general-request-echo.c', 1],
-        ['cgi-bin/c-general-request-echo.cgi', 1],
-        ['cgi-bin/c-get-echo.c', 1],
-        ['cgi-bin/c-get-echo.cgi', 1],
-        ['cgi-bin/c-hello-html-world.c', 1],
-        ['cgi-bin/c-hello-html-world.cgi', 1],
-        ['cgi-bin/c-hello-json-world.c', 1],
-        ['cgi-bin/c-hello-json-world.cgi', 1],
-        ['cgi-bin/c-post-echo.c', 1],
-        ['cgi-bin/c-post-echo.cgi', 1],
-        ['cgi-bin/c-sessions-1.c', 1],
-        ['cgi-bin/c-sessions-1.cgi', 1],
-        ['cgi-bin/c-sessions-2.c', 1],
-        ['cgi-bin/c-sessions-2.cgi', 1],
+function getRandomFilenameTitle() {
+    // In order to avoid manually determing the title for each file,
+    // I set the liklihood factor to 0 for most of the filenames.
+    // Later, if I want them to show up in the entries, I can add the title and change the factor
+    $files = [    
+    // PHP endpoints (no weight, can change later if visits at these places needed)
+    ['cgi-bin/php-URL-sessions-1.php', '', 0],
+    ['cgi-bin/php-URL-sessions-2.php', '', 0],
+    ['cgi-bin/php-cookie-sessions-1.php', '', 0],
+    ['cgi-bin/php-cookie-sessions-2.php', '', 0],
+    ['cgi-bin/php-destroy-URL-session.php', '', 0],
+    ['cgi-bin/php-destroy-cookie-session.php', '', 0],
+    ['cgi-bin/php-environment.php', '', 0],
+    ['cgi-bin/php-general-request-echo.php', '', 0],
+    ['cgi-bin/php-get-echo.php', '', 0],
+    ['cgi-bin/php-hello-html-world.php', '', 0],
+    ['cgi-bin/php-hello-json-world.php', '', 0],
+    ['cgi-bin/php-post-echo.php', '', 0],
 
-        // Perl files
-        ['cgi-bin/perl-destroy-session.pl', 1],
-        ['cgi-bin/perl-env-pm.pl', 1],
-        ['cgi-bin/perl-env.pl', 1],
-        ['cgi-bin/perl-general-echo.pl', 1],
-        ['cgi-bin/perl-get-echo.pl', 1],
-        ['cgi-bin/perl-html-world.pl', 1],
-        ['cgi-bin/perl-json-world.pl', 1],
-        ['cgi-bin/perl-post-echo.pl', 1],
-        ['cgi-bin/perl-sessions-1.pl', 1],
-        ['cgi-bin/perl-sessions-2.pl', 1],
+    // C CGI scripts no weight, can change later if visits at these places needed
+    ['cgi-bin/c-destroy-session.cgi', '', 0],
+    ['cgi-bin/c-env.cgi', '', 0],
+    ['cgi-bin/c-general-request-echo.cgi', '', 0],
+    ['cgi-bin/c-get-echo.cgi', '', 0],
+    ['cgi-bin/c-hello-html-world.cgi', '', 0],
+    ['cgi-bin/c-hello-json-world.cgi', '', 0],
+    ['cgi-bin/c-post-echo.cgi', '', 0],
+    ['cgi-bin/c-sessions-1.cgi', '', 0],
+    ['cgi-bin/c-sessions-2.cgi', '', 0],
 
-        // PHP files (twice the weight)
-        ['cgi-bin/php-URL-sessions-1.php', 2],
-        ['cgi-bin/php-URL-sessions-2.php', 2],
-        ['cgi-bin/php-cookie-sessions-1.php', 2],
-        ['cgi-bin/php-cookie-sessions-2.php', 2],
-        ['cgi-bin/php-destroy-URL-session.php', 2],
-        ['cgi-bin/php-destroy-cookie-session.php', 2],
-        ['cgi-bin/php-environment.php', 2],
-        ['cgi-bin/php-general-request-echo.php', 2],
-        ['cgi-bin/php-get-echo.php', 2],
-        ['cgi-bin/php-hello-html-world.php', 2],
-        ['cgi-bin/php-hello-json-world.php', 2],
-        ['cgi-bin/php-post-echo.php', 2],
+    // Perl CGI endpoints (varied weight, 1-3)
+    ['cgi-bin/perl-destroy-session.pl', 'Perl Session Destroyed', 2],
+    ['cgi-bin/perl-env-pm.pl', 'Environment Variables', 2],
+    ['cgi-bin/perl-env.pl', 'Environment Variables', 2],
+    ['cgi-bin/perl-general-echo.pl', 'General Request Echo', 3],
+    ['cgi-bin/perl-get-echo.pl', 'GET Request Echo', 2],
+    ['cgi-bin/perl-html-world.pl',' Hello, Perl!', 3],
+    ['cgi-bin/perl-json-world.pl', '', 1],
+    ['cgi-bin/perl-post-echo.pl', 'POST Request Echo', 2],
+    ['cgi-bin/perl-sessions-1.pl', 'Perl Sessions 1', 2],
+    ['cgi-bin/perl-sessions-2.pl', 'Perl Sessions 2', 3],
 
-        // Node files
-        ['node/node-destroy-session.js', 1],
-        ['node/node-environment.js', 1],
-        ['node/node-general-request-echo.js', 1],
-        ['node/node-get-echo-form.js', 1],
-        ['node/node-get-echo.js', 1],
-        ['node/node-hello-html-world.js', 1],
-        ['node/node-hello-json-world.js', 1],
-        ['node/node-post-echo-form.js', 1],
-        ['node/node-post-echo.js', 1],
-        ['node/node-sessions-1.js', 1],
-    ];
+    // Files at root directory
+    ['404.html', 'Oh no!', 6], // highest weight on error page
+    ['api.php', '', 0],
+    ['c-cgiform.html', '', 0],
+    ['database.html', '', 0],
+    ['dont_go_here.html', 'Naughty Bot!', 2],
+    ['hello.php', '', 0],
+    ['hellodataviz.html', '', 0],
+    ['index.html', 'CSE 135', 4], // same level as cgi-bin php files
+    ['node-cgiform.html', '', 0],
+    ['perl-cgiform.html', 'CGI Form', 3],
+    ['php-cgiform.html', '', 0],
+    ['robots.txt', '', 3],
+    ['server.js', '', 0],
+    ['styles.css', '', 0],
+    ['members/annekelley.html', 'Anne Kelley', 4], // second most popular, 
+];
 
     // Normalizes weights and selects
-    $totalWeight = array_sum(array_column($files, 1));
+    $totalWeight = array_sum(array_column($files, 2)); // index of weight is 2 in the array
     $rand = mt_rand() / mt_getrandmax(); // random float in [0,1]
     $cumulative = 0.0;
 
-    foreach ($files as [$file, $weight]) {
+    foreach ($files as [$file, $title, $weight]) {
         $cumulative += $weight / $totalWeight; // normalized, which keeps it in [0,1]
         if ($rand <= $cumulative) {
-            return $file;
+            return [$file, $title];
         }
     }
     return $files[array_key_last($files)][0]; // fallback if none in the loop were returned
@@ -148,14 +147,14 @@ function getRandomProjectFilename() {
 // within a session
 function generateFakeActivity($faker, $id, $userAgent) {
     $isMobile = strpos($userAgent, 'iPhone') !== false;
-    $ip = $faker->ipv4;
+    [$filename, $title] = getRandomFilenameTitle();
 
     return [
         'id' => $id,
         'eventType' => $faker->randomElement(['click', 'scroll', 'keypress', 'mousemove', 'error']),
         'eventTimestamp' => $faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
         'message' => $faker->optional(0.3, '')->sentence(),
-        'filename' => getRandomProjectFilename(),
+        'filename' => $filename,
         'lineno' => $faker->optional()->numberBetween(1, 500),
         'colno' => $faker->optional()->numberBetween(1, 80),
         'error' => $faker->optional(0.1, '')->catchPhrase(),
@@ -170,17 +169,9 @@ function generateFakeActivity($faker, $id, $userAgent) {
         'userState' => $faker->randomElement(['active', 'idle', 'away']),
         'screenState' => $faker->randomElement(['visible', 'hidden']),
         'idleDuration' => $faker->numberBetween(0, 10000),
-        'url' => $faker->url(),
-        'title' => $faker->sentence(6),
-        'eventCount' => $faker->unique()->numberBetween(1, 10000),
-        'clientIP' => $ip,
-        'authUser' => $faker->optional()->userName(),
-        'vhost' => $faker->domainName(),
-        'port' => $faker->optional()->numberBetween(80, 8080),
-        'httpStatus' => $faker->optional(0.9, 200)->randomElement([200, 301, 404, 500]),
-        'bytesSent' => $faker->optional()->numberBetween(100, 1000000),
-        'connStatus' => $faker->optional()->randomElement(['S', 'C']),
-        'cookie' => $faker->optional()->regexify('[a-f0-9]{32}'),
+        'url' => "https://annekelley.site/" . $filename,
+        'title' => $title,
+        'eventCount' => $faker->unique()->numberBetween(1, 10000)
     ];
 }
 
@@ -281,7 +272,13 @@ for ($i = 0; $i < 100; $i++) {
     sendToApi('performance', $perfEntry);
 
     // Activity entry (array of events per session)
-    $activityPack = [ 'activityLog' => generateFakeActivity($faker, $id, $staticEntry['userAgent']) ];
+    $activityPack = [];
+    $activityPack['activityLog'] = [];
+    
+    for ($i = 0; $i < 3; $i++) {
+        array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
+    }
+
     sendToApi('activity', $activityPack);
 
     // Monitor progress
