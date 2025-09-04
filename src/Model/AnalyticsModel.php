@@ -135,7 +135,7 @@ class AnalyticsModel {
             foreach($inner_data as $activity) {
                 $this->insert("activity", $activity);
             }
-            exit(); // process complete
+            return;
         }
 
         // Prepares a comma seperated list of the cols to be submitted for the new table entry
