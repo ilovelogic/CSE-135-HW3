@@ -126,6 +126,12 @@ class AnalyticsModel {
 
         // For the activity data submission, $data's entries are arrays with the cols and values
         if ($table === "activity") { 
+            if (!isset($data['activityLog']) || !is_array($data['activityLog'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Missing or invalid activityLog data"]);
+                print_r($data);
+                exit();
+            }
             $inner_data = $data['activityLog'];
             print_r($inner_data);
             foreach($inner_data as $activity) {
