@@ -49,7 +49,7 @@ $userAgents = [
 
 
 // Selects a random item from a list, weighted by the specified probabilities
-function weightedRandomUserAg($items) {
+function weightedRandomItem($items) {
     $r = mt_rand() / mt_getrandmax(); // Generates a random float between 0 and 1
     $cumulative = 0.0;
 
@@ -73,15 +73,18 @@ function weightedRandomUserAg($items) {
 
 // Generates a fake 'static' record simulating a user's device and browser environment
 function generateFakeStatic($faker, $userAgents, $id) {
-    $userAgent = weightedRandomUserAg($userAgents);
+    $userAgent = weightedRandomItem($userAgents);
     $isMobile = strpos($userAgent, 'iPhone') !== false;
     $screenWidth = $isMobile ? $faker->randomElement([320, 375, 414]) : $faker->numberBetween(1024, 1920);
     $screenHeight = $isMobile ? $faker->randomElement([568, 667, 736]) : $faker->numberBetween(768, 1080);
 
+    $langs = [["en-US", 0.8], ["es",0.15], ["fr", 0.05]];
+    $lang = weightedRandomItem($langs);
+
     return [
         'id' => $id,
         'userAgent' => $userAgent,
-        'userLang' => $faker->languageCode,
+        'userLang' => $lang,
         'acceptsCookies' => $faker->boolean(90),
         'allowsJavaScript' => $faker->boolean(95),
         'allowsImages' => $faker->boolean(98),
