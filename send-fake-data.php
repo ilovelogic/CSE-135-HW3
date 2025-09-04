@@ -240,7 +240,7 @@ function generateFakePerformance($faker, $id, $userAgent) {
         ]),
         'pageLoadStart' => $pageLoadStart,
         'pageLoadEnd' => $pageLoadEnd,
-        'pageLoadTotal' => $baseLoadTime,
+        'pageLoadTimeTotal' => $baseLoadTime,
     ];
 }
 
