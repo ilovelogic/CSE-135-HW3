@@ -287,8 +287,9 @@ for ($i = 0; $i < 100; $i++) {
 
     // Activity entry (array of events per session)
     $activityPack = [];
+    $activityPack['activityLog'] = [];
     for ($j = 0; $j < 5; $j++) {
-        array_push($activityPack, generateFakeActivity($faker, $id, $staticEntry['userAgent']));
+        array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
     }
     $model->insert('activity', $activityPack);
 
