@@ -138,10 +138,9 @@ class AnalyticsModel {
         $place = implode(", ", array_fill(0, count($data), "?")); 
         // array_fill builds a new array, where the entries are all "?" and the size is count($data)
 
+        $types = $this->getTypes($table, $data); // types string for param binding (e.g. "ssidsss")
+
         $stmt = $this->conn->prepare("INSERT INTO `$table` ($cols) VALUES ($place)");
-
-        $types = $this->getTypes($table, $data);
-
         $stmt->bind_param($types, ...array_values($data));
         return $stmt->execute();
     }
