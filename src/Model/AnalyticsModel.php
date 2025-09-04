@@ -95,16 +95,16 @@ class AnalyticsModel {
         // Determines which column to type array to use based on the requested table
         switch ($table) {
             case "static":
-                $colMap = $this->staticColMap[$col]; // shallow copy
+                $colMap = $this->staticColMap; // shallow copy
                 break;
             case "performance":
-                $colMap = $this->performanceColMap[$col];
+                $colMap = $this->performanceColMap;
                 break;
             case "activity":
-                $colMap =  $this->activityColMap[$col];
+                $colMap =  $this->activityColMap;
                 break;
             case "apacheLogs":
-                $colMap = $this->apacheLogsColMap[$col];
+                $colMap = $this->apacheLogsColMap;
                 break;
         }
 
@@ -112,7 +112,7 @@ class AnalyticsModel {
         $types = "";
         foreach($colNames as $col) {
             $type = $colMap[$col];
-            if (is_null) {
+            if (is_null($type)) {
                 http_response_code(400);
                 echo json_encode(["error" => "$col is not a column of the table $table"]);
                 die();

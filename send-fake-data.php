@@ -4,7 +4,6 @@ require __DIR__ . '/vendor/autoload.php';
 $faker = Faker\Factory::create();
 
 use Dotenv\Dotenv;
-use mysqli;
 
 // Creates a Dotenv instance, pointing to project root directory
 $dotenv = Dotenv::createImmutable(__DIR__);
