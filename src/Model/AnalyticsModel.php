@@ -7,7 +7,7 @@ use mysqli_sql_exception;
 class AnalyticsModel {
     private $conn;
 
-    private $apacheLogsColMap = [
+    private $logsColMap = [
         "entryNum"            => "i", // INT NOT NULL AUTO_INCREMENT
         "vhost"               => "s", // VARCHAR(255) NULL
         "port"                => "i", // SMALLINT UNSIGNED NULL
@@ -104,14 +104,14 @@ class AnalyticsModel {
                 $colMap =  $this->activityColMap;
                 break;
             case "apacheLogs":
-                $colMap = $this->apacheLogsColMap;
+                $colMap = $this->logsColMap;
                 break;
         }
 
         // Uses the column to type map to create the appropriate string of types (e.g. "ssiiss")
         $types = "";
         foreach($colNames as $col) {
-            $type = $colMap[$col];
+            $type = $colMap[$col] ?? null;
             if (is_null($type)) {
                 http_response_code(400);
                 echo json_encode(["error" => "$col is not a column of the table $table"]);
