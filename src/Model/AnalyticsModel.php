@@ -124,10 +124,9 @@ class AnalyticsModel {
 
     public function insert($table, $data) {
 
-        // For the activity data submission, the arrays with cols and values are in $data['activityLog']
+        // For the activity data submission, $data's entries are arrays with the cols and values
         if ($table === "activity") { 
-            $inner_data = $data['activityLog']; 
-            foreach($inner_data as $activity) {
+            foreach($data as $activity) {
                 $this->insert("activity", $activity);
             }
             exit(); // process complete
