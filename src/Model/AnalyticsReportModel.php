@@ -4,6 +4,18 @@ namespace Model;
 use mysqli;
 use mysqli_sql_exception;
 
+// Loading Composer autoloader and using Dotenv\Dotenv in order to get login info from .env file
+require __DIR__ . '/vendor/autoload.php';
+use Dotenv\Dotenv;
+
+
+// Creates a Dotenv instance, pointing to project root directory
+$dotenv = Dotenv::createImmutable(__DIR__);
+
+
+// Loads the variables from the .env file into environment
+$dotenv->load();
+
 class AnalyticsModel {
     private $conn;
 
@@ -23,6 +35,29 @@ class AnalyticsModel {
         "filename"            => "s", // VARCHAR(1024)
         "connStatus"          => "s", // CHAR(1)
         "cookie"              => "s", // VARCHAR(4096)
+    ];
+
+    private $staticColMap = [
+        "id"                => "s",  // VARCHAR(255)
+        "userAgent"         => "s",  // VARCHAR(255)
+        "userLang"          => "s",  // VARCHAR(10)
+        "acceptsCookies"    => "i",  // TINYINT(1)
+        "allowsJavaScript"  => "i",  // TINYINT(1)
+        "allowsImages"      => "i",  // TINYINT(1)
+        "allowsCSS"         => "i",  // TINYINT(1)
+        "userScreenWidth"   => "i",  // INT UNSIGNED
+        "userScreenHeight"  => "i",  // INT UNSIGNED
+        "userWindowWidth"   => "i",  // INT UNSIGNED
+        "userWindowHeight"  => "i",  // INT UNSIGNED
+        "userNetConnType"   => "s",  // VARCHAR(20)
+    ];
+
+    private $performanceColMap = [
+        "pageLoadTimingObject" => "s",  // JSON stored as string in PHP
+        "pageLoadStart"        => "d",  // DOUBLE
+        "pageLoadEnd"          => "d",  // DOUBLE
+        "pageLoadTimeTotal"    => "d",  // DOUBLE
+        "id"                   => "s",  // VARCHAR(255)
     ];
 
     private $activityColMap = [
@@ -52,14 +87,17 @@ class AnalyticsModel {
 
     public function __construct() {
         // Define your DB credentials here or load from config
-        $host = "localhost";
-        $user = "your_db_user";
-        $password = "your_db_password";
-        $dbname = "your_db_name";
+        // Environment variables are accessible with getenv() or $_ENV
+        $servername = $_ENV['DB_HOST'];
+        $username = $_ENV['DB_USER'];
+        $password = $_ENV['DB_PASS'];
+        $dbname = $_ENV['DB_NAME'];
+        $port = 25060;
+        $cert = "ca-certificate.crt";
 
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         try {
-            $this->conn = new mysqli($host, $user, $password, $dbname);
+            $this->conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
             $this->conn->set_charset("utf8mb4");
         } catch (mysqli_sql_exception $e) {
             // Handle connection error
@@ -85,7 +123,7 @@ class AnalyticsModel {
         // array_keys returns an array of the input's keys
         // implode makes a str of the entries of the array, seperated by the given delimiter (", ")
 
-        // Builds a string of "?, ?, ...", with one "?" for each value, to use in the param binding
+        // Builds a string of "?, ?, ..." to use in the param binding
         $place = implode(", ", array_fill(0, count($data), "?")); 
         // array_fill builds a new array, where the entries are all "?" and the size is count($data)
 
@@ -93,7 +131,7 @@ class AnalyticsModel {
 
         // str_repeat returns a string comprised of count($data) number of "s"s
         $stmt->bind_param(str_repeat("s", count($data)), ...array_values($data));
-        // str_repeat returns a string comprised of count($data) number of "s"s
+
         return $stmt->execute();
     }
     public function update($table, $id, $data) {
