@@ -149,11 +149,19 @@ function generateFakeActivity($faker, $id, $userAgent) {
     $isMobile = strpos($userAgent, 'iPhone') !== false;
     [$filename, $title] = getRandomFilenameTitle();
 
+    $eventType = $faker->randomElement(['click', 'scroll', 'keypress', 'mousemove', 'error']);
+    if ($eventType === 'error') {
+        $message = "Uncaught TypeError: Assignment to constant variable.";
+    }
+    else {
+        $message = null;
+    }
+
     return [
         'id' => $id,
-        'eventType' => $faker->randomElement(['click', 'scroll', 'keypress', 'mousemove', 'error']),
+        'eventType' => $eventType,
         'eventTimestamp' => $faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
-        'message' => $faker->optional(0.3, '')->sentence(),
+        'message' => $message,
         'filename' => $filename,
         'lineno' => $faker->optional()->numberBetween(1, 500),
         'colno' => $faker->optional()->numberBetween(1, 80),
@@ -274,15 +282,17 @@ for ($i = 0; $i < 100; $i++) {
     // Activity entry (array of events per session)
     $activityPack = [];
     $activityPack['activityLog'] = [];
-    
     for ($i = 0; $i < 3; $i++) {
         array_push($activityPack['activityLog'], generateFakeActivity($faker, $id, $staticEntry['userAgent']));
     }
-
     sendToApi('activity', $activityPack);
+
+    // Apache log entry
+    $apacheLog = generateFakeApacheLog($faker, $id, $staticEntry['userAgent']);
+    sendToApi('apacheLogs', $apacheLog);
 
     // Monitor progress
     echo "Sent session $i/100\n";
 }
-?>
+
 ?>
