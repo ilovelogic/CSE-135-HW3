@@ -31,6 +31,7 @@
         <!-- <div id="bar3"></div>
         <div id="bar2"></div> -->
         <div id="userLangPie"></div>
+        <div id="spanishVisitsGrid" style="width: 100%; height: 500px;"></div>
         <div id="cookies"></div>
         <div id="javascript"></div>
         <div id="network"></div>
@@ -57,7 +58,7 @@
                 const pieLabels = langData.map(row => row.language);  // ["English", "Spanish", ...]
                 const pieValues = langData.map(row => parseInt(row.count, 10));  // 10 communicates nums are base 10
 
-                const userLangColors = ["#e74c3c", "#27ae60", "#f5cba7", "#7f8c8d", "#16a085"];
+                const userLangColors = ["#27ae60", "#e74c3c", "#f5cba7", "#7f8c8d", "#16a085"];
                 // -- Pie Chart --
                 const userLangPie = generatePieConfig(pieLabels, pieValues, 
                 "User Language Distribution", "Spanish users are a noteable percentage", 
@@ -170,6 +171,43 @@
 
             } catch (err) {
                 console.error("Error rendering charts:", err);
+            }
+        }
+
+        async function renderGrid() {
+            try {
+            // Fetch the page views by Spanish speakers (adjust URL as needed)
+            const resp = await fetch('/endpoint.php/reports/spanish-pages');
+            const data = await resp.json();  // Expected: [{FileName: "index.html", Visits: 803}, ...]
+
+            // Convert Visits fields to numbers to avoid issues
+            data.forEach(row => {
+                row.Visits = parseInt(row.Visits, 10);
+            });
+
+            // Configure ZingGrid
+            // We define the columns explicitly to format headers and data types
+            const columns = [
+                { index: 'FileName', header: 'File Name', sortable: true },
+                { index: 'Visits', header: 'Number of Visits', type: 'number', sortable: true }
+            ];
+
+            // Create a new ZingGrid with data and configuration
+            const grid = document.createElement('zing-grid');
+            grid.setAttribute('page-size', '20');
+            grid.setAttribute('page-size-options', '10,20,50');
+            grid.setAttribute('sort-on-load', 'true');
+            grid.setAttribute('sort-column', 'Visits');
+            grid.setAttribute('sort-direction', 'desc');
+            grid.data = data;
+            grid.columns = columns;
+
+            // Append the grid to the container
+            const container = document.getElementById('spanishVisitsGrid');
+            container.appendChild(grid);
+
+            } catch (error) {
+            console.error('Error rendering Spanish Visits Grid:', error);
             }
         }
 
@@ -421,6 +459,7 @@
         }
 
         renderCharts();
+        renderGrid();
 
     </script>
 </body>
