@@ -101,14 +101,14 @@
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
 
         let userAgentConfig = generateWordCloudConfig(await userAgentsToWordCloud());
-        let userLangConfig = generateBarConfig(await countKeyValue('reports/user-langs'));
-        let acceptsCookiesConfig = generateNavPieConfig(await countKeyValue('static/acceptsCookies'));
-        let allowsJavaScriptConfig = generateNavPieConfig(await countKeyValue('static/allowsJavaScript'));
-        let allowsImagesConfig = generateNavPieConfig(await countKeyValue('static/allowsImages'));
-        let allowsCSSConfig = generateNavPieConfig(await countKeyValue('static/allowsCSS'));
+        let userLangConfig = generateBarConfig(await countKeyValue('userLang'));
+        let acceptsCookiesConfig = generateNavPieConfig(await countKeyValue('acceptsCookies'));
+        let allowsJavaScriptConfig = generateNavPieConfig(await countKeyValue('allowsJavaScript'));
+        let allowsImagesConfig = generateNavPieConfig(await countKeyValue('allowsImages'));
+        let allowsCSSConfig = generateNavPieConfig(await countKeyValue('allowsCSS'));
         let userScreenDimensionsConfig = generateBarConfig();
         let userWindowDimensionsConfig = generateBarConfig();
-        let userNetConnTypeConfig = generateBarConfig(await countKeyValue('reports/session-by-width'));
+        let userNetConnTypeConfig = generateBarConfig(await countKeyValue('netConnType'));
         let pageLoadStartConfig = generateHorizontalBoxPlot();
         let pageLoadEndConfig = generateHorizontalBoxPlot();
         let pageLoadTimeTotalConfig = generateHorizontalBoxPlot();
