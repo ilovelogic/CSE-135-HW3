@@ -54,8 +54,8 @@
                 const langData = await resp.json();
                 // langData ex: [{userLang: "en", count: 10, language: "English"}, ...]
 
-                const pieLabels = langStats.map(row => row.language);  // ["English", "Spanish", ...]
-                const pieValues = langStats.map(row => row.count);     // [32, 21, 9, ...]
+                const pieLabels = langData.map(row => row.language);  // ["English", "Spanish", ...]
+                const pieValues = langData.map(row => row.count);     // [32, 21, 9, ...]
 
                 const userLangColors = ["#e74c3c", "#27ae60", "#f5cba7", "#7f8c8d", "#16a085"];
                 // -- Pie Chart --
