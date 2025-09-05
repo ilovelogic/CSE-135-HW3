@@ -78,7 +78,7 @@ function generateFakeStatic($faker, $userAgents, $id) {
     $screenWidth = $isMobile ? $faker->randomElement([320, 375, 414]) : $faker->randomElement([1280, 1920, 1440]);
     $screenHeight = $isMobile ? $faker->randomElement([568, 667, 736]) : $faker->randomElement([1024, 800, 720, 1080]);
 
-    $langs = [["en-US", 0.8], ["es",0.15], ["fr", 0.05]];
+    $langs = [["en-US", 0.8], ["es",0.15], ["de", 0.01], ["ja", 0.01], ["fr", 0.03]];
     $lang = weightedRandomItem($langs);
 
     return [
