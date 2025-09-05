@@ -38,6 +38,7 @@ class AnalyticsController {
 
     public function route($resource, $id, $method) {
         // Reports
+        echo $resource;
         if ($resource === "reports") {
             switch ($id) {
                 case 'user-langs':
