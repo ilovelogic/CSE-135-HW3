@@ -1,0 +1,34 @@
+<!doctype html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visuals</title>
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+</head>
+
+<body>
+<form action="https://amazon.com" method="post">
+  <form-field>
+    <label for="school">School:</label>
+    <input type="text" id="school" name="school" />
+  </form-field>
+
+  <form-field>
+    <label for="course">Course:</label>
+    <input type="text" id="course" name="course" value="CSE135" readonly />
+  </form-field>
+
+  <form-field>
+    <label for="level">Test Difficulty:</label>
+    <select id="level" name="level" disabled>
+      <option>Extreme</option>
+      <option selected>Average</option>
+      <option>Easy</option>
+    </select>
+  </form-field>
+
+  <input type="hidden" id="test" value="mini-final" />
+
+  <input type="submit" name="submitBtn" value="Echo" />
+</body>
