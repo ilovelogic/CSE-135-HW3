@@ -28,8 +28,8 @@
     <p style="font-size: xx-large; display: flex; justify-content: center;">Try clicking on things!</p>
 
     <div id="charts">
-        <div id="bar3"></div>
-        <div id="bar2"></div>
+        <!-- <div id="bar3"></div>
+        <div id="bar2"></div> -->
         <div id="userLangPie"></div>
         <div id="cookies"></div>
         <div id="javascript"></div>
@@ -46,32 +46,31 @@
             try {
                 // Dynamic fetch of data
                 const rawStaticData = await getData('static',
-                    ['userScreenWidth', 'userScreenHeight', 'userWindowWidth', 'userWindowHeight', 'userLang',
-                        'userNetConnType', 'acceptsCookies', 'allowsJavaScript']);
+                    ['userLang', 'userNetConnType', 'acceptsCookies', 'allowsJavaScript']);
 
                 console.log("Fetched static data:", rawStaticData);
 
                 // Aggregate counts
                 const pieCounts = {};
 
-                const bar1280Counts2 = {}; // window height counts where window width is 1280
-                const bar500Counts2 = {}; // window height counts where window width is 500
+                //const bar1280Counts2 = {}; // window height counts where window width is 1280
+                //const bar500Counts2 = {}; // window height counts where window width is 500
 
-                const bar1280Counts3 = {}; // screen height counts where screen width is 1280
-                const bar1920Counts3 = {}; // screen height counts where screen width is 500
-                const barOtherCounts3 = {}; // screen height counts where screen width is not 1280 or 500
+                //const bar1280Counts3 = {}; // screen height counts where screen width is 1280
+                //const bar1920Counts3 = {}; // screen height counts where screen width is 500
+                //const barOtherCounts3 = {}; // screen height counts where screen width is not 1280 or 500
 
                 rawStaticData.forEach(item => {
                     // Pie chart labels and values
-                    parseCounts('pie', item.userScreenWidth, pieCounts);
+                    parseCounts('pie', item.userLang, pieCounts);
 
                     // 2 series bar chart
                     // Comparing screen widths in terms of corresponding screen height counts
-                    parseCounts('bar2', [item.userWindowWidth, item.userWindowHeight], [bar1280Counts2, bar500Counts2], ['1280', '500']);
+                    //parseCounts('bar2', [item.userWindowWidth, item.userWindowHeight], [bar1280Counts2, bar500Counts2], ['1280', '500']);
 
                     // 3 series bar chart
                     // Comparing 3 groups of user screen width in terms of their screen height
-                    parseCounts('bar3', [item.userScreenWidth, item.userScreenHeight], [bar1280Counts3, bar1920Counts3, barOtherCounts3], ['1280', '1920', 'other']);
+                    //parseCounts('bar3', [item.userScreenWidth, item.userScreenHeight], [bar1280Counts3, bar1920Counts3, barOtherCounts3], ['1280', '1920', 'other']);
 
                     // NOTE: Currently with the way 3 series bar charts are hard coded, other values are grouped together, might have to change this
                     // functionaliy to be more flexible with a different kind of bar3 configuration/style, but with the current one it works.
@@ -82,18 +81,18 @@
                 const pieLabels = Object.keys(pieCounts);
                 const pieValues = Object.values(pieCounts);
 
-                const barLabels2 = Object.keys(bar1280Counts2); // either 1280 or 500 would work here
+                //const barLabels2 = Object.keys(bar1280Counts2); // either 1280 or 500 would work here
                 // Ensure values are arrays and match the order of barLabels2
-                const bar1280Values2 = barLabels2.map(h => bar1280Counts2[h] || 0);
-                const bar500Values2 = barLabels2.map(h => bar500Counts2[h] || 0);
+                //const bar1280Values2 = barLabels2.map(h => bar1280Counts2[h] || 0);
+                //const bar500Values2 = barLabels2.map(h => bar500Counts2[h] || 0);
 
-                const barLabels3 = Object.keys(barOtherCounts3); // any of the three would work here
+                //const barLabels3 = Object.keys(barOtherCounts3); // any of the three would work here
                 // Ensure values are arrays and match the order of barLabels3
-                const bar1280Values3 = barLabels3.map(h => bar1280Counts3[h] || 0);
-                const bar1920Values3 = barLabels3.map(h => bar1920Counts3[h] || 0);
-                const barOtherValues3 = barLabels3.map(h => barOtherCounts3[h] || 0);
+                //const bar1280Values3 = barLabels3.map(h => bar1280Counts3[h] || 0);
+                //const bar1920Values3 = barLabels3.map(h => bar1920Counts3[h] || 0);
+                //const barOtherValues3 = barLabels3.map(h => barOtherCounts3[h] || 0);
 
-                // --- 3-Series Bar Chart ---
+                /* --- 3-Series Bar Chart ---
                 const screenDimensions3 = generateBar3Config([bar1280Values3, bar1920Values3, barOtherValues3],
                     "Screen Dimensions", barLabels3, "Count", ["Screen Width: 1280", "Screen Width: 1920", "Screen Width: Other"],
                     ['pink', 'purple', 'blue'], { alpha: [0.7, 0.7, 0.7] }
@@ -103,7 +102,7 @@
                 const windowDimensions2 = generateBar2Config([bar500Values2, bar1280Values2],
                     "Window Dimensions", barLabels2, "Count", ["Window Width: 500", "Window Width: 1280"],
                     ["#3366FF", "#00BFFF"], { alpha: [1, 0.7] }
-                );
+                ); */
 
                 const userLangColors = ["#27ae60", "#e74c3c", "#f39c12", "#7f8c8d", "#16a085"];
                 // -- Pie Chart --
@@ -115,9 +114,9 @@
                     slice: 0.6
                 }, userLangColors.slice(0,pieValues.length));
 
-                // Render
+                /* Render
                 zingchart.render({ id: 'bar3', data: JSON.stringify(screenDimensions3), height: 1000, width: '100%' });
-                zingchart.render({ id: 'bar2', data: JSON.stringify(windowDimensions2), height: 1000, width: '100%' });
+                zingchart.render({ id: 'bar2', data: JSON.stringify(windowDimensions2), height: 1000, width: '100%' }); */
                 zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), height: 1000, width: '100%' });
 
                 // Aggregate counts
