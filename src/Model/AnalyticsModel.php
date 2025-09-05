@@ -274,9 +274,9 @@ class AnalyticsModel {
                 "GROUP BY a.filename " . // grouping rows by unique filenames
                 "ORDER BY Visits DESC"; // ordering as most to least visited for filenames
 
-        $result = $this->model->conn->query($stmt);
+        $result = $this->conn->query($stmt);
         if (!$result) {
-            return ["error" => "Query failed: " . $this->model->conn->error];
+            return ["error" => "Query failed: " . $this->conn->error];
         }
         return $result->fetch_all(MYSQLI_ASSOC);
     }
