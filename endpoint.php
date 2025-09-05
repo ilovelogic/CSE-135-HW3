@@ -1,18 +1,14 @@
 <?php
 require_once __DIR__ . '/src/Controller/AnalyticsController.php';
 
-// Gets and normalizes the request path (ex. "/reports/spanish-pages")
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-// Removes leading slash if present
-$path = ltrim($path, '/');
-
-// Splits by "/" into parts
+$scriptName = basename($_SERVER['SCRIPT_NAME']); // currently 'endpoint.php'
+$path = preg_replace("#^$scriptName#", '', ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+$path = ltrim($path, '/');  // remove any leading slash remaining
 $parts = explode('/', $path);
 
-// Assigns resource and id (if present)
-$resource = $parts[0] ?? null; // "reports", "static", etc.
-$id = $parts[1] ?? null;       // specific report or record id
+$resource = $parts[0] ?? null;
+$id = $parts[1] ?? null;
+
 
 $method = $_SERVER['REQUEST_METHOD'];
 
