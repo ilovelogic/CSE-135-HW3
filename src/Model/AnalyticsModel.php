@@ -202,4 +202,66 @@ class AnalyticsModel {
         $result = $this->conn->query($q);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+    /*
+    This function retrieves all user language codes found in the static table 
+    along with the counts how many times each language appears, 
+    and then it attaches the English name for each language to the result.
+    Example: Fetched ["userLang" => "en", "count" => 7] 
+    becomes ["userLang" => "en", "count" => 7, "language" => "English"].
+    */
+    public function getUserLangCounts() {
+        // Common lanugage codes and associated names in English
+        $userLangNames = [
+            "en"    => "English",
+            "en-US" => "English (United States)",
+            "es"    => "Spanish",
+            "fr"    => "French",
+            "de"    => "German",
+            "zh"    => "Chinese",
+            "ja"    => "Japanese",
+            "ko"    => "Korean",
+            "it"    => "Italian",
+            "ru"    => "Russian",
+            "ar"    => "Arabic",
+            "pt"    => "Portuguese",
+            "nl"    => "Dutch",
+            "tr"    => "Turkish",
+            "pl"    => "Polish",
+            "sv"    => "Swedish",
+            "no"    => "Norwegian",
+            "da"    => "Danish",
+            "fi"    => "Finnish",
+            "cs"    => "Czech",
+            "el"    => "Greek",
+            "he"    => "Hebrew",
+            "hi"    => "Hindi",
+            "th"    => "Thai",
+            "vi"    => "Vietnamese",
+            "id"    => "Indonesian",
+            "ms"    => "Malay",
+            "ro"    => "Romanian",
+            "hu"    => "Hungarian",
+            "uk"    => "Ukrainian"
+        ];
+
+        $stmt = "SELECT userLang, COUNT(*) AS count " .
+                "FROM static " .
+                "GROUP BY userLang " .
+                "ORDER BY count DESC";
+
+        $result = $this->conn->query($stmt);
+        $langResults = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Maps results to language name
+        $finalResults = [];
+        foreach ($langResults as $row) {
+            $langCode = $row['userLang'];
+            // Finds human name or keeps language code (i.e. 'fr') as fallback
+            $row['language'] = isset($userLangNames[$langCode]) ? $userLangNames[$langCode] : $langCode;
+            $finalResults[] = $row;
+        }
+
+        return $finalResults;
+    }
 }

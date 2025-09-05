@@ -1,11 +1,38 @@
 <?php
 namespace Controller;
 use Model\AnalyticsModel;
+require __DIR__ . '/../../vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+// Creates a Dotenv instance, pointing to project root directory
+$dotenv = Dotenv::createImmutable(__DIR__);
+
+// Loads vars from the .env file into environment (needed when connecting to api.php via server)
+$dotenv->load();
+
 
 class AnalyticsController {
     private $model;
 
-    public function __construct($conn) {
+    public function __construct() {
+        $servername = $_ENV['DB_HOST'];
+        $username = $_ENV['DB_USER'];
+        $password = $_ENV['DB_PASS'];
+        $dbname = $_ENV['DB_NAME'];
+        $port = 25060;
+        $cert = "ca-certificate.crt";
+
+        header("Content-Type: application/json");
+
+        // Connects to mySQL database
+        $conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
+        // Note that ca-certificate.crt is not on the repo and is kept only on the server itself
+
+        // Checks connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
         $this->model = new AnalyticsModel($conn);
     }
 
@@ -13,22 +40,27 @@ class AnalyticsController {
         // Reports
         if ($resource === "reports") {
             switch ($id) {
+                case 'user-langs':
+                    $data = $this->model->getUserLangCounts();
+                    break;
+                case 'spanish-pages':
+                    $data = $this->model->pageViewsBySpanishSpeakers();
+                    break;
                 case 'avg-file-serve':
                     $data = $this->model->avgTimeToServeByFile();
-                    $this->sendJson($data);
                     break;
                 case 'session-by-width':
                     $data = $this->model->sessionCountByWidth();
-                    $this->sendJson($data);
                     break;
                 case 'device-memory':
                     $data = $this->model->deviceMemoryDistribution();
-                    $this->sendJson($data);
                     break;
                 default:
                     http_response_code(404);
                     $this->sendJson(["error" => "Report not found"]);
+                    return;
             }
+            $this->sendJson($data);
             return;
         }
 

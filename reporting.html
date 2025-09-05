@@ -104,13 +104,13 @@
                     ["#3366FF", "#00BFFF"], { alpha: [1, 0.7] }
                 ); */
 
-                const userLangColors = ["#27ae60", "#e74c3c", "#f39c12", "#7f8c8d", "#16a085"];
+                const userLangColors = ["#e74c3c", "#27ae60", "#f5cba7", "#7f8c8d", "#16a085"];
                 // -- Pie Chart --
                 const userLangPie = generatePieConfig(pieLabels, pieValues, 
                 "User Language Distribution", "Spanish Users Take Up a Noticeable Chunk", 
                 {
                     threshold: "5%",
-                    others: { text: "Others", backgroundColor: "#f5cba7" },
+                    others: { text: "Others", backgroundColor: "#16a085" },
                     slice: 0.6
                 }, userLangColors.slice(0,pieValues.length));
 
