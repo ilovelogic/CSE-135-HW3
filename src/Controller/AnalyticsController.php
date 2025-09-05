@@ -43,12 +43,9 @@ class AnalyticsController {
             switch ($id) {
                 case 'user-langs':
                     $data = $this->model->getUserLangCounts();
-                    $this->sendJson(["tracking" => "Made it into user-langs case!"]);
                     break;
                 case 'spanish-pages':
                     $data = $this->model->pageViewsBySpanishSpeakers();
-                    $this->sendJson(["tracking" => "Made it into spanish-pages case!"]);
-                    break;
                 case 'avg-file-serve':
                     $data = $this->model->avgTimeToServeByFile();
                     break;

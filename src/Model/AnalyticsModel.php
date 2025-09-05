@@ -264,4 +264,21 @@ class AnalyticsModel {
 
         return $finalResults;
     }
+
+    public function pageViewsBySpanishSpeakers() {
+        // Joins static and activity on id, filter userLang, group and count visits per filename
+        $stmt = "SELECT a.filename AS FileName, COUNT(*) AS Visits " .
+                "FROM activity a " . // allows us to use a everywhere instead of activity
+                "INNER JOIN static s ON a.id = s.id " . // links activity and static by matching ids
+                "WHERE s.userLang = 'es' ". // only getting filenames where id's lang is spanish
+                "GROUP BY a.filename " . // grouping rows by unique filenames
+                "ORDER BY Visits DESC"; // ordering as most to least visited for filenames
+
+        $result = $this->model->conn->query($stmt);
+        if (!$result) {
+            return ["error" => "Query failed: " . $this->model->conn->error];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
 }
