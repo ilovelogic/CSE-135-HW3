@@ -38,7 +38,7 @@ class AnalyticsController {
 
     public function route($resource, $id, $method) {
         // Reports
-        echo $resource;
+        $this->sendJson(["error" => "Resource $resource not found"]);
         if ($resource === "reports") {
             switch ($id) {
                 case 'user-langs':
