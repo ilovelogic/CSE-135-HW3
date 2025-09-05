@@ -26,7 +26,7 @@ class AnalyticsController {
         header("Content-Type: application/json");
 
         // Connects to mySQL database
-        $conn = new mysqli($servername, $username, $password, $dbname, $port, $cert);
+        $conn = new \mysqli($servername, $username, $password, $dbname, $port, $cert); // Uses built-in mysqli
         // Note that ca-certificate.crt is not on the repo and is kept only on the server itself
 
         // Checks connection
