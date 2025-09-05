@@ -105,12 +105,15 @@
                     ["#3366FF", "#00BFFF"], { alpha: [1, 0.7] }
                 );
 
+                userLangColors = ["#27ae60", "#e74c3c", "#f39c12", "#7f8c8d", "#16a085"];
                 // -- Pie Chart --
-                const userLangPie = generatePieConfig(pieLabels, pieValues, "User Language Distribution", {
-                    threshold: "0%", // want them all showed together
-                    others: { text: "Others", backgroundColor: "#999 #333" }, // won't be used in this case
+                const userLangPie = generatePieConfig(pieLabels, pieValues, 
+                "User Language Distribution", "Spanish Users Take Up a Noticeable Chunk", 
+                {
+                    threshold: "5%",
+                    others: { text: "Others", backgroundColor: "#f5cba7" },
                     slice: 0.6
-                }, ["#27ae60", "#e74c3c", "#f39c12"]);
+                }, array_slice(userLangColors.slice(0,pieValues.length)));
 
                 // Render
                 zingchart.render({ id: 'bar3', data: JSON.stringify(screenDimensions3), height: 1000, width: '100%' });
@@ -430,10 +433,17 @@
          * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
          * @returns {Object} - Configuration object for the pie chart.
          */
-        function generatePieConfig(labels, values, title, options, colors) {
+        function generatePieConfig(labels, values, title, subtitle, options, colors) {
             return {
                 type: 'navpie', // allows for flexibility of representing many small slices effectively
-                title: { text: title },
+                title: { 
+                    text: title,
+                    fontSize: 20 
+                },
+                subtitle: {
+                    text: subtitle,
+                    fontSize: 16,        // Subtitle font size
+                },
                 options,
                 plot: {
                     borderColor: "#fff",
