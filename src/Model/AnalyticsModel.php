@@ -7,7 +7,8 @@ use mysqli_sql_exception;
 class AnalyticsModel {
     private $conn;
 
-    private $logsColMap = [
+    // Also used for handling column request in Controller
+    public $logsColMap = [
         "entryNum"            => "i", // INT NOT NULL AUTO_INCREMENT
         "vhost"               => "s", // VARCHAR(255) NULL
         "port"                => "i", // SMALLINT UNSIGNED NULL
@@ -25,7 +26,7 @@ class AnalyticsModel {
         "cookie"              => "s", // VARCHAR(4096)
     ];
 
-    private $staticColMap = [
+    public $staticColMap = [
         "id"                => "s",  // VARCHAR(255)
         "userAgent"         => "s",  // VARCHAR(255)
         "userLang"          => "s",  // VARCHAR(10)
@@ -40,7 +41,7 @@ class AnalyticsModel {
         "userNetConnType"   => "s",  // VARCHAR(20)
     ];
 
-    private $performanceColMap = [
+    public $performanceColMap = [
         "pageLoadTimingObject" => "s",  // JSON stored as string in PHP
         "pageLoadStart"        => "d",  // DOUBLE
         "pageLoadEnd"          => "d",  // DOUBLE
@@ -48,7 +49,7 @@ class AnalyticsModel {
         "id"                   => "s",  // VARCHAR(255)
     ];
 
-    private $activityColMap = [
+    public $activityColMap = [
         "id"            => "s", // VARCHAR(255)
         "eventType"     => "s", // VARCHAR(20)
         "eventTimestamp"=> "s", // TIMESTAMP
