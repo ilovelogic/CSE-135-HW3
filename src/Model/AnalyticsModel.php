@@ -308,10 +308,11 @@ class AnalyticsModel {
             if (array_key_exists($col, $colMap)) {
                 $allowedCols[] = $col;
             }
+            echo json_encode(["col" => $col]);
         }
         if (empty($allowedCols)) {
             http_response_code(400);
-            echo json_encode(["error" => "No valid columns provided."]);
+            echo json_encode(["error" => "No valid columns provided"]);
             exit();
         }
         $colString = implode(", ", array_map(fn($c) => "`$c`", $allowedCols));
