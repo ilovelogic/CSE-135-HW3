@@ -281,4 +281,48 @@ class AnalyticsModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    // Retrieves requested columns from table
+    public function getCols($table, $cols) {
+        $allowedCols = [];
+        switch ($table) {
+            case 'static': 
+                $colMap = $this->staticColMap; 
+                break;
+            case 'performance': 
+                $colMap = $this->performanceColMap; 
+                break;
+            case 'activity': 
+                $colMap = $this->activityColMap; 
+                break;
+            case 'apacheLogs': 
+                $colMap = $this->logsColMap; 
+                break;
+            default:
+                http_response_code(400);
+                echo json_encode(["error" => "Unsupported table: $table"]);
+                exit();
+        }
+        // Only includes columns present in the map
+        foreach ($cols as $col) {
+            if (array_key_exists($col, $colMap)) {
+                $allowedCols[] = $col;
+            }
+        }
+        if (empty($allowedCols)) {
+            http_response_code(400);
+            echo json_encode(["error" => "No valid columns provided."]);
+            exit();
+        }
+        $colString = implode(", ", array_map(fn($c) => "`$c`", $allowedCols));
+        $q = "SELECT $colString FROM `$table`";
+        $result = $this->conn->query($q);
+        if (!$result) {
+            http_response_code(500);
+            echo json_encode(["error" => "Query failed: " . $this->conn->error]);
+            exit();
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
 }

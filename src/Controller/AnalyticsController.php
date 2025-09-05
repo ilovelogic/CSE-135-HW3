@@ -36,10 +36,11 @@ class AnalyticsController {
         $this->model = new AnalyticsModel($conn);
     }
 
-    public function route($resource, $id, $method) {
+    public function route($resource, $idOrCols, $method) {
         // Reports
         
         if ($resource === "reports") {
+            $id = $idOrCols; // renaming for clarity
             switch ($id) {
                 case 'user-langs':
                     $data = $this->model->getUserLangCounts();
@@ -66,7 +67,7 @@ class AnalyticsController {
         }
 
         // Only accept known tables
-        $table = in_array($resource, ["static","activity","performance"]) ? $resource : null;
+        $table = in_array($resource, ["static","activity","performance", "apacheLogs"]) ? $resource : null;
         if (!$table) {
             http_response_code(400);
             $this->sendJson(["error" => "Invalid resource"]);
@@ -75,11 +76,20 @@ class AnalyticsController {
 
         switch ($method) {
             case 'GET':
-                if (empty($id)) {
+                if (empty($idOrCols)) {
                     $result = $this->model->fetchAll($table);
                     $this->sendJson($result);
                 } else {
-                    $result = $this->model->fetchById($table, $id);
+                    $reqCols = $this->isColCheck($resource, $idOrCols);
+                    if (empty($reqCols)) {
+                        $id = $idOrCols; // renaming for clarity
+                        $result = $this->model->fetchById($table, $id);
+                    }
+                    else {
+                        $cols = $idOrCols;
+                        $result = $this->model->getCols($table, $cols);
+                    }
+        
                     if ($result !== null) {
                         $this->sendJson($result);
                     } else {
@@ -106,6 +116,32 @@ class AnalyticsController {
                 http_response_code(405);
                 $this->sendJson(["error" => "Method not allowed"]);
         }
+    }
+
+    private function isColCheck($resource, $idOrCols) {
+        $reqCols = []; // to store all request columns of the table
+        switch ($resource) {
+            case 'static':
+                $validCols = array_keys($this->model->staticColMap);
+                break;
+            case 'performance':
+                $validCols = array_keys($this->model->performanceColMap);
+                break;
+            case 'activity':
+                $validCols = array_keys($this->model->activityColMap);
+                break;
+            case 'apacheLogs':
+                $validCols = array_keys($this->model->logsColMap);
+                break;
+            default:
+                $validCols = [];
+        }
+        foreach($validCols as $colName) {
+            if (strpos($idOrCols, $colName) !== false) {
+                array_push($reqCols, $colName); // appends $colName to $reqCols
+            }
+        }
+        return $reqCols;
     }
 
     private function sendJson($data) {
