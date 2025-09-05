@@ -113,7 +113,7 @@
                     threshold: "5%",
                     others: { text: "Others", backgroundColor: "#f5cba7" },
                     slice: 0.6
-                }, array_slice(userLangColors.slice(0,pieValues.length)));
+                }, userLangColors.slice(0,pieValues.length));
 
                 // Render
                 zingchart.render({ id: 'bar3', data: JSON.stringify(screenDimensions3), height: 1000, width: '100%' });
