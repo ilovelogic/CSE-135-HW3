@@ -308,7 +308,6 @@ class AnalyticsModel {
             if (array_key_exists($col, $colMap)) {
                 $allowedCols[] = $col;
             }
-            echo json_encode(["col" => $col]);
         }
         if (empty($allowedCols)) {
             http_response_code(400);

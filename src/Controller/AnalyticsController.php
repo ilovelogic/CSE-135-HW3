@@ -87,7 +87,7 @@ class AnalyticsController {
                     }
                     else {
                         $cols = $idOrCols;
-                        $result = $this->model->getCols($table, $cols);
+                        $result = $this->model->getCols($table, $reqCols);
                     }
         
                     if ($result !== null) {
