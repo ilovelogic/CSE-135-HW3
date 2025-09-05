@@ -188,7 +188,7 @@ class AnalyticsModel {
 
     // Analytics/reporting queries for ZingChart:
     public function avgTimeToServeByFile() {
-        $q = "SELECT filename, AVG(timeToServeMS) AS avgTime FROM logs GROUP BY filename";
+        $q = "SELECT filename, AVG(timeToServeMS) AS avgTime FROM apacheLogs GROUP BY filename";
         $result = $this->conn->query($q);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
