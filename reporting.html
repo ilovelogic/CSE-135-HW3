@@ -30,7 +30,7 @@
     <div id="charts">
         <div id="bar3"></div>
         <div id="bar2"></div>
-        <div id="pie"></div>
+        <div id="userLangPie></div>
         <div id="cookies"></div>
         <div id="javascript"></div>
         <div id="network"></div>
@@ -106,16 +106,16 @@
                 );
 
                 // -- Pie Chart --
-                const pieChart = generatePieConfig(pieLabels, pieValues, "Screen Width Distribution", {
-                    threshold: "15%",
-                    others: { text: "Others", backgroundColor: "#999 #333" },
+                const userLangPie = generatePieConfig(pieLabels, pieValues, "User Language Distribution", {
+                    threshold: "0%", // want them all showed together
+                    others: { text: "Others", backgroundColor: "#999 #333" }, // won't be used in this case
                     slice: 0.6
-                });
+                }, ["#27ae60", "#e74c3c", "#f39c12"]);
 
                 // Render
                 zingchart.render({ id: 'bar3', data: JSON.stringify(screenDimensions3), height: 1000, width: '100%' });
                 zingchart.render({ id: 'bar2', data: JSON.stringify(windowDimensions2), height: 1000, width: '100%' });
-                zingchart.render({ id: 'pie', data: JSON.stringify(pieChart), height: 1000, width: '100%' });
+                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), height: 1000, width: '100%' });
 
                 // Aggregate counts
                 const cookieCounts = {};
@@ -427,11 +427,12 @@
          * @param {Array} values - Values for each slice.
          * @param {string} title - Title of the chart.
          * @param {Object} options - Additional options for the pie chart.
+         * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
          * @returns {Object} - Configuration object for the pie chart.
          */
-        function generatePieConfig(labels = pieLabels, values = pieValues, title = 'Screen Width Distribution', options) {
+        function generatePieConfig(labels, values, title, options, colors) {
             return {
-                type: 'navpie',
+                type: 'navpie', // allows for flexibility of representing many small slices effectively
                 title: { text: title },
                 options,
                 plot: {
@@ -454,7 +455,8 @@
                 },
                 series: labels.map((label, i) => ({
                     text: label,
-                    values: [values[i]]
+                    values: [values[i]],
+                    backgroundColor: colors[i]
                 }))
             }
         }
