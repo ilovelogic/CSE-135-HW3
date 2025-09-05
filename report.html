@@ -1,0 +1,478 @@
+<!doctype html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Visuals</title>
+    <script src="https://cdn.zinggrid.com/zinggrid.min.js" defer></script>
+    <script src="https://cdn.zingchart.com/zingchart.min.js" defer></script>
+</head>
+<body>
+    <!-- ZingChart -->
+    <style>
+        section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit);
+            gap: 1rem;
+            padding: 1rem;
+        }
+        visual-chart {
+            background: #eee;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+        }
+        visual-grid {
+            background: #eee;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+        }
+    </style>
+    <h1><a href="https://annekelley.site/">annekelley.site</a> Dashboard</h1>
+    <p>Hint: Try clicking on different things and using your mouse to navigate around the charts!</p>
+    <section>
+        <h2>Static Data</h2>
+        <visual-chart id="userAgent">
+            <h3>Most Common Browser Clients - userAgent</h3>
+            <p>A <em>word cloud</em> displaying the most frequent browser agent received.</p>
+        </visual-chart>
+        <visual-chart id="userLang">
+            <h3>Most Common Browser Languages - userLang</h3>
+            <p>A <em>bar chart</em> displaying the most frequent languages.</p>
+        </visual-chart>
+        <visual-chart id="acceptsCookies">
+            <h3>acceptsCookies</h3>
+            <p>A <em>pie chart</em> displaying the % of users that accept cookies.</p>
+        </visual-chart>
+        <visual-chart id="allowsJavaScript">
+            <h3>allowsJavaScript</h3>
+            <p>A <em>pie chart</em> displaying the % of users that allow JavaScript.</p>
+        </visual-chart>
+        <visual-chart id="allowsImages">
+            <h3>allowsImages</h3>
+            <p>A <em>pie chart</em> displaying the % of users that allow images.</p>
+        </visual-chart>
+        <visual-chart id="allowsCSS">
+            <h3>allowsCSS</h3>
+            <p>A <em>pie chart</em> displaying the % of users that allow CSS.</p>
+        </visual-chart>
+        <visual-chart id="userScreenDimensions">
+            <h3>userScreenDimensions</h3>
+            <p></p>
+        </visual-chart>
+        <visual-chart id="userWindowDimensions">
+            <h3>userWindowDimensions</h3>
+            <p></p>
+        </visual-chart>
+        <visual-chart id="userNetConnType">
+            <h3>userNetConnType</h3>
+            <p>A <em>bar chart</em> displaying the most frequent network connection.</p>
+        </visual-chart>
+    </section>
+    <section>
+        <h2>Performance Data</h2>
+        <visual-chart id="pageLoadStart">
+            <h3>pageLoadStart</h3>
+            <p></p>
+        </visual-chart>
+        <visual-chart id="pageLoadEnd">
+            <h3>pageLoadEnd</h3>
+            <p></p>
+        </visual-chart>
+        <visual-chart id="pageLoadTimeTotal">
+            <h3>pageLoadTimeTotal</h3>
+            <p></p>
+        </visual-chart>
+    </section>
+    <section>
+        <h2>Activity Data</h2>
+        <visual-chart id="mouseHeatmap">
+            <h3>mouseHeatmap</h3>
+            <p></p>
+        </visual-chart>
+        <visual-chart id="errors">
+            <h3>errors</h3>
+            <p></p>
+        </visual-chart>
+    </section>
+    <script type="module">
+        import { getData, userAgentsToWordCloud, countKeyValue } from '/fetch.js';
+
+        ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+
+        let userAgentConfig = generateWordCloudConfig(await userAgentsToWordCloud());
+        let userLangConfig = generateBarConfig(await countKeyValue('reports/user-langs'));
+        let acceptsCookiesConfig = generateNavPieConfig(await countKeyValue('static/acceptsCookies'));
+        let allowsJavaScriptConfig = generateNavPieConfig(await countKeyValue('static/allowsJavaScript'));
+        let allowsImagesConfig = generateNavPieConfig(await countKeyValue('static/allowsImages'));
+        let allowsCSSConfig = generateNavPieConfig(await countKeyValue('static/allowsCSS'));
+        let userScreenDimensionsConfig = generateBarConfig();
+        let userWindowDimensionsConfig = generateBarConfig();
+        let userNetConnTypeConfig = generateBarConfig(await countKeyValue('reports/session-by-width'));
+        let pageLoadStartConfig = generateHorizontalBoxPlot();
+        let pageLoadEndConfig = generateHorizontalBoxPlot();
+        let pageLoadTimeTotalConfig = generateHorizontalBoxPlot();
+        let mouseHeatmapConfig = generateHeatMap('mouseHeatmap');
+        let errorsConfig = generateWordCloudConfig();
+
+        function generateWordCloudConfig(textData = "", otherOptions) {
+            return {
+                type: 'wordcloud',
+                options: {
+                    text: textData,
+                    aspect: 'flow-center',
+                    maxItems: 40,
+                    style: {
+                        hoverState: {
+                            backgroundColor: 'orange',
+                            borderRadius: 2,
+                            fontColor: 'black'
+                        },
+                        tooltip: {
+                            text: '%text: %hits',
+                            visible: true,
+                            alpha: 0.8,
+                            backgroundColor: 'black',
+                            borderRadius: 8,
+                            borderColor: 'none',
+                            fontColor: 'yellow',
+                            fontSize: 14,
+                        }
+                    }
+                },
+                otherOptions
+            }
+        }
+
+        function generateBarConfig(keyValuePairs = {}, otherOptions) {
+            console.log("Generating bar config with data:", keyValuePairs);
+            return {
+                type: "bar",
+                plot: { showZero: true },
+                scaleX: {
+                    values: Object.keys(keyValuePairs),
+                    item: { angle: -45 },
+                    step: 1,
+                    'items-overlap': true
+                },
+                series: [{ values: Object.values(keyValuePairs) }]
+            };
+        }
+
+        function generateNavPieConfig(keyValuePairs = {}, otherOptions) {
+            return {
+                type: 'navpie',
+                plot: {
+                    detach: true,
+                    valueBox: { text: '%t\n%npv%' },
+                    tooltip: { text: "%npv%<br>Count: %v" },
+                },
+                series: Object.entries(keyValuePairs).map(([key, value]) => ({
+                    text: key,
+                    values: [value]
+                })),
+                otherOptions,
+            }
+        }
+
+        function generateHorizontalBoxPlot() {
+            return {
+                "graphset": [{
+                    "type": "hboxplot",
+                    "plotarea": { "margin": "100" },
+                    "scaleX": {
+                        "guide": { "visible": false },
+                        "label": { "text": "Experiment No." },
+                        "values": ["1", "2", "3", "4", "5"],
+                        "item": { "wrapText": true }
+                    },
+                    "scaleY": {
+                        "minValue": "auto",
+                        "guide": { "lineStyle": "solid" },
+                        "label": { "text": "Observations" },
+                        "item": { "wrapText": true }
+                    },
+                    "tooltip": {
+                        "fontSize": 11,
+                        "align": "left",
+                        "borderRadius": 7,
+                        "borderWidth": 1,
+                        "backgroundColor": "#fff",
+                        "alpha": 0.9,
+                        "padding": 10,
+                        "color": "#000"
+                    },
+                    "plot": {},
+                    "options": {
+                        "box": {
+                            "barWidth": 0.5,
+                            "tooltip": {
+                                "text": `<span style="font-style:italic;">Experiment no. %scale-key-text</span><br><b style="font-size:15px;color:%color3">Observations:</b><br><br>Maximum: <b>%data-max</b><br>Upper Quartile: <b>%data-upper-quartile</b><br>Median: <b>%data-median</b><br>Lower Quartile: <b>%data-lower-quartile</b><br>Minimum: <b>%data-min</b>`
+                            }
+                        },
+                        "outlier": {
+                            "tooltip": {
+                                "text": `<span style="font-style:italic;">Experiment no. %scale-key-text</span><br><b style="font-size:15px;color:%color-7">Observation: %node-value</b>`
+                            },
+                            "marker": { "type": "circle" }
+                        }
+                    },
+                    "series": [{
+                        "dataBox": [
+                            [760, 801, 848, 895, 965],
+                            [733, 853, 939, 980, 1080],
+                            [714, 762, 817, 870, 918],
+                            [724, 802, 836, 871, 950],
+                            [834, 856, 864, 882, 910]
+                        ],
+                        "dataOutlier": [
+                            [0, 644],
+                            [1, 718],
+                            [4, 951],
+                            [3, 969],
+                            [2, 944]
+                        ]
+                    }]
+                }]
+            };
+        }
+
+        function generateHeatMap(elementID) {
+            var MAX = 100;
+            var aData = [];
+            zingchart.bind(elementID, 'load', function () {
+                var l, k, v;
+                var iMaxPoints = 512;
+                for (l = 0; l < iMaxPoints; l++) {
+                    k = 5 * Math.round(((iMaxPoints - l) % 300) / 5) + 350;
+                    v = 5 * Math.round((l % 100) / 5) + 250;
+                    aData.push([k, v, MAX]);
+                }
+                zingchart.exec(elementID, 'heatmap.setdata', { data: aData });
+            });
+        }
+
+        try {
+            zingchart.render({ id: 'userAgent', data: userAgentConfig, width: '100%' });
+            zingchart.render({ id: 'userLang', data: userLangConfig, width: '100%' });
+            zingchart.render({ id: 'acceptsCookies', data: acceptsCookiesConfig, width: '100%' });
+            zingchart.render({ id: 'allowsJavaScript', data: allowsJavaScriptConfig, width: '100%' });
+            zingchart.render({ id: 'allowsImages', data: allowsImagesConfig, width: '100%' });
+            zingchart.render({ id: 'allowsCSS', data: allowsCSSConfig, width: '100%' });
+            zingchart.render({ id: 'userScreenDimensions', data: userScreenDimensionsConfig, width: '100%' });
+            zingchart.render({ id: 'userWindowDimensions', data: userWindowDimensionsConfig, width: '100%' });
+            zingchart.render({ id: 'userNetConnType', data: userNetConnTypeConfig, width: '100%' });
+            zingchart.render({ id: 'pageLoadStart', data: pageLoadStartConfig, width: '100%' });
+            zingchart.render({ id: 'pageLoadEnd', data: pageLoadEndConfig, width: '100%' });
+            zingchart.render({ id: 'pageLoadTimeTotal', data: pageLoadTimeTotalConfig, width: '100%' });
+            let cdata = {
+                type: 'radar',
+                heatmap: {},
+                plotarea: { margin: 10 },
+                scale: { sizeFactor: 0.9 },
+                scaleV: { offsetStart: 40, offsetEnd: 0, values: '0:100:25' },
+                scaleK: { aspect: 'circle', values: '0:355:5', maxItems: 12 },
+                tooltip: {},
+                plot: {},
+                series: [{}]
+            };
+            zingchart.render({ id: 'mouseHeatmap', data: cdata, width: '100%', output: 'svg', modules: 'heatmap,color-scale' });
+            zingchart.render({ id: 'errors', data: errorsConfig, width: '100%' });
+        } catch (e) {
+            console.error("Error rendering chart:", e);
+        }
+
+        async function renderCharts() {
+            try {
+                // Load static data with columns via the new API path
+                const rawStaticData = await getData('static', ['userScreenWidth', 'userScreenHeight', 'userWindowWidth', 'userWindowHeight']);
+                console.log("Fetched static data:", rawStaticData);
+                const bar1280Counts2 = {};
+                const bar500Counts2 = {};
+                const bar1280Counts3 = {};
+                const bar1920Counts3 = {};
+                const barOtherCounts3 = {};
+                rawStaticData.forEach(item => {
+                    parseCounts('bar2', [item.userWindowWidth, item.userWindowHeight], [bar1280Counts2, bar500Counts2], ['1280', '500']);
+                    parseCounts('bar3', [item.userScreenWidth, item.userScreenHeight], [bar1280Counts3, bar1920Counts3, barOtherCounts3], ['1280', '1920', 'other']);
+                });
+                const barLabels2 = Object.keys(bar1280Counts2);
+                const bar1280Values2 = barLabels2.map(h => bar1280Counts2[h] || 0);
+                const bar500Values2 = barLabels2.map(h => bar500Counts2[h] || 0);
+                const barLabels3 = Object.keys(barOtherCounts3);
+                const bar1280Values3 = barLabels3.map(h => bar1280Counts3[h] || 0);
+                const bar1920Values3 = barLabels3.map(h => bar1920Counts3[h] || 0);
+                const barOtherValues3 = barLabels3.map(h => barOtherCounts3[h] || 0);
+                const screenDimensions3 = generateBar3Config([bar1280Values3, bar1920Values3, barOtherValues3],
+                    "Screen Dimensions", barLabels3, "Count", ["Screen Width: 1280", "Screen Width: 1920", "Screen Width: Other"],
+                    ['pink', 'purple', 'blue'], { alpha: [0.7, 0.7, 0.7] }
+                );
+                const windowDimensions2 = generateBar2Config([bar500Values2, bar1280Values2],
+                    "Window Dimensions", barLabels2, "Count", ["Window Width: 500", "Window Width: 1280"],
+                    ["#3366FF", "#00BFFF"], { alpha: [1, 0.7] }
+                );
+                zingchart.render({ id: 'userScreenDimensions', data: JSON.stringify(screenDimensions3), height: 1000, width: '100%' });
+                zingchart.render({ id: 'userWindowDimensions', data: JSON.stringify(windowDimensions2), height: 1000, width: '100%' });
+            } catch (err) {
+                console.error("Error rendering charts:", err);
+            }
+        }
+
+        function parseCounts(chartType, rawData, countObj, valueChecks = []) {
+            switch (chartType) {
+                case 'bar2':
+                    try {
+                        const [x, y] = rawData;
+                        const [countObj1, countObj2] = countObj;
+                        const [valCheck1, valCheck2] = valueChecks;
+                        switch (String(x)) {
+                            case String(valCheck1):
+                                countObj1[y] = (countObj1[y] || 0) + 1;
+                                countObj2[y] = countObj2[y] || 0;
+                                break;
+                            case String(valCheck2):
+                                countObj1[y] = countObj1[y] || 0;
+                                countObj2[y] = (countObj2[y] || 0) + 1;
+                                break;
+                            default:
+                                return;
+                        }
+                    } catch (err) {
+                        console.error("Error parsing 2-series bar chart data:", err);
+                    }
+                    break;
+                case 'bar3':
+                    try {
+                        const [x, y] = rawData;
+                        const [countObj1, countObj2, countObj3] = countObj;
+                        const [valCheck1, valCheck2, valCheck3] = valueChecks;
+                        switch (x) {
+                            case valCheck1:
+                                countObj1[y] = (countObj1[y] || 0) + 1;
+                                countObj2[y] = countObj2[y] || 0;
+                                countObj3[y] = countObj3[y] || 0;
+                                break;
+                            case valCheck2:
+                                countObj1[y] = countObj1[y] || 0;
+                                countObj2[y] = (countObj2[y] || 0) + 1;
+                                countObj3[y] = countObj3[y] || 0;
+                                break;
+                            default:
+                                countObj1[y] = countObj1[y] || 0;
+                                countObj2[y] = countObj2[y] || 0;
+                                countObj3[y] = (countObj3[y] || 0) + 1;
+                                return;
+                        }
+                    } catch (err) {
+                        console.error("Error parsing 3-series bar chart data:", err);
+                    }
+                    break;
+                default:
+                    console.error("Unknown chart type:", chartType);
+            }
+        }
+
+        function generateBar3Config(values, title, x_axis, y_axis, legend_labels, colors, options) {
+            return {
+                type: 'bar',
+                title: {
+                    text: title,
+                    backgroundColor: 'none',
+                    fontSize: "22px",
+                    alpha: 0.8,
+                    adjustLayout: true
+                },
+                plotarea: { margin: 'dynamic' },
+                scrollX: {},
+                scaleX: {
+                    values: x_axis,
+                    zooming: true,
+                    zoomTo: [0, 50],
+                    item: { fontSize: 10 },
+                    label: { text: "Screen Height", fontFamily: "Helvetica", bold: true, fontSize: "12px", fontColor: "#7E7E7E" }
+                },
+                scaleY: {
+                    lineColor: '#7E7E7E',
+                    item: { fontColor: '#7e7e7e' },
+                    guide: { visible: true },
+                    label: { text: "Count", fontFamily: "Helvetica", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
+                },
+                legend: {
+                    layout: 'x3',
+                    align: 'center',
+                    adjustLayout: true,
+                    shadow: false,
+                    overflow: 'page',
+                    alpha: 0.05,
+                    marker: { type: 'rectangle', borderColor: 'none', size: 12 },
+                    borderWidth: 0,
+                    maxItems: 3,
+                    toggleAction: 'hide',
+                    pageOn: { backgroundColor: '#000', size: 10, alpha: 0.75 },
+                    pageOff: { backgroundColor: '#7E7E7E', size: 10, alpha: 0.75 },
+                    pageStatus: { color: 'black' }
+                },
+                plot: { 'bars-space-left': 0.15, 'bars-space-right': 0.15 },
+                series: legend_labels.map((label, i) => ({
+                    text: label,
+                    values: values[i],
+                    backgroundColor: colors[i],
+                    alpha: options?.alpha[i] || 1
+                }))
+            }
+        }
+
+        function generateBar2Config(values, title, x_axis, y_axis, legend_labels, colors, options) {
+            return {
+                type: 'bar',
+                title: {
+                    text: title,
+                    backgroundColor: 'none',
+                    fontFamily: "verdana",
+                    fontColor: "#7E7E7E",
+                    fontSize: "22px",
+                    alpha: 1,
+                    adjustLayout: true
+                },
+                plotarea: { margin: 'dynamic' },
+                legend: {
+                    layout: 'x2',
+                    overflow: 'page',
+                    alpha: 0.05,
+                    shadow: false,
+                    align: 'center',
+                    adjustLayout: true,
+                    marker: { type: 'rectangle', borderColor: 'none', size: 18 },
+                    borderWidth: 0,
+                    maxItems: 3,
+                    toggleAction: 'hide',
+                    pageOn: { backgroundColor: '#000', size: 14, alpha: 1 },
+                    pageOff: { backgroundColor: '#7E7E7E', size: 14, alpha: 1 },
+                    pageStatus: { color: 'black' }
+                },
+                plot: { 'bars-space-left': 0.15, 'bars-space-right': 0.15 },
+                scaleY: {
+                    lineColor: '#7E7E7E',
+                    item: { fontColor: '#7e7e7e' },
+                    guide: { visible: true },
+                    label: { text: y_axis, fontFamily: "verdana", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
+                },
+                scaleX: {
+                    values: x_axis,
+                    placement: 'default',
+                    tick: { size: 10, placement: 'cross' },
+                    itemsOverlap: true,
+                    label: { text: "Window Height", fontFamily: "verdana", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
+                },
+                series: legend_labels.map((label, i) => ({
+                    text: label,
+                    values: values[i],
+                    backgroundColor: colors[i],
+                    alpha: options?.alpha[i] || 1
+                }))
+            }
+        }
+
+        renderCharts();
+    </script>
+</body>
