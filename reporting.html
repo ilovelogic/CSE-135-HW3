@@ -93,7 +93,7 @@
     <script type="module">
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
 
-        async function renderCharts() {
+        async function renderChart() {
             try {
                 const resp = await fetch('/endpoint.php/reports/user-langs');
                 const langData = await resp.json();
@@ -115,6 +115,53 @@
                 zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie)});
             } catch (err) {
                 console.error("Error rendering charts:", err);
+            }
+        }
+
+        /**
+         * Generates configuration for a pie chart.
+         * @param {Array} labels - Labels for the pie chart.
+         * @param {Array} values - Values for each slice.
+         * @param {string} title - Title of the chart.
+         * @param {Object} options - Additional options for the pie chart.
+         * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
+         * @returns {Object} - Configuration object for the pie chart.
+         */
+        function generatePieConfig(labels, values, title, subtitle, options, colors) {
+            return {
+                type: 'navpie', // allows for flexibility of representing many small slices effectively
+                title: {
+                    text: title,
+                    fontSize: 20
+                },
+                subtitle: {
+                    text: subtitle,
+                    fontSize: 16,        // Subtitle font size
+                },
+                options,
+                plot: {
+                    borderColor: "#fff",
+                    borderWidth: 2,
+                    valueBox: [
+                        {
+                            placement: 'out',
+                            text: '%t\n',
+                            fontSize: '14',
+                            fontFamily: "Open Sans"
+                        },
+                    ],
+                    tooltip: {
+                        fontSize: '14',
+                        fontFamily: "Open Sans",
+                        padding: "5 10",
+                        text: "%npv%<br>Count: %v"
+                    }
+                },
+                series: labels.map((label, i) => ({
+                    text: label,
+                    values: [values[i]],
+                    backgroundColor: colors[i]
+                }))
             }
         }
 
@@ -155,7 +202,7 @@
             }
         }
 
-        renderCharts();
+        renderChart();
         renderGrid();
 
     </script>
