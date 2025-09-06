@@ -291,6 +291,32 @@ class AnalyticsModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function userAgentDistributionByType() {
+        $stmt = "
+            SELECT
+                CASE
+                    WHEN userAgent LIKE '%Chrome/%' THEN 'Chrome'
+                    WHEN userAgent LIKE '%Safari/%' AND userAgent NOT LIKE '%Chrome/%' THEN 'Safari'
+                    WHEN userAgent LIKE '%Firefox/%' THEN 'Firefox'
+                    ELSE 'Other'
+                END AS browser,
+                CASE
+                    WHEN userAgent LIKE '%Windows%' THEN 'Windows'
+                    WHEN userAgent LIKE '%Macintosh%' THEN 'Mac'
+                    WHEN userAgent LIKE '%iPhone%' OR userAgent LIKE '%iPad%' THEN 'iOS'
+                    WHEN userAgent LIKE '%Linux%' THEN 'Linux'
+                    ELSE 'Other'
+                END AS platform,
+                COUNT(*)/(SELECT COUNT(*) FROM static) AS fraction
+            FROM static
+            GROUP BY browser, platform
+            ORDER BY browser, platform";
+            
+        $result = $this->conn->query($stmt);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
 
     // Retrieves requested columns from table
     public function getCols($table, $cols) {

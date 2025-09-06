@@ -48,6 +48,9 @@ class AnalyticsController {
                 case 'spanish-pages':
                     $data = $this->model->pageViewsBySpanishSpeakers();
                     break;
+                case 'browser-types':
+                    $data = $this->model->userAgentDistributionByType();
+                    break;
                 case 'avg-file-serve':
                     $data = $this->model->avgTimeToServeByFile();
                     break;
