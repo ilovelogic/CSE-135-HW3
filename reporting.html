@@ -6,108 +6,115 @@
     <script src="https://cdn.zinggrid.com/zinggrid.min.js" defer></script>
     <script src="https://cdn.zingchart.com/zingchart.min.js" defer></script>
     <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        margin: 1rem 2rem;
-        background: #f9f9f9;
-        color: #333;
-    }
-    h1 {
-        font-size: 2.25rem;
-        margin-bottom: 0.25rem;
-    }
-    a {
-        color: #2176ff;
-        text-decoration: none;
-    }
-    a:hover {
-        text-decoration: underline;
-    }
-    p.intro {
-        font-size: 1.125rem;
-        max-width: 720px;
-        margin-bottom: 1rem;
-    }
-    section {
-        background: #eee;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-        padding: 1rem 2rem;
-        margin-top: 1.5rem;
-        max-width: 960px;
-    }
-    section > h2 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-    visual-chart, visual-grid {
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25);
-        padding: 1rem;
-        margin-top: 1rem;
-        display: block;
-    }
-    /* Provide height for chart and grid blocks */
-    visual-chart {
-        height: 600px;
-    }
-    visual-grid {
-        height: 500px;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+            Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            margin: 1rem 2rem;
+            background: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.25rem;
+        }
+        a {
+            color: #2176ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        section {
+            background: #eee;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+            padding: 2rem 2.5rem;
+            margin-top: 2rem;
+            max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        section > h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .intro, .section-content {
+            font-size: 1.125rem;
+            max-width: 720px;
+            margin-bottom: 1rem;
+        }
+        .datacontent {
+            padding: 0;
+            background: none;
+            box-shadow: none;
+        }
+        .data-charts {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        .piechart-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.10);
+            width: 500px;
+            height: 400px;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 
 <body>
-    <h1><a href="https://annekelley.site/">annekelley.site</a> User Language Report</h1>
+    <h1>
+        <a href="https://annekelley.site/">annekelley.site</a> User Language Report
+    </h1>
 
-    <p class="intro">
-    Question: Should we create versions of our webpages in other languages, and serve them based on each user’s native tongue?
-    </p>
-
-    <p class="intro">
-    According to our collector script, most site visitors speak English, a significant number are Spanish speakers, and only a handful primarily speak French.
-    </p>
-
-    <section aria-label="User language distribution" style="max-width:960px; margin-bottom: 1.5rem;">
-  <h2>User Language Distribution</h2>
-  <p class="intro" style="margin-top:0;">
-    Spanish users are a notable percentage among site visitors.
-  </p>
-  <div style="display: flex; justify-content: center;">
-    <div id="userLangPie"
-       style="
-        border-radius:1rem;
-        padding:1rem;
-        margin-top:1rem;
-        background: #fff;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
-        width: 400px;
-        height: 400px;">
-    </div>
-  </div>
-</section>
-
-
-
-    <p class="intro">
-    Given that the Spanish speaking group makes up a notable percentage of our overall users, we should consider providing Spanish versions for the popular pages among the Spanish speakers. The following grid displays the pages visited by Spanish speakers, ordered from most to least popular.
-    </p>
-
-    <section aria-label="Popular pages visited by Spanish speakers">
-        <h2>Pages to Consider for Spanish Adaptation</h2>
-        <!-- Grid container, styled for appearance and used as the grid mounting point -->
-        <div id="spanishVisitsGrid" 
-            caption="Pages to Consider for Spanish Adaptation" 
-            style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 1rem; margin-top: 1rem;">
+    <!-- SECTION: Question -->
+    <section aria-label="Report Question">
+        <h2>Question</h2>
+        <div class="section-content">
+            Should we create versions of our webpages in other languages, and serve them based on each user’s native tongue?
         </div>
     </section>
 
+    <!-- SECTION: Data -->
+    <section aria-label="User Language Data" class="datacontent">
+        <h2>Data</h2>
+        <div class="section-content">
+            According to our data collection, most site visitors speak English, a significant number are Spanish speakers, and only a handful fall into other categories.
+        </div>
+        <div class="data-charts">
+            <!-- User Language Pie Chart Card -->
+            <div class="piechart-card">
+                <div id="userLangPie" style="width: 400px; height: 380px;"></div>
+            </div>
+        </div>
+    </section>
 
-    <p class="intro">
-    As you can see, the error page, member page for Anne Kelley, homepage, and the Perl demos are the most visited among Spanish speakers. Therefore, to improve user experience for this substantial chunk of our visitors, we could create Spanish versions of these pages and redirect Spanish speakers to them in our routing.
-    </p>
+    <!-- SECTION: Exploration -->
+    <section aria-label="Data Exploration">
+        <h2>Exploration</h2>
+        <div class="section-content">
+            Given that the Spanish speaking group makes up a substantial chunk of our overall users, we should consider providing Spanish versions for the pages they visit frequently. The following grid displays the pages visited by Spanish speakers, ordered from most to least popular.
+        </div>
+        <!-- Data grid card below -->
+        <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 1rem; margin-top: 1rem;">
+            <h3 style="margin-top: 0;">Pages to Consider for Spanish Adaptation</h3>
+            <div id="spanishVisitsGrid" style="width: 100%;"></div>
+        </div>
+    </section>
+
+    <!-- SECTION: Action -->
+    <section aria-label="Recommended Action">
+        <h2>Action</h2>
+        <div class="section-content">
+            As you can see, the error page, member page for Anne Kelley, homepage, and the Perl demos are the most visited among Spanish speakers. Therefore, to improve user experience for this important percentage of our visitors, we could create Spanish versions of these pages and redirect Spanish speakers to them in our routing.
+        </div>
+    </section>
 
     <script type="module">
         ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
@@ -116,49 +123,35 @@
             try {
                 const resp = await fetch('/endpoint.php/reports/user-langs');
                 const langData = await resp.json();
-                // langData ex: [{userLang: "en", count: 10, language: "English"}, ...]
-
-                const pieLabels = langData.map(row => row.language);  // ["English", "Spanish", ...]
-                const pieValues = langData.map(row => parseInt(row.count, 10));  // 10 communicates nums are base 10
-
+                const pieLabels = langData.map(row => row.language);
+                const pieValues = langData.map(row => parseInt(row.count, 10));
                 const userLangColors = ["#27ae60", "#e74c3c", "#f5cba7", "#7f8c8d", "#16a085"];
-                // -- Pie Chart --
                 const userLangPie = generatePieConfig(pieLabels, pieValues, 
-                {
-                    threshold: "15%",
-                    others: { text: "Others", backgroundColor: "#2980b9" },
-                    slice: 0.6
-                }, userLangColors.slice(0,pieValues.length));
-
-                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), width: 400, height: 400});
+                    {
+                        threshold: "15%",
+                        others: { text: "Others", backgroundColor: "#2980b9" },
+                        slice: 0.6
+                    }, userLangColors.slice(0,pieValues.length)
+                );
+                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), width: 500, height: 400 });
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
         }
 
-        /**
-         * Generates configuration for a pie chart.
-         * @param {Array} labels - Labels for the pie chart.
-         * @param {Array} values - Values for each slice.
-         * @param {Object} options - Additional options for the pie chart.
-         * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
-         * @returns {Object} - Configuration object for the pie chart.
-         */
         function generatePieConfig(labels, values, options, colors) {
             return {
-                type: 'navpie', // allows for flexibility of representing many small slices effectively
+                type: 'navpie',
                 options,
                 plot: {
                     borderColor: "#fff",
                     borderWidth: 2,
-                    valueBox: [
-                        {
-                            placement: 'out',
-                            text: '%t\n',
-                            fontSize: '14',
-                            fontFamily: "Open Sans"
-                        },
-                    ],
+                    valueBox: [{
+                        placement: 'out',
+                        text: '%t\n',
+                        fontSize: '14',
+                        fontFamily: "Open Sans"
+                    }],
                     tooltip: {
                         fontSize: '14',
                         fontFamily: "Open Sans",
@@ -176,45 +169,28 @@
 
         async function renderGrid() {
             try {
-            // Fetch the page views by Spanish speakers (adjust URL as needed)
-            const resp = await fetch('/endpoint.php/reports/spanish-pages');
-            const data = await resp.json();  // Expected: [{FileName: "index.html", Visits: 803}, ...]
-
-            // Convert Visits fields to numbers to avoid issues
-            data.forEach(row => {
-                row.Visits = parseInt(row.Visits, 10);
-            });
-
-            // Configure ZingGrid
-            // We define the columns explicitly to format headers and data types
-            const columns = [
-                { index: 'FileName', header: 'File Name', sortable: true },
-                { index: 'Visits', header: 'Number of Visits', type: 'number', sortable: true }
-            ];
-
-            // Create a new ZingGrid with data and configuration
-            const grid = document.createElement('zing-grid');
-            grid.setAttribute('page-size', '20');
-            grid.setAttribute('page-size-options', '10,20,50');
-            grid.setAttribute('sort-on-load', 'true');
-            grid.setAttribute('sort-column', 'Visits');
-            grid.setAttribute('sort-direction', 'desc');
-            grid.data = data;
-            grid.columns = columns;
-
-            // Append the grid to the container
-            const container = document.getElementById('spanishVisitsGrid');
-            container.appendChild(grid);
-
+                const resp = await fetch('/endpoint.php/reports/spanish-pages');
+                const data = await resp.json();
+                data.forEach(row => { row.Visits = parseInt(row.Visits, 10); });
+                const columns = [
+                    { index: 'FileName', header: 'File Name', sortable: true },
+                    { index: 'Visits', header: 'Number of Visits', type: 'number', sortable: true }
+                ];
+                const grid = document.createElement('zing-grid');
+                grid.setAttribute('page-size', '20');
+                grid.setAttribute('page-size-options', '10,20,50');
+                grid.setAttribute('sort-on-load', 'true');
+                grid.setAttribute('sort-column', 'Visits');
+                grid.setAttribute('sort-direction', 'desc');
+                grid.data = data;
+                grid.columns = columns;
+                document.getElementById('spanishVisitsGrid').appendChild(grid);
             } catch (error) {
-            console.error('Error rendering Spanish Visits Grid:', error);
+                console.error('Error rendering Spanish Visits Grid:', error);
             }
         }
-
         renderChart();
         renderGrid();
-
     </script>
 </body>
-
 </html>
