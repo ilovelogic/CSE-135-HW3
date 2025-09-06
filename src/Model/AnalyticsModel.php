@@ -270,7 +270,7 @@ class AnalyticsModel {
         // Groups Perl files together, others as usual
         $stmt = "SELECT 
                     CASE 
-                        WHEN a.filename LIKE '%.pl' THEN 'Perl Demo Files' 
+                        WHEN a.filename LIKE '%.pl' OR a.filename LIKE '%perl%' THEN 'Perl Demo Files' 
                         ELSE a.filename 
                     END AS FileName, 
                     COUNT(*) AS Visits 
@@ -279,10 +279,11 @@ class AnalyticsModel {
                 WHERE s.userLang = 'es'
                 GROUP BY 
                     CASE 
-                        WHEN a.filename LIKE '%.pl' THEN 'Perl Demo Files' 
+                        WHEN a.filename LIKE '%.pl' OR a.filename LIKE '%perl%' THEN 'Perl Demo Files' 
                         ELSE a.filename 
                     END
                 ORDER BY Visits DESC";
+
         $result = $this->conn->query($stmt);
         if (!$result) {
             return ["error" => "Query failed: " . $this->conn->error];
