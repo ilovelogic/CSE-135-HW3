@@ -70,7 +70,25 @@
     According to our collector script, most site visitors speak English, a significant number are Spanish speakers, and only a handful primarily speak French.
     </p>
 
-    <div id="userLangPie"></div>
+    <section aria-label="User language distribution" style="max-width:960px; margin-bottom: 1.5rem;">
+        <h2>User Language Distribution</h2>
+        <p class="intro" style="margin-top:0;">
+            Spanish users are a notable percentage among site visitors.
+        </p>
+        <div id="userLangPie" style="
+            background:#fff;
+            border-radius:1rem;
+            box-shadow:0 0.5rem 1rem rgba(0,0,0,0.25);
+            padding:1rem;
+            margin-top:1rem;
+            width:100%;
+            height:380px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        "></div>
+        </section>
+
 
     <p class="intro">
     Given that the Spanish speaking group makes up a notable percentage of our overall users, we should consider providing Spanish versions for the popular pages among the Spanish speakers. The following grid displays the pages visited by Spanish speakers, ordered from most to least popular.
@@ -112,7 +130,7 @@
                     slice: 0.6
                 }, userLangColors.slice(0,pieValues.length));
 
-                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie)});
+                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), width: '100%', height: 350 });
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
@@ -122,22 +140,13 @@
          * Generates configuration for a pie chart.
          * @param {Array} labels - Labels for the pie chart.
          * @param {Array} values - Values for each slice.
-         * @param {string} title - Title of the chart.
          * @param {Object} options - Additional options for the pie chart.
          * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
          * @returns {Object} - Configuration object for the pie chart.
          */
-        function generatePieConfig(labels, values, title, subtitle, options, colors) {
+        function generatePieConfig(labels, values, options, colors) {
             return {
                 type: 'navpie', // allows for flexibility of representing many small slices effectively
-                title: {
-                    text: title,
-                    fontSize: 20
-                },
-                subtitle: {
-                    text: subtitle,
-                    fontSize: 16,        // Subtitle font size
-                },
                 options,
                 plot: {
                     borderColor: "#fff",
