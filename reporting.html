@@ -53,12 +53,12 @@
         }
         .piechart-card {
             display: flex;
-            justify-content: flex-start; /* aligns child left */
-            align-items: center;         /* vertical centering */
+            justify-content: center;
+            align-items: center;
             background: #fff;
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.10);
-            width: 500px;
+            width: 600px;
             height: 400px;
             margin-bottom: 1.5rem;
         }
@@ -129,7 +129,7 @@
                         slice: 0.6
                     }, userLangColors.slice(0,pieValues.length)
                 );
-                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), width: 600, height: 400 });
+                zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), width: 500, height: 400 });
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
