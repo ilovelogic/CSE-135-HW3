@@ -277,7 +277,11 @@ class AnalyticsModel {
                 FROM activity a
                 INNER JOIN static s ON a.id = s.id
                 WHERE s.userLang = 'es'
-                GROUP BY FileName
+                GROUP BY 
+                    CASE 
+                        WHEN a.filename LIKE '%.pl' THEN 'Perl Demo Files' 
+                        ELSE a.filename 
+                    END
                 ORDER BY Visits DESC";
         $result = $this->conn->query($stmt);
         if (!$result) {
