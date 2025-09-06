@@ -307,11 +307,11 @@ class AnalyticsModel {
                     WHEN userAgent LIKE '%Linux%' THEN 'Linux'
                     ELSE 'Other'
                 END AS platform,
-                COUNT(*)/(SELECT COUNT(*) FROM static) AS fraction
+                COUNT(*) AS count
             FROM static
             GROUP BY browser, platform
             ORDER BY browser, platform";
-            
+
         $result = $this->conn->query($stmt);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
