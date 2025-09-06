@@ -5,14 +5,11 @@ Repo for the CSE 135 third homework web server, available at [annekelley.site](h
 As I was getting this up and running, I used a Google doc for tracking details to use in debugging down the road. [Google Doc Notes](https://docs.google.com/document/d/1myGtFbDzZ5-MzCQncl51wMC3QlLp-PAuKZ_tOACnpPk/edit?usp=sharing)
 
 ## Progressive Enhancement
-As firm believers in progressive enhancement, we rely on log files, then client hints, and lastly Javascript for our data collection.
+As firm believers in progressive enhancement, we rely on log files first and foremost and use Javascript to enhance our data collection.
 
-## Data Ingest
-We perform an immediate write to short term storage and carry out sanitization and
-processing later on.
 
 ## Dashboard
-We offer an explanation of all our design decisions, including the chart types representing our data, the metrics we worked with, amd so on. 
+We offer an explanation of all our design decisions, including the chart types representing our data, the metrics we worked with, and so on. 
 
 ### User Language Pie Chart
 In our report about designing versions of our pages for different languages, we needed to understand which language groups were most present among our users. 
