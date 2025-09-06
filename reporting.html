@@ -1,44 +1,92 @@
 <!doctype html>
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Visuals</title>
-    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-    <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Language Report</title>
+    <script src="https://cdn.zinggrid.com/zinggrid.min.js" defer></script>
+    <script src="https://cdn.zingchart.com/zingchart.min.js" defer></script>
+    <style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        margin: 1rem 2rem;
+        background: #f9f9f9;
+        color: #333;
+    }
+    h1 {
+        font-size: 2.25rem;
+        margin-bottom: 0.25rem;
+    }
+    a {
+        color: #2176ff;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    p.intro {
+        font-size: 1.125rem;
+        max-width: 720px;
+        margin-bottom: 1rem;
+    }
+    section {
+        background: #eee;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        padding: 1rem 2rem;
+        margin-top: 1.5rem;
+        max-width: 960px;
+    }
+    section > h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    visual-chart, visual-grid {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: block;
+    }
+    /* Provide height for chart and grid blocks */
+    visual-chart {
+        height: 600px;
+    }
+    visual-grid {
+        height: 500px;
+    }
+    </style>
 </head>
 
 <body>
-    <!-- ZingChart -->
-    <style>
-        #charts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(1fr));
-            gap: 20px;
-            padding: 20px;
-        }
+    <h1><a href="https://annekelley.site/">annekelley.site</a> User Language Report</h1>
 
-        #charts>div {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 10px;
-        }
-    </style>
+    <p class="intro">
+    Question: Should we create versions of our webpages in other languages, and serve them based on each user’s native tongue?
+    </p>
 
-    <p style="font-size: xx-large; display: flex; justify-content: center;">Try clicking on things!</p>
+    <p class="intro">
+    According to our collector script, most site visitors speak English, a significant number are Spanish speakers, and only a handful primarily speak French.
+    </p>
 
-    <div id="charts">
-        <!-- <div id="bar3"></div>
-        <div id="bar2"></div> -->
-        <div id="userLangPie"></div>
+    <div id="userLangPie"></div>
+
+    <p class="intro">
+    Given that the Spanish speaking group makes up a notable percentage of our overall users, we should consider providing Spanish versions for the popular pages among the Spanish speakers. The following grid displays the pages visited by Spanish speakers, ordered from most to least popular.
+    </p>
+
+    <section aria-label="Popular pages visited by Spanish speakers">
+    <h2>Spanish Page Visits</h2>
+    <visual-grid id="spanishVisitsGrid" caption="Files to Consider for Spanish Adaptation" aria-label="Grid showing Spanish page visits">
         <div id="spanishVisitsGrid" caption="Files to Consider for Spanish Adaptation" style="width: 100%; height: 500px;"></div>
-        <div id="cookies"></div>
-        <div id="javascript"></div>
-        <div id="network"></div>
-        <div id="languages"></div>
-    </div>
+    </visual-grid>
+    </section>
+
+    <p class="intro">
+    As you can see, the error page, member page for Anne Kelley, homepage, and the Perl demos are the most visited among Spanish speakers. Therefore, to improve user experience for this substantial chunk of our visitors, we could create Spanish versions of these pages and redirect Spanish speakers to them in our routing.
+    </p>
+
     <script type="module">
         // Retrieves getData function, which requests columns from a table of the web_analytics DB
         import { getData } from '/fetch.js';
@@ -47,12 +95,6 @@
 
         async function renderCharts() {
             try {
-                // Dynamic fetch of data
-                const rawStaticData = await getData('static',
-                    ['userLang', 'userNetConnType', 'acceptsCookies', 'allowsJavaScript']);
-
-                console.log("Fetched static data:", rawStaticData);
-
                 const resp = await fetch('/endpoint.php/reports/user-langs');
                 const langData = await resp.json();
                 // langData ex: [{userLang: "en", count: 10, language: "English"}, ...]
@@ -71,106 +113,6 @@
                 }, userLangColors.slice(0,pieValues.length));
 
                 zingchart.render({ id: 'userLangPie', data: JSON.stringify(userLangPie), height: 1000, width: '100%' });
-
-                // Aggregate counts
-                const cookieCounts = {};
-                rawStaticData.forEach(item => {
-                    cookieCounts[item.acceptsCookies === "1" ? "Accepts" : "Rejects"] =
-                        (cookieCounts[item.acceptsCookies === "1" ? "Accepts" : "Rejects"] || 0) + 1;
-                });
-
-                // Convert
-                const cookieLabels = Object.keys(cookieCounts);
-                const cookieValues = Object.values(cookieCounts);
-
-                // Config
-                const cookieChart = {
-                    type: "pie",
-                    title: { text: "Cookie Acceptance" },
-                    plot: {
-                        slice: '60%',
-                        detach: false,
-                        valueBox: { placement: 'in', text: '%t\n%npv%' }
-                    },
-                    series: cookieLabels.map((label, i) => ({
-                        text: label,
-                        values: [cookieValues[i]]
-                    }))
-                };
-
-                // Render
-                zingchart.render({ id: "cookies", data: cookieChart, height: 1000, width: '100%' });
-
-                const netCounts = {};
-                rawStaticData.forEach(item => {
-                    netCounts[item.userNetConnType || "Unknown"] =
-                        (netCounts[item.userNetConnType || "Unknown"] || 0) + 1;
-                });
-
-                const netLabels = Object.keys(netCounts);
-                const netValues = Object.values(netCounts);
-
-                const netChart = {
-                    type: "bar",
-                    title: { text: "Network Connection Types" },
-                    scaleX: { values: netLabels },
-                    series: [{ values: netValues, backgroundColor: "#33ccff" }]
-                };
-
-                zingchart.render({ id: "network", data: netChart, height: 1000, width: '100%' });
-
-                const jsCounts = {};
-                rawStaticData.forEach(item => {
-                    jsCounts[item.allowsJavaScript === "1" ? "Enabled" : "Disabled"] =
-                        (jsCounts[item.allowsJavaScript === "1" ? "Enabled" : "Disabled"] || 0) + 1;
-                });
-
-                const jsLabels = Object.keys(jsCounts);
-                const jsValues = Object.values(jsCounts);
-
-                const jsChart = {
-                    type: "pie",
-                    title: { text: "JavaScript Support" },
-                    plot: { slice: '55%' },
-                    series: jsLabels.map((label, i) => ({
-                        text: label,
-                        values: [jsValues[i]]
-                    }))
-                };
-
-                zingchart.render({ id: "javascript", data: jsChart, height: 1000, width: '100%' });
-
-                const langCounts = {};
-                rawStaticData.forEach(item => {
-                    langCounts[item.userLang || "Unknown"] =
-                        (langCounts[item.userLang || "Unknown"] || 0) + 1;
-                });
-
-                const langLabels = Object.keys(langCounts);
-                const langValues = Object.values(langCounts);
-
-                const langChart = {
-                    type: "bar",
-                    title: { text: "User Languages" },
-                    scaleX: {
-                        values: langLabels,
-                        item: {
-                            angle: -45,    // rotate labels if needed
-                            'font-size': 10
-                        },
-                        guide: { visible: false },
-                        tick: { visible: true },
-                        step: 1,          // show every label
-                        'max-items': langLabels.length, // prevent auto-skipping
-                        'items-overlap': true // allow overlap if needed
-                    },
-                    series: [
-                        { values: langValues, backgroundColor: "#ff9933" }
-                    ]
-                };
-
-                zingchart.render({ id: "languages", data: langChart, height: 1000, width: '100%' });
-
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
@@ -210,253 +152,6 @@
 
             } catch (error) {
             console.error('Error rendering Spanish Visits Grid:', error);
-            }
-        }
-
-        /**
-         * A function to parse raw data from our API and populate any
-         * given count object.
-         * @param {string} chartType - Type of chart ('pie', 'bar2', 'bar3')
-         * @param {any} rawData - Raw data to be parsed
-         * @param {Object} countObj - Object to store counts
-         */
-        function parseCounts(chartType, rawData, countObj, valueChecks = []) {
-            switch (chartType) {
-                case 'pie':
-                    try {
-                        countObj[rawData] = (countObj[rawData] || 0) + 1;
-                    } catch (err) {
-                        console.error("Error parsing pie chart data:", err);
-                    }
-                    break;
-                case 'bar2':
-
-                    // raw data item will be like this: userWindowWidth = 1280, userWindowHeight = 720
-
-                    try {
-                        // rawData, countObj, and valueChecks are expected to be an array of two elements
-                        const [x, y] = rawData;
-                        const [countObj1, countObj2] = countObj;
-                        const [valCheck1, valCheck2] = valueChecks;
-                        switch (String(x)) {
-                            case String(valCheck1):
-                                countObj1[y] = (countObj1[y] || 0) + 1;
-                                countObj2[y] = countObj2[y] || 0;
-                                break;
-                            case String(valCheck2):
-                                countObj1[y] = countObj1[y] || 0;
-                                countObj2[y] = (countObj2[y] || 0) + 1;
-                                break;
-                            default:
-                                return; // Ignore other values
-                        }
-                    } catch (err) {
-                        console.error("Error parsing 2-series bar chart data:", err);
-                    }
-                    break;
-                case 'bar3':
-                    try {
-                        // rawData, countObj, and valueChecks are expected to be an array of two elements
-                        const [x, y] = rawData;
-                        const [countObj1, countObj2, countObj3] = countObj;
-                        const [valCheck1, valCheck2, valCheck3] = valueChecks;
-                        switch (x) {
-                            case valCheck1:
-                                countObj1[y] = (countObj1[y] || 0) + 1;
-                                countObj2[y] = countObj2[y] || 0;
-                                countObj3[y] = countObj3[y] || 0;
-                                break;
-                            case valCheck2:
-                                countObj1[y] = countObj1[y] || 0;
-                                countObj2[y] = (countObj2[y] || 0) + 1;
-                                countObj3[y] = countObj3[y] || 0;
-                                break;
-                            default:
-                                countObj1[y] = countObj1[y] || 0;
-                                countObj2[y] = countObj2[y] || 0;
-                                countObj3[y] = (countObj3[y] || 0) + 1;
-                                return;
-                        }
-                    } catch (err) {
-                        console.error("Error parsing 3-series bar chart data:", err);
-                    }
-                    break;
-                default:
-                    console.error("Unknown chart type:", chartType);
-            }
-        }
-
-        /**
-         * Generates configuration for a 3-series bar chart.
-         * @param {Array} values - Array of arrays containing values for each series.
-         * @param {string} title - Title of the chart.
-         * @param {Array} x_axis - Labels for the x-axis.
-         * @param {string} y_axis - Label for the y-axis.
-         * @param {Array} legend_labels - Labels for the legend.
-         * @param {Array} colors - Colors for each series.
-         * @param {Object} options - Additional options like alpha values for each series.
-         * @returns {Object} - Configuration object for the 3-series bar chart.
-         */
-        function generateBar3Config(values, title, x_axis, y_axis, legend_labels, colors, options) {
-            return {
-                type: 'bar',
-                title: {
-                    text: title,
-                    backgroundColor: 'none',
-                    fontSize: "22px",
-                    alpha: 0.8,
-                    adjustLayout: true
-                },
-                plotarea: { margin: 'dynamic' },
-                scrollX: {
-
-                },
-                scaleX: {
-                    values: x_axis,
-                    zooming: true,
-                    zoomTo: [0,50],
-                    item: {
-                        fontSize: 10
-                    },
-                    label: { text: "Screen Height", fontFamily: "Helvetica", bold: true, fontSize: "12px", fontColor: "#7E7E7E" }
-                },
-                scaleY: {
-                    lineColor: '#7E7E7E',
-                    item: { fontColor: '#7e7e7e' },
-                    guide: { visible: true },
-                    label: { text: "Count", fontFamily: "Helvetica", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
-                },
-                legend: {
-                    layout: 'x3',
-                    align: 'center',
-                    adjustLayout: true,
-                    shadow: false,
-                    overflow: 'page',
-                    alpha: 0.05,
-                    marker: { type: 'rectangle', borderColor: 'none', size: 12 },
-                    borderWidth: 0,
-                    maxItems: 3,
-                    toggleAction: 'hide',
-                    pageOn: { backgroundColor: '#000', size: 10, alpha: 0.75 },
-                    pageOff: { backgroundColor: '#7E7E7E', size: 10, alpha: 0.75 },
-                    pageStatus: { color: 'black' }
-                },
-                plot: { 'bars-space-left': 0.15, 'bars-space-right': 0.15 },
-                series: legend_labels.map((label, i) => ({
-                    text: label,
-                    values: values[i],
-                    backgroundColor: colors[i],
-                    alpha: options?.alpha[i] || 1
-                }))
-            }
-        }
-
-        /**
-         * Generates configuration for a 2-series bar chart.
-         * @param {Array} values - Array of arrays containing values for each series.
-         * @param {string} title - Title of the chart.
-         * @param {Array} x_axis - Labels for the x-axis.
-         * @param {string} y_axis - Label for the y-axis.
-         * @param {Array} legend_labels - Labels for the legend.
-         * @param {Array} colors - Colors for each series.
-         * @param {Object} options - Additional options like alpha values for each series.
-         * @returns {Object} - Configuration object for the 2-series bar chart.
-         */
-        function generateBar2Config(values, title, x_axis, y_axis, legend_labels, colors, options) {
-            return {
-                type: 'bar',
-                title: {
-                    text: title,
-                    backgroundColor: 'none',
-                    fontFamily: "verdana",
-                    fontColor: "#7E7E7E",
-                    fontSize: "22px",
-                    alpha: 1,
-                    adjustLayout: true
-                },
-                plotarea: { margin: 'dynamic' },
-                legend: {
-                    layout: 'x2',
-                    overflow: 'page',
-                    alpha: 0.05,
-                    shadow: false,
-                    align: 'center',
-                    adjustLayout: true,
-                    marker: { type: 'rectangle', borderColor: 'none', size: 18 },
-                    borderWidth: 0,
-                    maxItems: 3,
-                    toggleAction: 'hide',
-                    pageOn: { backgroundColor: '#000', size: 14, alpha: 1 },
-                    pageOff: { backgroundColor: '#7E7E7E', size: 14, alpha: 1 },
-                    pageStatus: { color: 'black' }
-                },
-                plot: { 'bars-space-left': 0.15, 'bars-space-right': 0.15 },
-                scaleY: {
-                    lineColor: '#7E7E7E',
-                    item: { fontColor: '#7e7e7e' },
-                    guide: { visible: true },
-                    label: { text: y_axis, fontFamily: "verdana", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
-                },
-                scaleX: {
-                    values: x_axis,
-                    placement: 'default',
-                    tick: { size: 10, placement: 'cross' },
-                    itemsOverlap: true,
-                    label: { text: "Window Height", fontFamily: "verdana", bold: true, fontSize: "12px", fontColor: "#7E7E7E" },
-                },
-                series: legend_labels.map((label, i) => ({
-                    text: label,
-                    values: values[i],
-                    backgroundColor: colors[i],
-                    alpha: options?.alpha[i] || 1
-                }))
-            }
-        }
-
-        /**
-         * Generates configuration for a pie chart.
-         * @param {Array} labels - Labels for the pie chart.
-         * @param {Array} values - Values for each slice.
-         * @param {string} title - Title of the chart.
-         * @param {Object} options - Additional options for the pie chart.
-         * @param {Array} colors - Specifies the colors for each slice, in the order they are given in values
-         * @returns {Object} - Configuration object for the pie chart.
-         */
-        function generatePieConfig(labels, values, title, subtitle, options, colors) {
-            return {
-                type: 'navpie', // allows for flexibility of representing many small slices effectively
-                title: { 
-                    text: title,
-                    fontSize: 20 
-                },
-                subtitle: {
-                    text: subtitle,
-                    fontSize: 16,        // Subtitle font size
-                },
-                options,
-                plot: {
-                    borderColor: "#fff",
-                    borderWidth: 2,
-                    valueBox: [
-                        {
-                            placement: 'out',
-                            text: '%t\n',
-                            fontSize: '14',
-                            fontFamily: "Open Sans"
-                        },
-                    ],
-                    tooltip: {
-                        fontSize: '14',
-                        fontFamily: "Open Sans",
-                        padding: "5 10",
-                        text: "%npv%<br>Count: %v"
-                    }
-                },
-                series: labels.map((label, i) => ({
-                    text: label,
-                    values: [values[i]],
-                    backgroundColor: colors[i]
-                }))
             }
         }
 
