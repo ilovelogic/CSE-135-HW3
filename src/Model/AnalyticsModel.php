@@ -215,7 +215,7 @@ class AnalyticsModel {
         // Common lanugage codes and associated names in English
         $userLangNames = [
             "en"    => "English",
-            "en-US" => "English (United States)",
+            "en-US" => "English (U.S.)",
             "es"    => "Spanish",
             "fr"    => "French",
             "de"    => "German",
