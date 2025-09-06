@@ -86,7 +86,7 @@
         </div>
         <!-- User Language Pie Chart Card -->
         <div class="barchart-card">
-            <div id="userAgentBar" style="width: 500px; height: 400px;"></div>
+            <div id="userAgentBar" style="width: 800px; height: 400px;"></div>
         </div>
 
     </section>
@@ -117,11 +117,9 @@
 
         async function renderChart() {
             try {
-                // Retrieves data from database
                 const resp = await fetch('/endpoint.php/reports/browser-types');
                 const userAgentData = await resp.json();
 
-                // Defines the order of browsers and platforms in the chart
                 const browsers = ["Chrome", "Safari", "Firefox"];
                 const platforms = ["Windows", "Mac", "iOS", "Linux"];
 
@@ -133,10 +131,9 @@
                     browsers.forEach(browser => agg[platform][browser] = 0);
                 });
 
-                // Aggregates data (sum fractions as needed)
+                // Uses count now, not fraction
                 userAgentData.forEach(row => {
-                    // Sums up fractions for duplicate browser/platform combos (e.g. iOS Safari)
-                    agg[row.platform][row.browser] += parseFloat(row.fraction);
+                    agg[row.platform][row.browser] += parseInt(row.count, 10);  // parseInt for counts
                 });
 
                 // Assigns colors by platform
@@ -147,23 +144,18 @@
                     Linux: "#984ea3"
                 };
 
-                // Builds series
                 const series = platforms.map(platform => ({
                     text: platform,
                     backgroundColor: platformColors[platform] || "#999",
-                    values: browsers.map(browser => Number(agg[platform][browser].toFixed(3)))
+                    values: browsers.map(browser => agg[platform][browser])
                 }));
 
-                // Assembles the config
                 const barData = {
                     type: "bar",
                     stacked: true,
-                    title: { text: "User Agent Distribution by Browser & Platform" },
                     legend: { align: "center", verticalAlign: "bottom" },
-                    scaleX: {
-                        labels: browsers
-                    },
-                    scaleY: { label: { text: "Fraction of Sessions" } },
+                    scaleX: { labels: browsers },
+                    scaleY: { label: { text: "Number of Users" } },  // Label changed from Fraction
                     series: series
                 };
                 zingchart.render({ id: 'userAgentBar', data: barData, width: 700, height: 400 });
