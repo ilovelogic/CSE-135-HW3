@@ -180,10 +180,18 @@ function getRandomFilenameTitle() {
 function generateFakeActivity($faker, $id, $userAgent) {
     $isMobile = strpos($userAgent, 'iPhone') !== false;
     [$filename, $title] = getRandomFilenameTitle();
+    $weightedMssgs = [
+        ["Uncaught TypeError: Assignment to constant variable.", 0.45],
+        ["Failed to load resource: net::ERR_BLOCKED_BY_CLIENT", 0.3],
+        ["A Problem Repeatedly Occurred", 0.15],
+        ["Unexpected end of input", 0.07],
+        ["ERR_TOO_MANY_REDIRECTS", 0.03]
+    ];
+    
 
     $eventType = $faker->randomElement(['click', 'scroll', 'keypress', 'mousemove', 'error']);
     if ($eventType === 'error') {
-        $message = "Uncaught TypeError: Assignment to constant variable.";
+        $message = weightedRandomItem($weightedMssgs);
     }
     else {
         $message = null;
