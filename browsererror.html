@@ -86,7 +86,7 @@
         </div>
         <!-- User Language Pie Chart Card -->
         <div class="barchart-card">
-            <div id="userAgentBar" style="width: 800px; height: 400px;"></div>
+            <div id="userAgentBar" style="width: 1200px; height: 500px;"></div>
         </div>
 
     </section>
@@ -158,7 +158,7 @@
                     scaleY: { label: { text: "Number of Users" } },  // Label changed from Fraction
                     series: series
                 };
-                zingchart.render({ id: 'userAgentBar', data: barData, width: 700, height: 400 });
+                zingchart.render({ id: 'userAgentBar', data: barData, width: 1000, height: 400 });
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
