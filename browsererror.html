@@ -58,8 +58,8 @@
             background: #fff;
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.10);
-            width: 1200px;
-            height: 500px;
+            width: 1000px;
+            height: 380px;
             margin-bottom: 1.5rem;
         }
     </style>
@@ -158,7 +158,7 @@
                     scaleY: { label: { text: "Number of Users" } },  // Label changed from Fraction
                     series: series
                 };
-                zingchart.render({ id: 'userAgentBar', data: barData, width: 1000, height: 400 });
+                zingchart.render({ id: 'userAgentBar', data: barData, width: 900, height: 250 });
             } catch (err) {
                 console.error("Error rendering charts:", err);
             }
