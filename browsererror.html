@@ -79,14 +79,15 @@
     </section>
 
     <!-- SECTION: Data -->
-    <section aria-label="Brower Data" class="datacontent">
+    <section aria-label="Error Data" class="datacontent">
         <h2>Data</h2>
         <div class="section-content">
-
+            
         </div>
-        <!-- User Language Pie Chart Card -->
-        <div class="barchart-card">
-            <div id="userAgentBar"></div>
+        <!-- Data grid card below -->
+        <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 1rem; margin-top: 1rem;">
+            <h3 style="margin-top: 0;">Error Message Counts</h3>
+            <div id="errorMessageGrid" style="width: 100%;"></div>
         </div>
 
     </section>
@@ -97,11 +98,11 @@
         <div class="section-content">
 
         </div>
-        <!-- Data grid card below -->
-        <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 1rem; margin-top: 1rem;">
-            <h3 style="margin-top: 0;">Pages to Consider for Spanish Adaptation</h3>
-            <div id="spanishVisitsGrid" style="width: 100%;"></div>
+        <!-- User Agent Stacked Bar Chart -->
+        <div class="barchart-card">
+            <div id="userAgentBar"></div>
         </div>
+        
     </section>
 
     <!-- SECTION: Action -->
@@ -170,27 +171,35 @@
                 console.error("Error rendering charts:", err);
             }
         }
-
-        async function renderGrid() {
+        async function renderErrorGrid() {
             try {
-                const resp = await fetch('/endpoint.php/reports/spanish-pages');
+                // Fetches error message counts from endpoint 
+                const resp = await fetch('/endpoint.php/reports/error-messages');
                 const data = await resp.json();
-                data.forEach(row => { row.Visits = parseInt(row.Visits, 10); });
+
+                // Ensures numeric sorting for 'count', 10 means use base 10
+                data.forEach(row => { row.count = parseInt(row.count, 10); });
+
+                // Defines ZingGrid columns
                 const columns = [
-                    { index: 'FileName', header: 'File Name', sortable: true },
-                    { index: 'Visits', header: 'Total Number of Visits', type: 'number', sortable: true }
+                    { index: 'message', header: 'Error Message', type: 'string', sortable: true },
+                    { index: 'count', header: 'Occurrences', type: 'number', sortable: true }
                 ];
+
+                // Setting up grid
                 const grid = document.createElement('zing-grid');
                 grid.setAttribute('page-size', '20');
                 grid.setAttribute('page-size-options', '10,20,50');
                 grid.setAttribute('sort-on-load', 'true');
-                grid.setAttribute('sort-column', 'Visits');
+                grid.setAttribute('sort-column', 'count');
                 grid.setAttribute('sort-direction', 'desc');
                 grid.data = data;
                 grid.columns = columns;
-                document.getElementById('spanishVisitsGrid').appendChild(grid);
+
+                // Attaches grid to DOM
+                document.getElementById('errorMessageGrid').appendChild(grid);
             } catch (error) {
-                console.error('Error rendering Spanish Visits Grid:', error);
+                console.error('Error rendering Error Messages Grid:', error);
             }
         }
         renderChart();
