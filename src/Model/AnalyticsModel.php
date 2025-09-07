@@ -316,6 +316,20 @@ class AnalyticsModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function countErrorMessages() {
+        $stmt = "
+            SELECT message, COUNT(*) AS count
+            FROM activity
+            WHERE message IS NOT NULL AND message <> ''
+            GROUP BY message
+            ORDER BY count DESC
+        ";
+        $result = $this->conn->query($stmt);
+        if (!$result) {
+            return ["error" => "Query failed: " . $this->conn->error];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } 
 
 
     // Retrieves requested columns from table
