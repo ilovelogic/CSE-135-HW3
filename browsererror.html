@@ -29,7 +29,7 @@
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
             padding: 2rem 2.5rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
             max-width: 960px;
             margin-left: auto;
             margin-right: auto;
@@ -74,7 +74,7 @@
     <section aria-label="Report Question">
         <h2>Question</h2>
         <div class="section-content">
-            Are users experiencing a significant amount of errors because we are not supporting enough browser types?
+            Are users experiencing a significant number of errors because we are not supporting enough browser types?
         </div>
     </section>
 
@@ -82,7 +82,7 @@
     <section aria-label="Error Data" class="datacontent">
         <h2>Data</h2>
         <div class="section-content">
-
+            To make good decisions about browser support, we need to consider our types of errors and how prevelant they are for users.
         </div>
         <!-- Data grid card below -->
         <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 2rem; margin-top: 1rem;">
@@ -96,7 +96,7 @@
     <section aria-label="Data Discussion">
         <h2>Discussion</h2>
         <div class="section-content">
-            The most common error, "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT", is a Chrome-centric error. Given the prevalence of Chrome browsers, we would expect the most frequent error to be from Chrome. The next most occurring error, "A Problem Repeatedly Occurred", is specific to Safari. It is a little troubling that the number of occurrences for the Safari error is more than half that of the top error. In general, we could expect the number of Safari users to be far less than half of the number of Chrome users, so it seems that our error rates may not be proportional.
+            The most common error, "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT", is a Chrome-centric error. Given the popularity of Chrome browsers, we would expect the most frequent error to be from Chrome. The next most occurring error, "A Problem Repeatedly Occurred", is specific to Safari. It is a little troubling that the number of occurrences for the Safari error is more than half that of the top error. In general, we could expect the number of Safari users to be far less than half of the number of Chrome users, so it seems that our error rates may not be proportional.
         </div>
     </section>
 
@@ -104,7 +104,7 @@
     <section aria-label="Data Exploration">
         <h2>Exploration</h2>
         <div class="section-content">
-            To see if we need to redesign to better support Safari browsers, we turn to our data. We want to know if the number of Safari users is indeed less than half of the Chrome users, which would suggest an imbalance in errors between the browser types.
+            To see if we need to redesign to better support Safari browsers, we turn to our data. We want to know if the number of Safari users is indeed less than half of the Chrome users, which would suggest an imbalance in errors between the browser types.<br>
         <!-- User Agent Stacked Bar Chart -->
         <div class="barchart-card">
             <div id="userAgentBar"></div>
