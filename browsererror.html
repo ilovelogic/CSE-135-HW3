@@ -82,10 +82,10 @@
     <section aria-label="Error Data" class="datacontent">
         <h2>Data</h2>
         <div class="section-content">
-            
+
         </div>
         <!-- Data grid card below -->
-        <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 1rem; margin-top: 1rem;">
+        <div style="background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.25); padding: 2rem; margin-top: 1rem;">
             <h3 style="margin-top: 0;">Error Message Counts</h3>
             <div id="errorMessageGrid" style="width: 100%;"></div>
         </div>
@@ -171,7 +171,7 @@
                 console.error("Error rendering charts:", err);
             }
         }
-        async function renderErrorGrid() {
+        async function renderGrid() {
             try {
                 // Fetches error message counts from endpoint 
                 const resp = await fetch('/endpoint.php/reports/error-messages');
