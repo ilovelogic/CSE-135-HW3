@@ -74,7 +74,7 @@
     <section aria-label="Report Question">
         <h2>Question</h2>
         <div class="section-content">
-            Are our users experiencing errors as a result of us not supporting enough browser types?
+            Are users experiencing a significant amount of errors because we are not supporting enough browser types?
         </div>
     </section>
 
@@ -92,12 +92,19 @@
 
     </section>
 
+    <!-- SECTION: Discussion -->
+    <section aria-label="Data Discussion">
+        <h2>Discussion</h2>
+        <div class="section-content">
+            The most common error, "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT", is a Chrome-centric error. Given the prevalance of Chrome browsers, we would expect the msot frequent error to be from Chrome. The next most occuring error, "A Problem Repeatedly Occurred", is specific to Safari. It is a little troubling that the number of occurences for the Safari error is more than half that of the top error. In general, we could expect the number of Safari users to be far less than half of the number of Chrome users, so it seems that our error rates may not be proportional.
+        </div>
+    </section>
+
     <!-- SECTION: Exploration -->
     <section aria-label="Data Exploration">
         <h2>Exploration</h2>
         <div class="section-content">
-
-        </div>
+            To see if we need to redesign to better support Safari browsers, we turn to the number of users of each type. We want to know if the amount of Safari users is indeed less than half of the Chrome users, which would suggest an imbalance in errors between the browser types.
         <!-- User Agent Stacked Bar Chart -->
         <div class="barchart-card">
             <div id="userAgentBar"></div>
@@ -109,7 +116,7 @@
     <section aria-label="Recommended Action">
         <h2>Action</h2>
         <div class="section-content">
-
+            The Safari browser demographic is certainly less than half of the size of the Chrome demographic. As a result, we see that Safari browsers are more enclined to experience errors on our web pages. Given that Safari browsers are still a noticeable population among our users, we need to invest in their experience. I recommend updating our code to work well on both Chrome and Safari, so that we do drive away our Safari visitors with our poor performace.
         </div>
     </section>
 
