@@ -51,6 +51,9 @@ class AnalyticsController {
                 case 'browser-types':
                     $data = $this->model->userAgentDistributionByType();
                     break;
+                case 'error-messages':
+                    $data = $this->model->countErrorMessages();
+                    break;
                 case 'avg-file-serve':
                     $data = $this->model->avgTimeToServeByFile();
                     break;
